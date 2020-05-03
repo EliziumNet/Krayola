@@ -5,7 +5,7 @@ function Split-KeyValuePairFormatter {
       Split-KeyValuePairFormatter
 
     .SYNOPSIS
-      Splits an input string which should conform to the format string contaning
+      Splits an input string which should conform to the format string containing
       <%KEY%> and <%VALUE%> constituents.
 
     .DESCRIPTION
@@ -14,7 +14,19 @@ function Split-KeyValuePairFormatter {
 
     .PARAMETER Format
       Format specifier for each key/value pair encountered. The string must contain the tokens
-      <%KEY%> and <%VALUE%>
+      whatever is defined in KeyPlaceHolder and ValuePlaceHolder.
+
+    .PARAMETER KeyConstituent
+      The value of the Key.
+
+    .PARAMETER ValueConstituent
+      The value of the Value!
+
+    .PARAMETER KeyPlaceHolder
+      The place holder that identifies the Key in the Format parameter.
+
+    .PARAMETER ValuePlaceHolder
+      The place holder that identifies the Value in the Format parameter.
   #>
 
   [CmdletBinding()]

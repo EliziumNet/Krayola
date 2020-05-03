@@ -1,5 +1,3 @@
-# This file is temprary and should not be checked in
-#
 
 . ./Krayola/Internal/split-key-value-pair-formatter.ps1
 . ./Krayola/Public/themes.ps1

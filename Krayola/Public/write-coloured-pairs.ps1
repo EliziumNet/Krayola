@@ -7,6 +7,7 @@ function Write-ColouredPairs {
       Write-ColouredPairs
 
     .SYNOPSIS
+      Writes a collection of key/value pairs in colour according to a specified Theme.
 
     .DESCRIPTION
       The Pairs defined here are colour-less, instead colours coming from the KEY-COLOURS
@@ -27,7 +28,7 @@ function Write-ColouredPairs {
 
       $PairsToWriteInColour = @(
         @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
-        @(@("Star", "Green"), @("Anna Hournikova", "Cyan"))
+        @(@("Star", "Green"), @("Martina Hingis", "Cyan"))
       );
       Write-PairsInColour -Message ">>> Greetings" -MessageColours @("Magenta") `
         -Pairs $PairsToWriteInColour -Format "'<%KEY%>'<--->'<%VALUE%>'" `
@@ -50,9 +51,8 @@ function Write-ColouredPairs {
         "MESSAGE-SUFFIX" = " // "
       }
 
-    .PARAMETER Format
-      Format specifier for each key/value pair encountered. The string must contain the tokens
-      <%KEY%> and <%VALUE%>
+    .PARAMETER Pairs
+      A 2 dimesional array representing the key/value pairs to be rendered.
 
     .PARAMETER Theme
       Hastable that must contain all the following fields
@@ -68,15 +68,8 @@ function Write-ColouredPairs {
       MESSAGE-COLOURS
       MESSAGE-SUFFIX
 
-
-    .PARAMETER MetaColours
-      This is the colour specifier for any character that is not the key or the value. Eg: if
-      the format is defined as ['<%KEY%>'='<%VALUE%>'], then [' '=' '] will be written in
-      this colour. As with other write in clour functionality, the user can specify just a
-      single colour (in a single item array), which would represent the foreground colour, or
-      2 colours can be specified, representing the foreground and background colours in
-      that order inside the 2 element array (a pair). These meta colours will also apply
-      to the Open, Close and Separator tokens.
+    .PARAMETER Message
+      An optional message that precedes the display of the Key/Value sequence.
   #>
 
   [CmdletBinding()]
@@ -150,3 +143,5 @@ function Write-ColouredPairs {
 
   Invoke-Expression -Command $expression;
 }
+
+Set-Alias -Name Write-ColoredPairs -Value Write-ColouredPairs

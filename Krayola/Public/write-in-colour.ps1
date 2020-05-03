@@ -28,7 +28,7 @@ function Write-InColour {
       Write-InColour -colouredTextLine  @( ,@("some text", "Blue") )
 
       Empty snippets, should not be passed in, it's up to the caller to ensure that this is
-      the case. If an empty snippet is found and ugly warning message is emitted, so this
+      the case. If an empty snippet is found an ugly warning message is emitted, so this
       should not go un-noticed.
     
     .PARAMETER ColouredTextLine
@@ -88,3 +88,5 @@ function Write-InColour {
     Write-Host "";
   }
 }
+
+Set-Alias -Name Write-InColor -Value Write-InColour

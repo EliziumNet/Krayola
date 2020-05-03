@@ -23,5 +23,6 @@ foreach ($folder in $functionFolders)
 #
 # $publicFunctions = (Get-ChildItem -Path "$PSScriptRoot/Public" -Filter '*.ps1').BaseName
 #
-Export-ModuleMember -Function Write-ColouredPairs, Write-InColour, Write-PairsInColour
+Export-ModuleMember -Function Write-ColouredPairs, Write-InColour, Write-PairsInColour, Show-ConsoleColours
 Export-ModuleMember -Variable DefinedThemes
+Export-ModuleMember -Alias Write-ColoredPairs, Write-InColor, Write-PairsInColor, Show-ConsoleColors
