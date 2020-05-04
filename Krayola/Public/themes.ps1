@@ -4,47 +4,62 @@
 $KrayolaThemes = @{
   <#💩#>
   "EMERGENCY-THEME"  = @{
-    "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
+    "FORMAT"             = "{{<%KEY%>}}={{<%VALUE%>}}";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
     "KEY-COLOURS"        = @("White");
     "VALUE-COLOURS"      = @("DarkGray");
-    "OPEN"               = "(";
-    "CLOSE"              = ")";
-    "SEPARATOR"          = "👻 ";
+    "OPEN"               = "{";
+    "CLOSE"              = "}";
+    "SEPARATOR"          = "; ";
     "META-COLOURS"       = @("Black");
     "MESSAGE-COLOURS"    = @("Gray");
-    "MESSAGE-SUFFIX"     = " 💥 " 
+    "MESSAGE-SUFFIX"     = " !!!! " 
   };
 
   <#😍#>
-  "AMOUR-EMOJI-THEME" = @{
-    "FORMAT"             = "💍'<%KEY%>'=💕'<%VALUE%>'";
+  "ROUND-THEME" = @{
+    "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
     "KEY-COLOURS"        = @("DarkCyan");
     "VALUE-COLOURS"      = @("DarkBlue");
     "OPEN"               = "(";
     "CLOSE"              = ")";
-    "SEPARATOR"          = ", ";
+    "SEPARATOR"          = " @@ ";
     "META-COLOURS"       = @("Yellow");
     "MESSAGE-COLOURS"    = @("Cyan");
-    "MESSAGE-SUFFIX"     = " 💋 " 
+    "MESSAGE-SUFFIX"     = " ~~ " 
   };
   
   <#😎#>
-  "COOL-EMOJI-THEME" = @{
-    "FORMAT"             = "🍺'<%KEY%>'=🌀'<%VALUE%>'";
+  "SQUARE-THEME" = @{
+    "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
     "KEY-COLOURS"        = @("DarkCyan");
     "VALUE-COLOURS"      = @("DarkBlue");
-    "OPEN"               = "(";
-    "CLOSE"              = ")";
-    "SEPARATOR"          = " 💥 ";
+    "OPEN"               = "[";
+    "CLOSE"              = "]";
+    "SEPARATOR"          = " ## ";
     "META-COLOURS"       = @("Black");
     "MESSAGE-COLOURS"    = @("DarkGreen");
-    "MESSAGE-SUFFIX"     = " 😎 " 
+    "MESSAGE-SUFFIX"     = " == " 
+  };
+
+  <#🌀#>
+  "ANGULAR-THEME" = @{
+    "FORMAT"             = "'<%KEY%>'-->'<%VALUE%>'";
+    "KEY-PLACE-HOLDER"   = "<%KEY%>";
+    "VALUE-PLACE-HOLDER" = "<%VALUE%>";
+    "KEY-COLOURS"        = @("DarkCyan");
+    "VALUE-COLOURS"      = @("DarkBlue");
+    "OPEN"               = "<";
+    "CLOSE"              = ">";
+    "SEPARATOR"          = " ^^ ";
+    "META-COLOURS"       = @("Black");
+    "MESSAGE-COLOURS"    = @("DarkGreen");
+    "MESSAGE-SUFFIX"     = " // " 
   }
 }
 
