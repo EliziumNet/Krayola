@@ -1,7 +1,7 @@
 
 # https://getemoji.com/
 #
-$DefinedThemes = @{
+$KrayolaThemes = @{
   <#💩#>
   "EMERGENCY-THEME"  = @{
     "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
@@ -48,5 +48,5 @@ $DefinedThemes = @{
   }
 }
 
-$null = $DefinedThemes;
+$null = $KrayolaThemes;
  

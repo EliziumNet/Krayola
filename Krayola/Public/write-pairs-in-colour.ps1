@@ -1,14 +1,14 @@
 
-function Write-PairsInColour {
+function Write-RawPairsInColour {
   <#
     .NAME
-      Write-PairsInColour
+      Write-RawPairsInColour
 
     .SYNOPSIS
 
     .DESCRIPTION
       The snippets passed in as element of $Pairs are in the same format as
-      those passed into Write-InColour as ColouredTextLine. The only difference is that
+      those passed into Write-InColour as TextSnippets. The only difference is that
       each snippet can only have 2 entries, the first being the key and the second being
       the value.
 
@@ -124,12 +124,12 @@ function Write-PairsInColour {
   if (-not([String]::IsNullOrEmpty($Message))) {
     [string[]]$messageSnippet = @($Message) + $MessageColours;
     [string[][]]$wrapper = @(, $messageSnippet);
-    Write-InColour -ColouredTextLine $wrapper -NoNewLine;
+    Write-InColour -TextSnippets $wrapper -NoNewLine;
 
     if (-not([String]::IsNullOrEmpty($MessageSuffix))) {
       [string[]]$suffixSnippet = @($MessageSuffix) + $MessageColours;
       [string[][]]$wrapper = @(, $suffixSnippet);
-      Write-InColour -ColouredTextLine $wrapper -NoNewLine;  
+      Write-InColour -TextSnippets $wrapper -NoNewLine;  
     }
   }
 
@@ -138,7 +138,7 @@ function Write-PairsInColour {
   if (-not([String]::IsNullOrEmpty($Open))) {
     [string[]]$openSnippet = @($Open) + $MetaColours;
     [string[][]]$wrapper = @(, $openSnippet);
-    Write-InColour -ColouredTextLine $wrapper -NoNewLine;
+    Write-InColour -TextSnippets $wrapper -NoNewLine;
   }
 
   [int]$fieldCounter = 0;
@@ -191,7 +191,7 @@ function Write-PairsInColour {
       $constituentSnippet = @($constituents[4]) + $MetaColours;
       $displayField += , $constituentSnippet;
 
-      Write-InColour -ColouredTextLine $displayField -NoNewLine;
+      Write-InColour -TextSnippets $displayField -NoNewLine;
 
       if ($field.Length -gt 2) {
         Write-Warning " * Ignoring excess snippets *";
@@ -205,7 +205,7 @@ function Write-PairsInColour {
     #
     if (($fieldCounter -lt ($Pairs.Length - 1)) -and (-not([String]::IsNullOrEmpty($Separator)))) {
       [string[]]$separatorSnippet = @($Separator) + $MetaColours;
-      Write-InColour -ColouredTextLine @(, $separatorSnippet) -NoNewLine;
+      Write-InColour -TextSnippets @(, $separatorSnippet) -NoNewLine;
     }
 
     $fieldCounter++;
@@ -216,10 +216,10 @@ function Write-PairsInColour {
   if (-not([String]::IsNullOrEmpty($Close))) {
     [string[]]$closeSnippet = @($Close) + $MetaColours;
     [string[][]]$wrapper = @(, $closeSnippet);
-    Write-InColour -ColouredTextLine $wrapper -NoNewLine;
+    Write-InColour -TextSnippets $wrapper -NoNewLine;
   }
 
   Write-Host "";
 }
 
-Set-Alias -Name Write-PairsInColor -Value Write-PairsInColour
+Set-Alias -Name Write-PairsInColor -Value Write-RawPairsInColour

@@ -104,7 +104,7 @@ This is the function to call to invoke the functionality described in section *"
 
 The parameters:
 
-* ColouredTextLine: the collection of text fields with their colour descriptions
+* TextSnippets: the collection of text fields with their colour descriptions
 * NoNewLine: switch indicating not to render a new line
 
 Example:
@@ -115,10 +115,10 @@ $line = @(
   @(@("Song", "Blue"), @("Marbles", "Yellow"))
 );
 
-Write-InColour -ColouredTextLine $line;
+Write-InColour -TextSnippets $line;
 ```
 
-### Write-PairsInColour
+### Write-RawPairsInColour
 
 This is the raw function to call that applies the same colour specification to all Keys and Values consistently without the use of a Theme object. This function would not usually be called by the client but can be if so required, since there are sensible defaults for most of the parameters.
 
@@ -136,7 +136,7 @@ The parameters (See the Theme parameters table above for their descriptions):
 * MessageColours
 * MessageSuffix
 
-### Write-ColouredPairs
+### Write-ThemedColouredPairs
 
 This is the function to call is invoke the functionality describe in section *"Provide a theme describing how key/value pairs should be rendered"*.
 
@@ -165,7 +165,7 @@ $ExampleTheme = @{
 
 $PairsToWrite = @(@("Artist", "Plastikman"), @("Song", "Marbles"))
 
-Write-ColouredPairs -Pairs $PairsToWrite -Theme $ExampleTheme
+Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $ExampleTheme
 ```
 
 The above would display as follows (actual colours not represented!):
@@ -175,21 +175,21 @@ The above would display as follows (actual colours not represented!):
 and with a custom message:
 
 ```powershell
-Write-ColouredPairs -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Catalogue entry: "
+Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Catalogue entry: "
 ```
 
 > Catalogue entry:  // {'Artist'='Plastikman' | 'Song'='Marbles'}
 
 ## Invalid Theme
 
-If an invalid Theme is passed into *Write-ColouredPairs*, (eg, 1 of the elements is missing) then it will revert to using an alternative 'emergency theme'.
+If an invalid Theme is passed into *Write-ThemedColouredPairs*, (eg, 1 of the elements is missing) then it will revert to using an alternative 'emergency theme'.
 
 Eg
 
 ```powershell
 $InvalidTheme = @{}
 $PairsToWrite = @(@("Artist", "Plastikman"), @("Song", "Marbles"))
-Write-ColouredPairs -Pairs $PairsToWrite -Theme $InvalidTheme
+Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $InvalidTheme
 ```
 
 is displayed as:
@@ -198,12 +198,12 @@ is displayed as:
 
 ## Global pre-defined Themes
 
-The module exports a global variable *$DefinedThemes* hash-table, which contains some predefined themes. The user can use one of these (currently defined as "EMERGENCY-THEME", "LOVE-EMOJI-THEME" and "COOL-EMOJI-THEME"). This list may be added to in the future. *$DefinedThemes*, is not a read only variable, so if the client requires, they can add their own.
+The module exports a global variable *$KrayolaThemes* hash-table, which contains some predefined themes. The user can use one of these (currently defined as "EMERGENCY-THEME", "LOVE-EMOJI-THEME" and "COOL-EMOJI-THEME"). This list may be added to in the future. *$KrayolaThemes*, is not a read only variable, so if the client requires, they can add their own.
 
 For example:
 
 ```powershell
-Write-ColouredPairs -Pairs $PairsToWrite -Theme $DefinedThemes["COOL-EMOJI-THEME"]
+Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $KrayolaThemes["COOL-EMOJI-THEME"]
 ```
 
 ## Helper function Show-ConsoleColours
@@ -212,7 +212,7 @@ The module exports a function *Show-ConsoleColours* that simply displays all the
 
 ## Trouble shooting
 
-Owing to the nature of how arrays have been implemented in PowerShell, it very easy to tie yourself up in knots when defining multi dimensional arrays as the $Pairs parameter (to Write-ColouredPairs and Write-PairsInColour) or $ColouredTextLine parameter (to Write-InColour). It's incumbent on you to make appropriate use of @() and comma operators to get the result you intended. In fact, in writing this documentation I actually made this silly mistake that highlights this very issue.
+Owing to the nature of how arrays have been implemented in PowerShell, it very easy to tie yourself up in knots when defining multi dimensional arrays as the $Pairs parameter (to Write-ThemedColouredPairs and Write-RawPairsInColour) or $TextSnippets parameter (to Write-InColour). It's incumbent on you to make appropriate use of @() and comma operators to get the result you intended. In fact, in writing this documentation I actually made this silly mistake that highlights this very issue.
 
 An example I was attempting to illustrate is as follows:
 
@@ -222,7 +222,7 @@ $line = @(
   @(@("Artist", "Red"), @("Plastikman", "Green")),
   @(@("Song", "Blue"), @("Marbles", "Yellow"))
 )
-Write-InColour -ColouredTextLine $line
+Write-InColour -TextSnippets $line
 ```
 
 You run this and you'll see it blow up :bomb: in your face :rage: :
@@ -246,15 +246,15 @@ $line = @(
   @("Artist", "Red"), @("Plastikman", "Green"),
   @("Song", "Blue"), @("Marbles", "Yellow")
 )
-Write-InColour -ColouredTextLine $line
+Write-InColour -TextSnippets $line
 ```
 
 which actually displays this:
 
 > ArtistPlastikmanSongMarbles
 
-* The important thing you need to remember when using Write-InColour, is that it is not working with Key/Value pairs ($ColouredTextLine is simply a 2 dimensional array). Its working with a collection of *snippets*, where each snippet is a sub sequence of 2 or 3 items (text, foreground colour & background colour).
+* The important thing you need to remember when using Write-InColour, is that it is not working with Key/Value pairs ($TextSnippets is simply a 2 dimensional array). Its working with a collection of *snippets*, where each snippet is a sub sequence of 2 or 3 items (text, foreground colour & background colour).
 * The Pairs parameter passed into Write-PairsInColours is a series of key/value pairs, and since the key and the value is a multiple entry *snippet*, it is a 3 dimensional array.
-* However, the Pairs passed into Write-ColouredPairs is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
+* However, the Pairs passed into Write-ThemedColouredPairs is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
 
 If you keep these points in mind, then hopefully you'll avoid getting errors like the one just illustrated.
