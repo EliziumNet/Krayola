@@ -1,10 +1,10 @@
 
 [int]$MandatoryNoOfThemeEntries = 11;
 
-function Write-ColouredPairs {
+function Write-ThemedColouredPairs {
   <#
     .NAME
-      Write-ColouredPairs
+      Write-ThemedColouredPairs
 
     .SYNOPSIS
       Writes a collection of key/value pairs in colour according to a specified Theme.
@@ -15,7 +15,7 @@ function Write-ColouredPairs {
       simpler to specify. However, the colour representation is more restricted, becauuse
       all Keys displayed must be of the same colour and the same goes for the values.
 
-      When using Write-PairsInColour directly, the user has to specify each element of a
+      When using Write-RawPairsInColour directly, the user has to specify each element of a
       pair with 2 or 3 items; text, foreground colour & background colour, eg:
 
         @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow"))
@@ -23,14 +23,14 @@ function Write-ColouredPairs {
       Now, each pair is specified as a simply a pair of strings:
         @("Sport", "Tennis")
 
-      The purpose of this function is to generate a single call to Write-PairsInColour in
+      The purpose of this function is to generate a single call to Write-RawPairsInColour in
       the form:
 
       $PairsToWriteInColour = @(
         @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
         @(@("Star", "Green"), @("Martina Hingis", "Cyan"))
       );
-      Write-PairsInColour -Message ">>> Greetings" -MessageColours @("Magenta") `
+      Write-RawPairsInColour -Message ">>> Greetings" -MessageColours @("Magenta") `
         -Pairs $PairsToWriteInColour -Format "'<%KEY%>'<--->'<%VALUE%>'" `
         -MetaColours @(,"Blue") -Open " ••• <<" -Close ">> •••"
 
@@ -89,8 +89,38 @@ function Write-ColouredPairs {
 
   [boolean]$inEmergency = $false;
 
-  if ($Theme.Count -lt $MandatoryNoOfThemeEntries) {
-    $Theme = $DefinedThemes["EMERGENCY-THEME"];
+  function isThemeValid {
+    param(
+      [System.Collections.Hashtable]$themeToValidate
+    )
+
+    return ($themeToValidate -and ($themeToValidate.Count -eq $MandatoryNoOfThemeEntries))
+  }
+
+  if (-not(isThemeValid($Theme))) {
+    $Theme = $KrayolaThemes["EMERGENCY-THEME"];
+
+    # Incase the user has compromised the EMERGENCY theme, which should be modifyable (because we
+    # can't be sure that the emergency theme we have defined is suitable for their console),
+    # we'll use this internal emergency theme ...
+    #
+    if (-not(isThemeValid($Theme))) {
+      $Theme = @{
+        <#💩#>
+        "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
+        "KEY-PLACE-HOLDER"   = "<%KEY%>";
+        "VALUE-PLACE-HOLDER" = "<%VALUE%>";
+        "KEY-COLOURS"        = @("White");
+        "VALUE-COLOURS"      = @("DarkGray");
+        "OPEN"               = "(";
+        "CLOSE"              = ")";
+        "SEPARATOR"          = "👻 ";
+        "META-COLOURS"       = @("Black");
+        "MESSAGE-COLOURS"    = @("Gray");
+        "MESSAGE-SUFFIX"     = " 💥 " 
+      }
+    }
+
     $inEmergency = $true;
   }
 
@@ -112,7 +142,7 @@ function Write-ColouredPairs {
     $PairsToWriteInColour += $transformedPair;
   }
 
-  [string]$expression = 'Write-PairsInColour -Pairs $PairsToWriteInColour `
+  [string]$expression = 'Write-RawPairsInColour -Pairs $PairsToWriteInColour `
     -Format $Theme["FORMAT"] `
     -KeyPlaceHolder $Theme["KEY-PLACE-HOLDER"] `
     -ValuePlaceHolder $Theme["VALUE-PLACE-HOLDER"] `
@@ -144,4 +174,4 @@ function Write-ColouredPairs {
   Invoke-Expression -Command $expression;
 }
 
-Set-Alias -Name Write-ColoredPairs -Value Write-ColouredPairs
+Set-Alias -Name Write-ColoredPairs -Value Write-ThemedColouredPairs

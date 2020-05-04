@@ -1,7 +1,7 @@
 
 # https://getemoji.com/
 #
-$DefinedThemes = @{
+$KrayolaThemes = @{
   <#💩#>
   "EMERGENCY-THEME"  = @{
     "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
@@ -18,7 +18,7 @@ $DefinedThemes = @{
   };
 
   <#😍#>
-  "LOVE-EMOJI-THEME" = @{
+  "AMOUR-EMOJI-THEME" = @{
     "FORMAT"             = "💍'<%KEY%>'=💕'<%VALUE%>'";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
@@ -48,5 +48,5 @@ $DefinedThemes = @{
   }
 }
 
-$null = $DefinedThemes;
+$null = $KrayolaThemes;
  

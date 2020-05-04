@@ -31,7 +31,7 @@ function Write-InColour {
       the case. If an empty snippet is found an ugly warning message is emitted, so this
       should not go un-noticed.
     
-    .PARAMETER ColouredTextLine
+    .PARAMETER TextSnippets
       An array of an array of strings (see description).
 
     .PARAMETER NoNewLine
@@ -42,12 +42,12 @@ function Write-InColour {
   param (
     [Parameter(Mandatory = $true)]
     [string[][]]
-    $ColouredTextLine,
+    $TextSnippets,
 
     [Switch]$NoNewLine
   )
 
-  foreach ($snippet in $ColouredTextLine) {
+  foreach ($snippet in $TextSnippets) {
     if ($snippet.Length -eq 0) {
       Write-Warning " * Found malformed line (empty snippet entry), skipping * ";
       continue;
