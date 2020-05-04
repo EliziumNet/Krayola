@@ -70,7 +70,7 @@ Write-Host ".................";
 Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $DuffTheme -Message "Emergency 🌀"
 
 Write-Host ".................";
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["LOVE-EMOJI-THEME"] -Message "Smooch 💖"
+Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["AMOUR-EMOJI-THEME"] -Message "Smooch 💖"
 
 Write-Host ".................";
 Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["COOL-EMOJI-THEME"] -Message "Cool:"

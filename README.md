@@ -198,7 +198,7 @@ is displayed as:
 
 ## Global pre-defined Themes
 
-The module exports a global variable *$KrayolaThemes* hash-table, which contains some predefined themes. The user can use one of these (currently defined as "EMERGENCY-THEME", "LOVE-EMOJI-THEME" and "COOL-EMOJI-THEME"). This list may be added to in the future. *$KrayolaThemes*, is not a read only variable, so if the client requires, they can add their own.
+The module exports a global variable *$KrayolaThemes* hash-table, which contains some predefined themes. The user can use one of these (currently defined as "EMERGENCY-THEME", "AMOUR-EMOJI-THEME" and "COOL-EMOJI-THEME"). This list may be added to in the future. *$KrayolaThemes*, is not a read only variable, so if the client requires, they can add their own.
 
 For example:
 

@@ -18,7 +18,7 @@ $KrayolaThemes = @{
   };
 
   <#😍#>
-  "LOVE-EMOJI-THEME" = @{
+  "AMOUR-EMOJI-THEME" = @{
     "FORMAT"             = "💍'<%KEY%>'=💕'<%VALUE%>'";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
