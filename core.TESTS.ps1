@@ -1,4 +1,8 @@
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "")]
+Param()
+
 $PairsToWriteInColour = @(
   @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
   @(@("Star", "Green"), @("Anna Hournikova", "Cyan"))

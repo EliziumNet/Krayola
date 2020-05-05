@@ -8,13 +8,13 @@ foreach ($folder in $functionFolders)
     if (Test-Path -Path $folderPath)
     {
         Write-Verbose -Message "Importing from $folder"
-        $functions = Get-ChildItem -Path $folderPath -Filter '*.ps1' 
+        $functions = Get-ChildItem -Path $folderPath -Filter '*.ps1'
         foreach ($function in $functions)
         {
             Write-Verbose -Message "  Importing $($function.BaseName)"
             . $($function.FullName)
         }
-    }    
+    }
 }
 
 # This has to be done manually, because there is no direct relationship between
