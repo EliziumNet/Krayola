@@ -11,7 +11,7 @@ function Show-ConsoleColours {
 
   [Array]$colours = @("Black", "DarkBlue", "DarkGreen", "DarkCyan", "DarkRed", "DarkMagenta", `
       "DarkYellow", "Gray", "DarkGray", "Blue", "Green", "Cyan", "Red", "Magenta", "Yellow", "White");
-  
+
   foreach ($col in $colours) {
     Write-Host -ForegroundColor $col $col;
   }

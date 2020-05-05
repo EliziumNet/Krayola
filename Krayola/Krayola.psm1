@@ -1,4 +1,6 @@
 
+Set-StrictMode -Version Latest
+
 $functionFolders = @('Public', 'Internal')
 foreach ($folder in $functionFolders)
 {
@@ -25,4 +27,4 @@ foreach ($folder in $functionFolders)
 #
 Export-ModuleMember -Function Write-ThemedColouredPairs, Write-InColour, Write-RawPairsInColour, Show-ConsoleColours
 Export-ModuleMember -Variable KrayolaThemes
-Export-ModuleMember -Alias Write-ColoredPairs, Write-InColor, Write-PairsInColor, Show-ConsoleColors
+Export-ModuleMember -Alias Write-ThemedColoredPairs, Write-InColor, Write-RawPairsInColor, Show-ConsoleColors

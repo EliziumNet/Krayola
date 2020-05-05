@@ -68,6 +68,10 @@ function Write-RawPairsInColour {
       Key/Value pair collection.
   #>
 
+  # This function is supposed to write to the host, because the output is in colour.
+  # Using Write-Host is Krayola's raison d'etre!
+  #
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -96,7 +100,7 @@ function Write-RawPairsInColour {
     $Separator = ", ",
 
     [Parameter(Mandatory = $false)]
-    [string[]] 
+    [string[]]
     $MetaColours = @("White"),
 
     [Parameter(Mandatory = $false)]
@@ -129,7 +133,7 @@ function Write-RawPairsInColour {
     if (-not([String]::IsNullOrEmpty($MessageSuffix))) {
       [string[]]$suffixSnippet = @($MessageSuffix) + $MessageColours;
       [string[][]]$wrapper = @(, $suffixSnippet);
-      Write-InColour -TextSnippets $wrapper -NoNewLine;  
+      Write-InColour -TextSnippets $wrapper -NoNewLine;
     }
   }
 
@@ -149,7 +153,6 @@ function Write-RawPairsInColour {
     # which we can defer to. We need to create the 5 snippets that represents the field pair.
     #
     if ($field.Length -ge 2) {
-  
       # Get the key and value
       #
       [string[]]$keySnippet = $field[0];
@@ -167,7 +170,7 @@ function Write-RawPairsInColour {
       #
 
       # header
-      # 
+      #
       $constituentSnippet = @($constituents[0]) + $MetaColours;
       $displayField += , $constituentSnippet;
 
@@ -219,7 +222,9 @@ function Write-RawPairsInColour {
     Write-InColour -TextSnippets $wrapper -NoNewLine;
   }
 
-  Write-Host "";
+  if (-not($NoNewLine.ToBool())) {
+    Write-Host "";
+  }
 }
 
-Set-Alias -Name Write-PairsInColor -Value Write-RawPairsInColour
+Set-Alias -Name Write-RawPairsInColor -Value Write-RawPairsInColour
