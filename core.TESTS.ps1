@@ -14,7 +14,7 @@ Write-RawPairsInColour -Message ">>> Greetings 😈" -MessageColours @("Magenta"
 Write-Host ".................";
 $PairsToWriteInColour = @(
   @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
-  @(@("Star", "Green"), @("Anna Hournikova", "Cyan"))
+  @(@("Star", "Green"), @("Elena Dementieva", "Cyan"))
 );
 Write-RawPairsInColour -Pairs $PairsToWriteInColour -Format "'<%KEY%>'<--->'<%VALUE%>'" `
   -MetaColours @(, "Blue") -Open "            ••• {" -Close "} •••"

@@ -5,56 +5,87 @@ Colourful console writing with PowerShell
 
 ## Introduction
 
-Krayola provides the capability to write consistent and colourful PowerShell console applications. The key here is that it produces structured output according to user defined formats. There are 2 main ways of writing output:
+Krayola provides the capability to write consistent and colourful PowerShell console applications. The key here is that it produces structured output according to user defined formats. There are 3 main ways of writing output:
 
-1. Provide a collection consisting of text and colour descriptions as key value pairs
-2. Provide a collection of key value pairs and a theme containing the colour descriptions
+1. Provide a collection consisting of text and colour descriptions (*Write-InColour*)
+2. Provide a collection consisting of text and colour descriptions as key value pairs (*Write-RawPairsInColour*)
+3. Provide a collection of key value pairs and a theme containing the colour descriptions (*Write-ThemedColoursInPairs*)
 
 First, there follows a description of the data that needs to be provided to the api, next a full description of the api itself.
 
-## On the fly colour descriptions for key/value pairs
+## A sequence of text snippets each with their own colour descriptions (*Write-InColour*)
 
-We describe the key/value pair data that needs to be rendered. This is done as a collection of key/value pairs where each part of the pair must contain either 2 or 3 items, in this order:
+The sequence provided is just a collection of snippets, where each snippet is a sub collection of 2 or 3 items:
 
 1. The text to be written (mandatory)
 2. The foreground colour of the text (mandatory)
 3. The background colour (optional)
 
-So for example, consider the collection of key value pairs:
-
-```powershell
-@(@("Artist", "Plastikman"), @("Song", "Marbles"))
-```
-
-where the keys are **Artist** and **Song** and the values are **Plastikman** and **Marbles**
-
-Lets say we want to render those values in foreground colours "Red", "Green", "Blue" and "Yellow" respectively (note, no mention yet of any background colours). We would apply those colours to the collection by altering the collection as follows:
+So for example, consider the collection of text snippets that need to be displayed in different colours:
 
 ```powershell
 @(
-  @(@("Artist", "Red"), @("Plastikman", "Green")),
-  @(@("Song", "Blue"), @("Marbles", "Yellow"))
+  @("Artist"), @("Plastikman"), @("Song"), @("Marbles"), @("Genre"), @("Minimal")
 );
 ```
+
+Lets say we want to render those values in foreground colours "Red", "Green", "Blue", "Yellow", "Black" and "Cyan" respectively (note, no mention yet of any background colours). We would apply those colours to the collection by altering the collection as follows:
+
+```powershell
+@(
+  @("Artist", "Red"), @("Plastikman", "Green"), @("Song", "Blue"),
+  @("Marbles", "Yellow"), @("Genre", "Black"), @("Minimal", "Cyan")
+);
+```
+
+⚠️ Note, that this collection is a 2 dimensional array.
 
 We can optionally add background colours to any item, by providing a 3rd entry, eg. if we wanted **Artist** to have a "Black" background colour we would specify:
 
 ```powershell
 @(
-  @(@("Artist", "Red", "Black"), @("Plastikman", "Green")),
-  @(@("Song", "Blue"), @("Marbles", "Yellow"))
+  @("Artist", "Red", "Black"), @("Plastikman", "Green"), @("Song", "Blue"),
+  @("Marbles", "Yellow"), @("Genre", "Black"), @("Minimal", "Cyan")
 );
 ```
 
-## Provide a theme describing how key/value pairs should be rendered
+## A sequence of colour described key/value pairs (*Write-RawPairsInColour*)
+
+We describe the key/value pair data that needs to be rendered. This is done as a collection of key/value pairs where each part of the pair must contain the same 2 or 3 items previously described:
+
+1. The text to be written (mandatory)
+2. The foreground colour of the text (mandatory)
+3. The background colour (optional)
+
+The difference here is that items need to be organised into key/value pairs, as opposed to being a sequence of snippets. So organising the previous example as a list of key value pairs we get this:
+
+```powershell
+@(
+  @(@("Artist", "Red", "Black"), @("Plastikman", "Green")),
+  @(@("Song", "Blue"), @("Marbles", "Yellow")),
+  @(@("Genre", "Black"), @("Minimal", "Cyan"))
+);
+```
+
+where the keys are **Artist**, **Song** and **Genre** and the values are **Plastikman**, **Marbles** and **Minimal**
+
+:warning: Note, that this collection is now a 3 dimensional array, because each top level entry is a key/value pair.
+
+## Provide a theme describing how key/value pairs should be rendered (*Write-ThemedColoursInPairs*)
 
 If we didn't want the overhead of specify colours for each individual key and value, we can use a theme instead, which helps us keep the output consistent with less overhead.
 
-So for the same collection of key/value pairs mentioned above, we can just say, we want all our keys in "Red" and the values in "Blue". To do so, we use the collection as is:
+So for the same collection of key/value pairs mentioned above, we can just say, we want all our keys in "Red" and the values in "Blue". To do so, we use a collection of key/value pairs without colours:
 
 ```powershell
-@(@("Artist", "Plastikman"), @("Song", "Marbles"))
+@(
+  @(@("Artist"), @("Plastikman")),
+  @(@("Song"), @("Marbles")),
+  @(@("Genre"), @("Minimal"))
+);
 ```
+
+:warning: Note, that this collection is a 2 dimensional array, because we don't include colour information.
 
 and then we pass in a theme parameter to the api (described later), but essentially, we populate the key foreground colour to be "Red" and the value foreground colour to be "Blue". This will be made clearer in the following sections.
 
@@ -73,7 +104,7 @@ This is just a hash table, which must contain the following items:
 | CLOSE              | string   | Specifies the tail wrapper around the whole key/value pair collection typically ')'
 | SEPARATOR          | string   | Specifies a sequence of characters that separates the Key/Vale pairs, typically ','
 | META-COLOURS       | string[] | Meta characters include OPEN, CLOSE, SEPARATOR and any other character in the FORMAT which is not the KEY or VALUE
-| MESSAGE-COLOURS    | string[] | An optional message that appears preceding the Key/Value pair collection and this array describes the colours used to write that message.
+| MESSAGE-COLOURS    | string[] | The colours that describe the optional message that appears preceding the Key/Value pair collection.
 | MESSAGE-SUFFIX     | string   | Specifies a sequence of characters that separates the MESSAGE (if present) from the Key/Value pair collection.
 
 An example Theme is as follows:
@@ -100,31 +131,48 @@ $ExampleTheme = @{
 
 ### Write-InColour
 
-This is the function to call to invoke the functionality described in section *"On the fly colour descriptions for key/value pairs"* previously. Each Key/Value pair can have it's own colour description.
+This is the function to call to invoke the functionality described in section *"A sequence of text snippets each with their own colour descriptions"* previously. Each Key/Value pair can have it's own colour description.
 
 The parameters:
 
-* TextSnippets: the collection of text fields with their colour descriptions
+* TextSnippets: (a 2 dimensional array) the collection of text fields with their colour descriptions
 * NoNewLine: switch indicating not to render a new line
 
 Example:
 
 ```powershell
 $line = @(
-  @(@("Artist", "Red"), @("Plastikman", "Green")),
-  @(@("Song", "Blue"), @("Marbles", "Yellow"))
-);
-
+  @("Artist", "Red"), @("Plastikman", "Green"),
+  @("Song", "Blue"), @("Marbles", "Yellow")
+)
 Write-InColour -TextSnippets $line;
 ```
 
+which displays this:
+
+> ArtistPlastikmanSongMarbles
+
 ### Write-RawPairsInColour
 
-This is the raw function to call that applies the same colour specification to all Keys and Values consistently without the use of a Theme object. This function would not usually be called by the client but can be if so required, since there are sensible defaults for most of the parameters.
+This is the raw function to call (described in *"A sequence of colour described key/value pairs"*) That requires a colour description to be included with each key *value* and value *value*. This function would not usually be called by the client but can be if so required, since there are sensible defaults for most of the parameters.
 
-The parameters (See the Theme parameters table above for their descriptions):
+The parameters (Most of these are in Theme parameters table above, please see for their descriptions):
 
-* Pairs
+* Pairs: (a 3 dimensional array) representing Key/Value pairs, where each Key and Value are themselves an array of 2 or 3 items (*Text, Foreground Colour, Background Colour*), eg:
+
+```powershell
+$line = @(
+  @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
+  @(@("Star", "Green"), @("Agnieszka Radwanska", "Cyan"))
+);
+
+Write-RawPairsInColour $line
+```
+
+using other defaulted parameters would display this:
+
+> === [('Sport'='Tennis'), ('Star'='Agnieszka Radwanska')] ===
+
 * Format
 * KeyPlaceHolder (This MUST be present in Format)
 * ValuePlaceHolder (This MUST be present in Format)
@@ -132,7 +180,7 @@ The parameters (See the Theme parameters table above for their descriptions):
 * Close
 * Separator
 * MetaColours
-* Message
+* Message: (Optional) The textual message to be displayed preceding the Key/Value pair collection
 * MessageColours
 * MessageSuffix
 
@@ -188,13 +236,13 @@ Eg
 
 ```powershell
 $InvalidTheme = @{}
-$PairsToWrite = @(@("Artist", "Plastikman"), @("Song", "Marbles"))
+$PairsToWrite = @(@("Sport", "Tennis"), @("Star", "Elena Dementieva"))
 Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $InvalidTheme
 ```
 
 is displayed as:
 
-> 💩💩💩  💥 ('Artist'='Plastikman'👻 'Song'='Marbles')
+> 💩💩💩  💥 ('Sport'='Tennis'👻 'Star'='Elena Dementieva')
 
 ## Global pre-defined Themes
 
@@ -254,7 +302,7 @@ which actually displays this:
 > ArtistPlastikmanSongMarbles
 
 * The important thing you need to remember when using Write-InColour, is that it is not working with Key/Value pairs ($TextSnippets is simply a 2 dimensional array). Its working with a collection of *snippets*, where each snippet is a sub sequence of 2 or 3 items (text, foreground colour & background colour).
-* The Pairs parameter passed into Write-PairsInColours is a series of key/value pairs, and since the key and the value is a multiple entry *snippet*, it is a 3 dimensional array.
+* The Pairs parameter passed into Write-RawPairsInColours is a series of key/value pairs, and since the key and the value are multiple entry *snippets*, Pairs is a 3 dimensional array.
 * However, the Pairs passed into Write-ThemedColouredPairs is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
 
 If you keep these points in mind, then hopefully you'll avoid getting errors like the one just illustrated.
