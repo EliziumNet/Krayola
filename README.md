@@ -3,23 +3,49 @@
 
 Colourful console writing with PowerShell
 
+## Table of contents
+
+[Introduction](#Introduction)<br>
+  + [Provide a sequence of text snippets each with their own colour descriptions](#Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions)<br>
+  + [Provide sequence of colour described key/value pairs](#Provide-sequence-of-colour-described-key/value-pairs)<br>
+  + [Provide a theme describing how key/value pairs should be rendered](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered)<br>
+
+[Using The API](#Using-the-API)<br>
+  + [The Theme parameter](#The-Theme-parameter)<br>
+  + [The Public API](#The-Public-API)<br>
+    * [Write-InColour](#Write-InColour)<br>
+    * [Write-RawPairsInColour](#Write-RawPairsInColour)<br>
+    * [Write-ThemedPairsInColour](#Write-ThemedPairsInColour)<br>
+    * [Helper function Show-ConsoleColours](#Helper-function-Show-ConsoleColours)<br>
+
+  + [Invalid Theme](#Invalid-Theme)<br>
+  + [Global pre-defined Themes](#Global-pre-defined-Themes)<br>
+
+[Trouble shooting](#Trouble-shooting)<br>
+
 ## Introduction
+
+The module can be installed using the standard **install-module** command:
+
+> PS> install-module -Name Elizium.Krayola
 
 Krayola provides the capability to write consistent and colourful PowerShell console applications. The key here is that it produces structured output according to user defined formats. There are 3 main ways of writing output:
 
-1. Provide a collection consisting of text and colour descriptions (*Write-InColour*)
-2. Provide a collection consisting of text and colour descriptions as key value pairs (*Write-RawPairsInColour*)
-3. Provide a collection of key value pairs and a theme containing the colour descriptions (*Write-ThemedColoursInPairs*)
+1. [**Provide a sequence of text snippets each with their own colour descriptions**](##Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions) - [*(Write-Colour)*](#Write-InColour)
+2. [**Provide sequence of colour described key/value pairs**](#Provide-sequence-of-colour-described-key/value-pairs) - [*(Write-RawPairsInColour)*](#Write-RawPairsInColour)
+3. [**Provide a theme describing how key/value pairs should be rendered**](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered) - [*(Write-ThemedColoursInPairs)*](#Write-ThemedPairsInColour)
 
-First, there follows a description of the data that needs to be provided to the api, next a full description of the api itself.
+First, follows a description of the data that needs to be provided to the api, next a full description of the api itself.
 
-## A sequence of text snippets each with their own colour descriptions (*Write-InColour*)
+### Provide a sequence of text snippets each with their own colour descriptions
+
+(**api:** *Write-InColour*)<br>
 
 The sequence provided is just a collection of snippets, where each snippet is a sub collection of 2 or 3 items:
 
-1. The text to be written (mandatory)
-2. The foreground colour of the text (mandatory)
-3. The background colour (optional)
+ a) The text to be written (mandatory)<br>
+ b) The foreground colour of the text (mandatory)<br>
+ c) The background colour (optional)<br>
 
 So for example, consider the collection of text snippets that need to be displayed in different colours:
 
@@ -38,7 +64,7 @@ Lets say we want to render those values in foreground colours "Red", "Green", "B
 );
 ```
 
-⚠️ Note, that this collection is a 2 dimensional array.
+:warning: Note, that this collection is a 2 dimensional array.
 
 We can optionally add background colours to any item, by providing a 3rd entry, eg. if we wanted **Artist** to have a "Black" background colour we would specify:
 
@@ -49,7 +75,9 @@ We can optionally add background colours to any item, by providing a 3rd entry, 
 );
 ```
 
-## A sequence of colour described key/value pairs (*Write-RawPairsInColour*)
+### Provide sequence of colour described key/value pairs
+
+(**api:** *Write-RawPairsInColour*)<br>
 
 We describe the key/value pair data that needs to be rendered. This is done as a collection of key/value pairs where each part of the pair must contain the same 2 or 3 items previously described:
 
@@ -71,7 +99,9 @@ where the keys are **Artist**, **Song** and **Genre** and the values are **Plast
 
 :warning: Note, that this collection is now a 3 dimensional array, because each top level entry is a key/value pair.
 
-## Provide a theme describing how key/value pairs should be rendered (*Write-ThemedColoursInPairs*)
+### Provide a theme describing how key/value pairs should be rendered
+
+(**api:** *Write-ThemedColoursInPairs*)<br>
 
 If we didn't want the overhead of specify colours for each individual key and value, we can use a theme instead, which helps us keep the output consistent with less overhead.
 
@@ -89,7 +119,9 @@ So for the same collection of key/value pairs mentioned above, we can just say, 
 
 and then we pass in a theme parameter to the api (described later), but essentially, we populate the key foreground colour to be "Red" and the value foreground colour to be "Blue". This will be made clearer in the following sections.
 
-## The Theme parameter
+## Using the API
+
+### The Theme parameter
 
 This is just a hash table, which must contain the following items:
 
@@ -127,9 +159,9 @@ $ExampleTheme = @{
 
 :warning: Note that the tokens <%KEY%> and <%VALUE%> are also defined inside the FORMAT. You will see an error if the FORMAT does not contain these place holders.
 
-## The Public API
+### The Public API
 
-### Write-InColour
+#### Write-InColour
 
 This is the function to call to invoke the functionality described in section *"A sequence of text snippets each with their own colour descriptions"* previously. Each Key/Value pair can have it's own colour description.
 
@@ -150,9 +182,9 @@ Write-InColour -TextSnippets $line;
 
 which displays this:
 
-> ArtistPlastikmanSongMarbles
+> <span style="color:red;">Artist</span><span style="color:green;">Plastikman</span><span style="color:blue;">Song</span><span style="color:yellow;">Marbles</span>
 
-### Write-RawPairsInColour
+#### Write-RawPairsInColour
 
 This is the raw function to call (described in *"A sequence of colour described key/value pairs"*) That requires a colour description to be included with each key *value* and value *value*. This function would not usually be called by the client but can be if so required, since there are sensible defaults for most of the parameters.
 
@@ -173,6 +205,18 @@ using other defaulted parameters would display this:
 
 > === [('Sport'='Tennis'), ('Star'='Agnieszka Radwanska')] ===
 
+And the colour representation (assuming a dark console; PS, this looks better in a real console):<br>
+
+<span style="color:white;background-color: black;">=== [('</span>
+<span style="color:red;background-color: black;">Sport</span>
+<span style="color:white;background-color: black;">'='</span>
+<span style="color:blue;background-color: yellow;">Tennis</span>
+<span style="color:white;background-color: black;">'), ('</span>
+<span style="color:green;background-color: black;">Star</span>
+<span style="color:white;background-color: black;">'='</span>
+<span style="color:cyan;background-color: black;">Agnieszka Radwanska</span>
+<span style="color:white;background-color: black;">')] ===</span>
+
 * Format
 * KeyPlaceHolder (This MUST be present in Format)
 * ValuePlaceHolder (This MUST be present in Format)
@@ -184,7 +228,7 @@ using other defaulted parameters would display this:
 * MessageColours
 * MessageSuffix
 
-### Write-ThemedColouredPairs
+#### Write-ThemedPairsInColour
 
 This is the function to call is invoke the functionality describe in section *"Provide a theme describing how key/value pairs should be rendered"*.
 
@@ -213,54 +257,66 @@ $ExampleTheme = @{
 
 $PairsToWrite = @(@("Artist", "Plastikman"), @("Song", "Marbles"))
 
-Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $ExampleTheme
+Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $ExampleTheme
 ```
 
-The above would display as follows (actual colours not represented!):
+The above would display as follows:
 
 > {'Artist'='Plastikman' | 'Song'='Marbles'}
+
+and in colour:<br>
+
+<span style="color:cyan;background-color: black;">{'</span>
+<span style="color:red;background-color: black;">Artist</span>
+<span style="color:cyan;background-color: black;">'='</span>
+<span style="color:blue;background-color: black;">Plastikman</span>
+<span style="color:cyan;background-color: black;"> | </span>
+<span style="color:blue;background-color: black;">Song</span>
+<span style="color:cyan;background-color: black;">'='</span>
+<span style="color:cyan;background-color: black;">Marbles</span>
+<span style="color:cyan;background-color: black;">'}</span>
 
 and with a custom message:
 
 ```powershell
-Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Catalogue entry: "
+Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Catalogue entry: "
 ```
 
 > Catalogue entry:  // {'Artist'='Plastikman' | 'Song'='Marbles'}
 
-## Invalid Theme
+#### Helper function Show-ConsoleColours
 
-If an invalid Theme is passed into *Write-ThemedColouredPairs*, (eg, 1 of the elements is missing) then it will revert to using an alternative 'emergency theme'.
+The module exports a function *Show-ConsoleColours* that simply displays all the available console colours as they are represented in text in the colour they represent. This will aid in defining custom themes. Just invoke the function with no arguments in your PowerShell session.
+
+### Invalid Theme
+
+If an invalid Theme is passed into *Write-ThemedPairsInColour*, (eg, 1 of the elements is missing) then it will revert to using an alternative 'emergency theme'.
 
 Eg
 
 ```powershell
 $InvalidTheme = @{}
 $PairsToWrite = @(@("Sport", "Tennis"), @("Star", "Elena Dementieva"))
-Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $InvalidTheme
+Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $InvalidTheme
 ```
 
 is displayed as:
 
 > 💩💩💩  💥 ('Sport'='Tennis'👻 'Star'='Elena Dementieva')
 
-## Global pre-defined Themes
+### Global pre-defined Themes
 
 The module exports a global variable *$KrayolaThemes* hash-table, which contains some predefined themes. The user can use one of these (currently defined as "EMERGENCY-THEME", "ROUND-THEME", "SQUARE-THEME" and "ANGULAR-THEME"). This list may be added to in the future. *$KrayolaThemes*, is not a read only variable, so if the client requires, they can add their own.
 
 For example:
 
 ```powershell
-Write-ThemedColouredPairs -Pairs $PairsToWrite -Theme $KrayolaThemes["SQUARE-THEME"]
+Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $KrayolaThemes["SQUARE-THEME"]
 ```
-
-## Helper function Show-ConsoleColours
-
-The module exports a function *Show-ConsoleColours* that simply displays all the available console colours as they are represented in text in the colour they represent. This will aid in defining custom themes. Just invoke the function with no arguments in your PowerShell session.
 
 ## Trouble shooting
 
-Owing to the nature of how arrays have been implemented in PowerShell, it very easy to tie yourself up in knots when defining multi dimensional arrays as the $Pairs parameter (to Write-ThemedColouredPairs and Write-RawPairsInColour) or $TextSnippets parameter (to Write-InColour). It's incumbent on you to make appropriate use of @() and comma operators to get the result you intended. In fact, in writing this documentation I actually made this silly mistake that highlights this very issue.
+Owing to the nature of how arrays have been implemented in PowerShell, it very easy to tie yourself up in knots when defining multi dimensional arrays as the $Pairs parameter (to Write-ThemedPairsInColour and Write-RawPairsInColour) or $TextSnippets parameter (to Write-InColour). It's incumbent on you to make appropriate use of @() and comma operators to get the result you intended. In fact, in writing this documentation I actually made this silly mistake that highlights this very issue.
 
 An example I was attempting to illustrate is as follows:
 
@@ -301,8 +357,11 @@ which actually displays this:
 
 > ArtistPlastikmanSongMarbles
 
+> <span style="color:red;">Artist</span><span style="color:green;">Plastikman</span><span style="color:blue;">Song</span><span style="color:yellow;">Marbles</span>
+<br>
+
 * The important thing you need to remember when using Write-InColour, is that it is not working with Key/Value pairs ($TextSnippets is simply a 2 dimensional array). Its working with a collection of *snippets*, where each snippet is a sub sequence of 2 or 3 items (text, foreground colour & background colour).
 * The Pairs parameter passed into Write-RawPairsInColours is a series of key/value pairs, and since the key and the value are multiple entry *snippets*, Pairs is a 3 dimensional array.
-* However, the Pairs passed into Write-ThemedColouredPairs is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
+* However, the Pairs passed into Write-ThemedPairsInColour is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
 
 If you keep these points in mind, then hopefully you'll avoid getting errors like the one just illustrated.
