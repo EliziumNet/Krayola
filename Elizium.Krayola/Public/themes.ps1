@@ -1,8 +1,9 @@
 
-# https://getemoji.com/
-#
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "")]
+Param()
+
 $KrayolaThemes = @{
-  <#💩#>
+
   "EMERGENCY-THEME"  = @{
     "FORMAT"             = "{{<%KEY%>}}={{<%VALUE%>}}";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
@@ -14,54 +15,50 @@ $KrayolaThemes = @{
     "SEPARATOR"          = "; ";
     "META-COLOURS"       = @("Black");
     "MESSAGE-COLOURS"    = @("Gray");
-    "MESSAGE-SUFFIX"     = " !!!! " 
+    "MESSAGE-SUFFIX"     = "  ֎ "
   };
 
-  <#😍#>
   "ROUND-THEME" = @{
     "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
     "KEY-COLOURS"        = @("DarkCyan");
     "VALUE-COLOURS"      = @("DarkBlue");
-    "OPEN"               = "(";
-    "CLOSE"              = ")";
+    "OPEN"               = "••• (";
+    "CLOSE"              = ") •••";
     "SEPARATOR"          = " @@ ";
     "META-COLOURS"       = @("Yellow");
     "MESSAGE-COLOURS"    = @("Cyan");
-    "MESSAGE-SUFFIX"     = " ~~ " 
+    "MESSAGE-SUFFIX"     = " ~~ "
   };
-  
-  <#😎#>
+
   "SQUARE-THEME" = @{
     "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
     "KEY-COLOURS"        = @("DarkCyan");
     "VALUE-COLOURS"      = @("DarkBlue");
-    "OPEN"               = "[";
-    "CLOSE"              = "]";
+    "OPEN"               = "■■■ [";
+    "CLOSE"              = "] ■■■";
     "SEPARATOR"          = " ## ";
     "META-COLOURS"       = @("Black");
     "MESSAGE-COLOURS"    = @("DarkGreen");
-    "MESSAGE-SUFFIX"     = " == " 
+    "MESSAGE-SUFFIX"     = " == "
   };
 
-  <#🌀#>
   "ANGULAR-THEME" = @{
     "FORMAT"             = "'<%KEY%>'-->'<%VALUE%>'";
     "KEY-PLACE-HOLDER"   = "<%KEY%>";
     "VALUE-PLACE-HOLDER" = "<%VALUE%>";
     "KEY-COLOURS"        = @("DarkCyan");
     "VALUE-COLOURS"      = @("DarkBlue");
-    "OPEN"               = "<";
-    "CLOSE"              = ">";
+    "OPEN"               = "◄◄◄ <";
+    "CLOSE"              = "> ►►►";
     "SEPARATOR"          = " ^^ ";
     "META-COLOURS"       = @("Black");
     "MESSAGE-COLOURS"    = @("DarkGreen");
-    "MESSAGE-SUFFIX"     = " // " 
+    "MESSAGE-SUFFIX"     = " // "
   }
 }
 
 $null = $KrayolaThemes;
- 

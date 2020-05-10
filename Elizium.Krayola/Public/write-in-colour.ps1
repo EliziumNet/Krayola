@@ -11,7 +11,7 @@ function Write-InColour {
     .DESCRIPTION
       The user passes in an array of 1,2 or 3 element arrays, which contains any number of text fragments
       with an optional colour specification (ConsoleColor enumeration). The function will then write a
-      multi coloured text line to the console. 
+      multi coloured text line to the console.
 
       Element 0: text
       Element 1: foreground colour
@@ -30,7 +30,7 @@ function Write-InColour {
       Empty snippets, should not be passed in, it's up to the caller to ensure that this is
       the case. If an empty snippet is found an ugly warning message is emitted, so this
       should not go un-noticed.
-    
+
     .PARAMETER TextSnippets
       An array of an array of strings (see description).
 
@@ -38,6 +38,10 @@ function Write-InColour {
       Switch to indicate if a new line should be written after the text.
   #>
 
+  # This function is supposed to write to the host, because the output is in colour.
+  # Using Write-Host is Krayola's raison d'etre!
+  #
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]

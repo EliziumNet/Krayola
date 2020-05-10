@@ -1,4 +1,8 @@
 
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "")]
+Param()
+
 $PairsToWriteInColour = @(
   @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
   @(@("Star", "Green"), @("Anna Hournikova", "Cyan"))
@@ -10,7 +14,7 @@ Write-RawPairsInColour -Message ">>> Greetings 😈" -MessageColours @("Magenta"
 Write-Host ".................";
 $PairsToWriteInColour = @(
   @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
-  @(@("Star", "Green"), @("Anna Hournikova", "Cyan"))
+  @(@("Star", "Green"), @("Elena Dementieva", "Cyan"))
 );
 Write-RawPairsInColour -Pairs $PairsToWriteInColour -Format "'<%KEY%>'<--->'<%VALUE%>'" `
   -MetaColours @(, "Blue") -Open "            ••• {" -Close "} •••"
@@ -45,7 +49,7 @@ $PairsToWriteInColour = @(
   @("Posture", "Marychiasana D"),
   @("Difficulty", "Advanced")
 )
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $SunshineTheme
+Write-ThemedPairsInColour -Pairs $PairsToWriteInColour -Theme $SunshineTheme
 Write-Host ".................";
 $HotTheme = @{
   "FORMAT"             = "'<%KEY%>' == '<%VALUE%>'";
@@ -61,20 +65,20 @@ $HotTheme = @{
   "MESSAGE-SUFFIX"     = " >> "
 }
 
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $HotTheme -Message "The heat is on ";
+Write-ThemedPairsInColour -Pairs $PairsToWriteInColour -Theme $HotTheme -Message "The heat is on ";
 Write-Host ".................";
 
 [System.Collections.Hashtable]$DuffTheme = @{ }
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $DuffTheme
+Write-ThemedPairsInColour -Pairs $PairsToWriteInColour -Theme $DuffTheme
 Write-Host ".................";
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $DuffTheme -Message "Emergency 🌀"
+Write-ThemedPairsInColour -Pairs $PairsToWriteInColour -Theme $DuffTheme -Message "Emergency 🌀"
 
 Write-Host ".................";
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["ROUND-THEME"] -Message "(ROUND) Smooch 💖"
+Write-ThemedPairsInColour -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["ROUND-THEME"] -Message "(ROUND) Smooch 💖"
 
 Write-Host ".................";
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["SQUARE-THEME"] -Message "[SQUARE] Cool:"
+Write-ThemedPairsInColour -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["SQUARE-THEME"] -Message "[SQUARE] Cool:"
 
 Write-Host ".................";
-Write-ThemedColouredPairs -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["ANGULAR-THEME"] -Message "<ANGULAR> Cool:"
+Write-ThemedPairsInColour -Pairs $PairsToWriteInColour -Theme $KrayolaThemes["ANGULAR-THEME"] -Message "<ANGULAR> Cool:"
 

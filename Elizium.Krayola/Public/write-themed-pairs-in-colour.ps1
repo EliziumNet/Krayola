@@ -1,10 +1,10 @@
 
 [int]$MandatoryNoOfThemeEntries = 11;
 
-function Write-ThemedColouredPairs {
+function Write-ThemedPairsInColour {
   <#
     .NAME
-      Write-ThemedColouredPairs
+      Write-ThemedPairsInColour
 
     .SYNOPSIS
       Writes a collection of key/value pairs in colour according to a specified Theme.
@@ -71,7 +71,12 @@ function Write-ThemedColouredPairs {
     .PARAMETER Message
       An optional message that precedes the display of the Key/Value sequence.
   #>
-
+  # Invoke-Expression is usually discouraged because of vulnerability to un-checked
+  # user defined input. In this instance, there is no unchecked user input so
+  # there is no cause for concern.
+  #
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingInvokeExpression", "")]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "")]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -106,18 +111,17 @@ function Write-ThemedColouredPairs {
     #
     if (-not(isThemeValid($Theme))) {
       $Theme = @{
-        <#💩#>
-        "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
+        "FORMAT"             = "{{<%KEY%>}}={{<%VALUE%>}}";
         "KEY-PLACE-HOLDER"   = "<%KEY%>";
         "VALUE-PLACE-HOLDER" = "<%VALUE%>";
         "KEY-COLOURS"        = @("White");
         "VALUE-COLOURS"      = @("DarkGray");
-        "OPEN"               = "(";
-        "CLOSE"              = ")";
-        "SEPARATOR"          = "👻 ";
+        "OPEN"               = "{";
+        "CLOSE"              = "}";
+        "SEPARATOR"          = "; ";
         "META-COLOURS"       = @("Black");
         "MESSAGE-COLOURS"    = @("Gray");
-        "MESSAGE-SUFFIX"     = " 💥 " 
+        "MESSAGE-SUFFIX"     = "  ֎ "
       }
     }
 
@@ -156,13 +160,13 @@ function Write-ThemedColouredPairs {
   #
   if ([String]::IsNullOrEmpty($Message)) {
     if ($inEmergency) {
-      $Message = '💩💩💩 ';
+      $Message = 'ϞϞϞ ';
       $messageExpression = ' -Message $Message -MessageColours $Theme["MESSAGE-COLOURS"] -MessageSuffix $Theme["MESSAGE-SUFFIX"]';
-    } 
+    }
   }
   else {
     if ($inEmergency) {
-      $Message = '💩💩💩 ' + $Message;
+      $Message = 'ϞϞϞ ' + $Message;
     }
     $messageExpression = ' -Message $Message -MessageColours $Theme["MESSAGE-COLOURS"] -MessageSuffix $Theme["MESSAGE-SUFFIX"]';
   }
@@ -174,4 +178,4 @@ function Write-ThemedColouredPairs {
   Invoke-Expression -Command $expression;
 }
 
-Set-Alias -Name Write-ColoredPairs -Value Write-ThemedColouredPairs
+Set-Alias -Name Write-ThemedColoredPairs -Value Write-ThemedPairsInColour

@@ -28,7 +28,7 @@ function Split-KeyValuePairFormatter {
     .PARAMETER ValuePlaceHolder
       The place holder that identifies the Value in the Format parameter.
   #>
-
+  [OutputType([string[]])]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -40,7 +40,7 @@ function Split-KeyValuePairFormatter {
 
     [string]
     $ValueConstituent,
-  
+
     [string]
     $KeyPlaceHolder = "<%KEY%>",
 
@@ -149,5 +149,5 @@ function Split-KeyValuePairFormatter {
     $constituents += $tail;
   }
 
-  return $constituents;
+  return [string[]]$constituents;
 }
