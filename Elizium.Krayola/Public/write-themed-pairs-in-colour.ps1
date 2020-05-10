@@ -1,10 +1,10 @@
 
 [int]$MandatoryNoOfThemeEntries = 11;
 
-function Write-ThemedColouredPairs {
+function Write-ThemedPairsInColour {
   <#
     .NAME
-      Write-ThemedColouredPairs
+      Write-ThemedPairsInColour
 
     .SYNOPSIS
       Writes a collection of key/value pairs in colour according to a specified Theme.
@@ -178,4 +178,4 @@ function Write-ThemedColouredPairs {
   Invoke-Expression -Command $expression;
 }
 
-Set-Alias -Name Write-ThemedColoredPairs -Value Write-ThemedColouredPairs
+Set-Alias -Name Write-ThemedColoredPairs -Value Write-ThemedPairsInColour
