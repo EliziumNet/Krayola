@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'Krayola.psm1'
+RootModule = 'Elizium.Krayola.psm1'
 
 # Version number of this module.
 ModuleVersion = '0.0.1'
@@ -18,13 +18,13 @@ ModuleVersion = '0.0.1'
 # CompatiblePSEditions = @()
 
 # ID used to uniquely identify this module
-GUID = 'f0983729-84d5-401c-a20d-668de2097576'
+GUID = 'cc13fedc-6dea-4573-b600-d26c9f77e6ac'
 
 # Author of this module
 Author = 'plastikfan'
 
 # Company or vendor of this module
-CompanyName = 'PlanetOfShapes'
+CompanyName = 'Elizium'
 
 # Copyright statement for this module
 Copyright = '(c) plastikfan. All rights reserved.'
