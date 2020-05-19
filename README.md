@@ -31,7 +31,7 @@ The module can be installed using the standard **install-module** command:
 
 Krayola provides the capability to write consistent and colourful PowerShell console applications. The key here is that it produces structured output according to user defined formats. There are 3 main ways of writing output:
 
-1. [**Provide a sequence of text snippets each with their own colour descriptions**](##Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions) - [*(Write-Colour)*](#Write-InColour)
+1. [**Provide a sequence of text snippets each with their own colour descriptions**](##Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions) - [*(Write-InColour)*](#Write-InColour)
 2. [**Provide sequence of colour described key/value pairs**](#Provide-sequence-of-colour-described-key/value-pairs) - [*(Write-RawPairsInColour)*](#Write-RawPairsInColour)
 3. [**Provide a theme describing how key/value pairs should be rendered**](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered) - [*(Write-ThemedColoursInPairs)*](#Write-ThemedPairsInColour)
 

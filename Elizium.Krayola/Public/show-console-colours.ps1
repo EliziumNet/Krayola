@@ -1,5 +1,8 @@
 
 function Show-ConsoleColours {
+
+  [Alias("Show-ConsoleColors")]
+  param ()
   <#
     .NAME
       Show-ConsoleColours
@@ -16,5 +19,3 @@ function Show-ConsoleColours {
     Write-Host -ForegroundColor $col $col;
   }
 }
-
-Set-Alias -Name Show-ConsoleColors -Value Show-ConsoleColours

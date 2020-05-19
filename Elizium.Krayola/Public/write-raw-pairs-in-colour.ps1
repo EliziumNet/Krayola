@@ -13,7 +13,7 @@ function Write-RawPairsInColour {
       the value.
 
     .PARAMETER Pairs
-      A 3 dimensioal array representing a sequence of key/value pairs where each key and value
+      A 3 dimensional array representing a sequence of key/value pairs where each key and value
       are in themselves a sub-sequence of 2 or 3 items representing text, foreground colour &
       background colours.
 
@@ -71,6 +71,7 @@ function Write-RawPairsInColour {
   # This function is supposed to write to the host, because the output is in colour.
   # Using Write-Host is Krayola's raison d'etre!
   #
+  [Alias("Write-RawPairsInColor")]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
   [CmdletBinding()]
   param (
@@ -91,11 +92,14 @@ function Write-RawPairsInColour {
     $ValuePlaceHolder = "<%VALUE%>",
 
     [Parameter(Mandatory = $false)]
+    [AllowEmptyString()]
     $Open = "=== [",
 
+    [AllowEmptyString()]
     [Parameter(Mandatory = $false)]
     $Close = "] ===",
 
+    [AllowEmptyString()]
     [Parameter(Mandatory = $false)]
     $Separator = ", ",
 
@@ -111,6 +115,7 @@ function Write-RawPairsInColour {
     [string[]]
     $MessageColours = @("White"),
 
+    [AllowEmptyString()]
     [Parameter(Mandatory = $false)]
     [string]
     $MessageSuffix = " // ",
@@ -226,5 +231,3 @@ function Write-RawPairsInColour {
     Write-Host "";
   }
 }
-
-Set-Alias -Name Write-RawPairsInColor -Value Write-RawPairsInColour

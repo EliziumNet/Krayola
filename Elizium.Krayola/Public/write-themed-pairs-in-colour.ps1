@@ -75,6 +75,7 @@ function Write-ThemedPairsInColour {
   # user defined input. In this instance, there is no unchecked user input so
   # there is no cause for concern.
   #
+  [Alias("Write-ThemedPairsInColor")]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingInvokeExpression", "")]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "")]
   [CmdletBinding()]
@@ -128,7 +129,7 @@ function Write-ThemedPairsInColour {
     $inEmergency = $true;
   }
 
-  [string[][][]] $PairsToWriteInColour = @();
+  [string[][][]] $pairsToWriteInColour = @();
 
   # Construct the pairs
   #
@@ -143,10 +144,10 @@ function Write-ThemedPairsInColour {
     [string[]]$transfomedKey = @($pair[0]) + $keyColours;
     [string[]]$transfomedValue = @($pair[1]) + $valueColours;
     $transformedPair = , @($transfomedKey, $transfomedValue);
-    $PairsToWriteInColour += $transformedPair;
+    $pairsToWriteInColour += $transformedPair;
   }
 
-  [string]$expression = 'Write-RawPairsInColour -Pairs $PairsToWriteInColour `
+  [string]$expression = 'Write-RawPairsInColour -Pairs $pairsToWriteInColour `
     -Format $Theme["FORMAT"] `
     -KeyPlaceHolder $Theme["KEY-PLACE-HOLDER"] `
     -ValuePlaceHolder $Theme["VALUE-PLACE-HOLDER"] `
@@ -177,5 +178,3 @@ function Write-ThemedPairsInColour {
 
   Invoke-Expression -Command $expression;
 }
-
-Set-Alias -Name Write-ThemedColoredPairs -Value Write-ThemedPairsInColour

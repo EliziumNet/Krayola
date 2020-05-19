@@ -41,6 +41,7 @@ function Write-InColour {
   # This function is supposed to write to the host, because the output is in colour.
   # Using Write-Host is Krayola's raison d'etre!
   #
+  [Alias("Write-InColor")]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
   [CmdletBinding()]
   param (
@@ -92,5 +93,3 @@ function Write-InColour {
     Write-Host "";
   }
 }
-
-Set-Alias -Name Write-InColor -Value Write-InColour
