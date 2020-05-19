@@ -71,12 +71,7 @@ function Write-ThemedPairsInColour {
     .PARAMETER Message
       An optional message that precedes the display of the Key/Value sequence.
   #>
-  # Invoke-Expression is usually discouraged because of vulnerability to un-checked
-  # user defined input. In this instance, there is no unchecked user input so
-  # there is no cause for concern.
-  #
   [Alias("Write-ThemedPairsInColor")]
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingInvokeExpression", "")]
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "")]
   [CmdletBinding()]
   param (
@@ -147,6 +142,17 @@ function Write-ThemedPairsInColour {
     $pairsToWriteInColour += $transformedPair;
   }
 
+  [System.Collections.Hashtable]$parameters = @{
+    'Pairs'            = $pairsToWriteInColour;
+    'Format'           = $Theme["FORMAT"];
+    'KeyPlaceHolder'   = $Theme["KEY-PLACE-HOLDER"];
+    'ValuePlaceHolder' = $Theme["VALUE-PLACE-HOLDER"];
+    'Open'             = $Theme["OPEN"];
+    'Close'            = $Theme["CLOSE"];
+    'Separator'        = $Theme["SEPARATOR"];
+    'MetaColours'      = $Theme["META-COLOURS"];
+  }
+
   [string]$expression = 'Write-RawPairsInColour -Pairs $pairsToWriteInColour `
     -Format $Theme["FORMAT"] `
     -KeyPlaceHolder $Theme["KEY-PLACE-HOLDER"] `
@@ -174,7 +180,11 @@ function Write-ThemedPairsInColour {
 
   if (-not([String]::IsNullOrEmpty($messageExpression))) {
     $expression += $messageExpression;
+
+    $parameters['Message'] = $Message;
+    $parameters['MessageColours'] = $Theme["MESSAGE-COLOURS"];
+    $parameters['MessageSuffix'] = $Theme["MESSAGE-SUFFIX"];
   }
 
-  Invoke-Expression -Command $expression;
+  & "Write-RawPairsInColour" @parameters;
 }
