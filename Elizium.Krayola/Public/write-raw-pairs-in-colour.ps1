@@ -124,8 +124,7 @@ function Write-RawPairsInColour {
   )
 
   if (($MetaColours.Length -lt 1) -or ($MetaColours.Length -gt 2)) {
-    Write-Error -ErrorAction Stop `
-      -Message "Bad meta colours spec, aborting (No of colours specified: $($MetaColours.Length))";
+    Write-Error -Message "Bad meta colours spec, aborting (No of colours specified: $($MetaColours.Length))";
   }
 
   # Write the leading message

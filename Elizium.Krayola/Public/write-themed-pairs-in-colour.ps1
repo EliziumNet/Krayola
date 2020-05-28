@@ -133,7 +133,7 @@ function Write-ThemedPairsInColour {
 
   foreach ($pair in $Pairs) {
     if ($pair.Length -ne 2) {
-      Write-Error -ErrorAction Stop "Found pair that does not contain 2 items (pair: $($pair)) [!!! Reminder: you need to use the comma op for a single item array]";
+      Write-Error "Found pair that does not contain 2 items (pair: $($pair)) [!!! Reminder: you need to use the comma op for a single item array]";
     }
 
     [string[]]$transfomedKey = @($pair[0]) + $keyColours;
