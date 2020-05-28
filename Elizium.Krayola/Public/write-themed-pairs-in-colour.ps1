@@ -71,8 +71,8 @@ function Write-ThemedPairsInColour {
     .PARAMETER Message
       An optional message that precedes the display of the Key/Value sequence.
   #>
-  [Alias("Write-ThemedPairsInColor")]
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseBOMForUnicodeEncodedFile", "")]
+  [Alias('Write-ThemedPairsInColor')]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseBOMForUnicodeEncodedFile', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -99,7 +99,7 @@ function Write-ThemedPairsInColour {
   }
 
   if (-not(isThemeValid($Theme))) {
-    $Theme = $KrayolaThemes["EMERGENCY-THEME"];
+    $Theme = $KrayolaThemes['EMERGENCY-THEME'];
 
     # Incase the user has compromised the EMERGENCY theme, which should be modifyable (because we
     # can't be sure that the emergency theme we have defined is suitable for their console),
@@ -107,17 +107,17 @@ function Write-ThemedPairsInColour {
     #
     if (-not(isThemeValid($Theme))) {
       $Theme = @{
-        "FORMAT"             = "{{<%KEY%>}}={{<%VALUE%>}}";
-        "KEY-PLACE-HOLDER"   = "<%KEY%>";
-        "VALUE-PLACE-HOLDER" = "<%VALUE%>";
-        "KEY-COLOURS"        = @("White");
-        "VALUE-COLOURS"      = @("DarkGray");
-        "OPEN"               = "{";
-        "CLOSE"              = "}";
-        "SEPARATOR"          = "; ";
-        "META-COLOURS"       = @("Black");
-        "MESSAGE-COLOURS"    = @("Gray");
-        "MESSAGE-SUFFIX"     = "  ֎ "
+        'FORMAT'             = '{{<%KEY%>}}={{<%VALUE%>}}';
+        'KEY-PLACE-HOLDER'   = '<%KEY%>';
+        'VALUE-PLACE-HOLDER' = '<%VALUE%>';
+        'KEY-COLOURS'        = @('White');
+        'VALUE-COLOURS'      = @('DarkGray');
+        'OPEN'               = '{';
+        'CLOSE'              = '}';
+        'SEPARATOR'          = '; ';
+        'META-COLOURS'       = @('Black');
+        'MESSAGE-COLOURS'    = @('Gray');
+        'MESSAGE-SUFFIX'     = '  ֎ '
       }
     }
 
@@ -128,12 +128,12 @@ function Write-ThemedPairsInColour {
 
   # Construct the pairs
   #
-  [string[]]$keyColours = $Theme["KEY-COLOURS"];
-  [string[]]$valueColours = $Theme["VALUE-COLOURS"];
+  [string[]]$keyColours = $Theme['KEY-COLOURS'];
+  [string[]]$valueColours = $Theme['VALUE-COLOURS'];
 
   foreach ($pair in $Pairs) {
     if ($pair.Length -ne 2) {
-      Write-Error -ErrorAction Stop "Found pair that does not contain 2 items (pair: $($pair))";
+      Write-Error -ErrorAction Stop "Found pair that does not contain 2 items (pair: $($pair)) [!!! Reminder: you need to use the comma op for a single item array]";
     }
 
     [string[]]$transfomedKey = @($pair[0]) + $keyColours;
@@ -144,47 +144,31 @@ function Write-ThemedPairsInColour {
 
   [System.Collections.Hashtable]$parameters = @{
     'Pairs'            = $pairsToWriteInColour;
-    'Format'           = $Theme["FORMAT"];
-    'KeyPlaceHolder'   = $Theme["KEY-PLACE-HOLDER"];
-    'ValuePlaceHolder' = $Theme["VALUE-PLACE-HOLDER"];
-    'Open'             = $Theme["OPEN"];
-    'Close'            = $Theme["CLOSE"];
-    'Separator'        = $Theme["SEPARATOR"];
-    'MetaColours'      = $Theme["META-COLOURS"];
+    'Format'           = $Theme['FORMAT'];
+    'KeyPlaceHolder'   = $Theme['KEY-PLACE-HOLDER'];
+    'ValuePlaceHolder' = $Theme['VALUE-PLACE-HOLDER'];
+    'Open'             = $Theme['OPEN'];
+    'Close'            = $Theme['CLOSE'];
+    'Separator'        = $Theme['SEPARATOR'];
+    'MetaColours'      = $Theme['META-COLOURS'];
   }
 
-  [string]$expression = 'Write-RawPairsInColour -Pairs $pairsToWriteInColour `
-    -Format $Theme["FORMAT"] `
-    -KeyPlaceHolder $Theme["KEY-PLACE-HOLDER"] `
-    -ValuePlaceHolder $Theme["VALUE-PLACE-HOLDER"] `
-    -Open $Theme["OPEN"] `
-    -Close $Theme["CLOSE"] `
-    -Separator $Theme["SEPARATOR"] `
-    -MetaColours $Theme["META-COLOURS"]';
-
-  [string]$messageExpression = "";
-  # Finally do the invoke
-  #
   if ([String]::IsNullOrEmpty($Message)) {
     if ($inEmergency) {
       $Message = 'ϞϞϞ ';
-      $messageExpression = ' -Message $Message -MessageColours $Theme["MESSAGE-COLOURS"] -MessageSuffix $Theme["MESSAGE-SUFFIX"]';
     }
   }
   else {
     if ($inEmergency) {
       $Message = 'ϞϞϞ ' + $Message;
     }
-    $messageExpression = ' -Message $Message -MessageColours $Theme["MESSAGE-COLOURS"] -MessageSuffix $Theme["MESSAGE-SUFFIX"]';
   }
 
-  if (-not([String]::IsNullOrEmpty($messageExpression))) {
-    $expression += $messageExpression;
-
+  if (-not([String]::IsNullOrEmpty($Message))) {
     $parameters['Message'] = $Message;
-    $parameters['MessageColours'] = $Theme["MESSAGE-COLOURS"];
-    $parameters['MessageSuffix'] = $Theme["MESSAGE-SUFFIX"];
+    $parameters['MessageColours'] = $Theme['MESSAGE-COLOURS'];
+    $parameters['MessageSuffix'] = $Theme['MESSAGE-SUFFIX'];
   }
 
-  & "Write-RawPairsInColour" @parameters;
+  & 'Write-RawPairsInColour' @parameters;
 }

@@ -41,8 +41,8 @@ function Write-InColour {
   # This function is supposed to write to the host, because the output is in colour.
   # Using Write-Host is Krayola's raison d'etre!
   #
-  [Alias("Write-InColor")]
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+  [Alias('Write-InColor')]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -54,7 +54,7 @@ function Write-InColour {
 
   foreach ($snippet in $TextSnippets) {
     if ($snippet.Length -eq 0) {
-      Write-Warning " * Found malformed line (empty snippet entry), skipping * ";
+      Write-Warning ' * Found malformed line (empty snippet entry), skipping * ';
       continue;
     }
 
@@ -64,7 +64,7 @@ function Write-InColour {
     }
 
     if ($null -eq $snippet[0]) {
-      Write-Warning " * Found empty snippet text, skipping *";
+      Write-Warning ' * Found empty snippet text, skipping *';
       continue;
     }
 
@@ -90,6 +90,6 @@ function Write-InColour {
   }
 
   if (-not ($NoNewLine.ToBool())) {
-    Write-Host "";
+    Write-Host '';
   }
 }

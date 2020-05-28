@@ -42,10 +42,10 @@ function Split-KeyValuePairFormatter {
     $ValueConstituent,
 
     [string]
-    $KeyPlaceHolder = "<%KEY%>",
+    $KeyPlaceHolder = '<%KEY%>',
 
     [string]
-    $ValuePlaceHolder = "<%VALUE%>"
+    $ValuePlaceHolder = '<%VALUE%>'
   )
 
   [string[]]$constituents = @();
@@ -68,7 +68,7 @@ function Split-KeyValuePairFormatter {
   # before the value in the format sring.
   #
   if ($keyPosition -lt $valuePosition) {
-    [string]$header = "";
+    [string]$header = '';
 
     if ($keyPosition -ne 0) {
       # Insert everything up to the KeyFormat (the header)
@@ -110,7 +110,7 @@ function Split-KeyValuePairFormatter {
     $constituents += $tail;
   }
   else {
-    [string]$header = "";
+    [string]$header = '';
 
     if ($valuePosition -ne 0) {
       # Insert everything up to the ValueFormat (the header)
