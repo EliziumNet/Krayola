@@ -16,6 +16,8 @@ Colourful console writing with PowerShell
     * [Write-InColour](#Write-InColour)<br>
     * [Write-RawPairsInColour](#Write-RawPairsInColour)<br>
     * [Write-ThemedPairsInColour](#Write-ThemedPairsInColour)<br>
+    * [Helper function Get-IsKrayolaLightTerminal](#Helper-function-Get-IsKrayolaLightTerminal)<br>
+    * [Helper function Get-KrayolaTheme](#Helper-function-Get-KrayolaTheme)<br>
     * [Helper function Show-ConsoleColours](#Helper-function-Show-ConsoleColours)<br>
 
   + [Invalid Theme](#Invalid-Theme)<br>
@@ -283,6 +285,22 @@ Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Ca
 ```
 
 > Catalogue entry:  // {'Artist'='Plastikman' | 'Song'='Marbles'}
+
+#### Helper function Get-IsKrayolaLightTerminal
+
+Gets the value of the environment variable *KRAYOLA-LIGHT-TERMINAL* as a boolean.
+
+For use by applications that need to use a Krayola theme that is dependent on whether a light or dark background colour is in effect in the current terminal.
+
+#### Helper function Get-KrayolaTheme
+
+Helper function that makes it easier for client applications to get a Krayola theme from the environment, which is compatible with the terminal colours being used. This helps keep output from different applications consistent.
+
+The parameters:
+
+* KrayolaThemeName (optional)
+
+If $KrayolaThemeName is specified, then it is used to lookup the theme in the global $KrayolaThemes hash table exposed by the Krayola module. If either the theme specified does not exist or not specified, then a default theme is used. The default theme created should be compatible with the dark/lightness of the background of the terminal currently in use. By default, a dark terminal is assumed and the colours used show up clearly against a dark background. If *KRAYOLA-LIGHT-TERMINAL* is defined as an environment variable (can be set to any string apart from empty string/white space), then the colours chosen show up best against a light background.
 
 #### Helper function Show-ConsoleColours
 

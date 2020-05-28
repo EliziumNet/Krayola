@@ -25,6 +25,8 @@ foreach ($folder in $functionFolders)
 #
 # $publicFunctions = (Get-ChildItem -Path "$PSScriptRoot/Public" -Filter '*.ps1').BaseName
 #
-Export-ModuleMember -Function Write-ThemedPairsInColour, Write-InColour, Write-RawPairsInColour, Show-ConsoleColours
+Export-ModuleMember -Function Write-ThemedPairsInColour, Write-InColour, `
+  Write-RawPairsInColour, Show-ConsoleColours, Get-KrayolaTheme, Get-IsKrayolaLightTerminal
+
 Export-ModuleMember -Variable KrayolaThemes
 Export-ModuleMember -Alias Write-ThemedColoredPairs, Write-InColor, Write-RawPairsInColor, Show-ConsoleColors
