@@ -24,6 +24,9 @@ Colourful console writing with PowerShell
   + [Global pre-defined Themes](#Global-pre-defined-Themes)<br>
 
 [Trouble shooting](#Trouble-shooting)<br>
+  + [Use the correct array dimensions when invoking the writer functions](#Use-the-correct-array-dimensions-when-invoking-the-writer-functions)<br>
+  + [A reminder about single item arrays in PowerShell](#A-reminder-about-single-item-arrays-in-PowerShell)<br>
+  + [Creating Pairs iteratively using Array.Add()](#Creating-Pairs-iteratively-using-Array.Add())<br>
 
 ## Introduction
 
@@ -334,6 +337,10 @@ Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $KrayolaThemes["SQUARE-THE
 
 ## Trouble shooting
 
+The following a description of some of the pitfalls that I encountered writing this module mainly due to the esoteric implementation of arrays in PowerShell, that I hope can be avoided by others.
+
+### Use the correct array dimensions when invoking the writer functions
+
 Owing to the nature of how arrays have been implemented in PowerShell, it very easy to tie yourself up in knots when defining multi dimensional arrays as the $Pairs parameter (to Write-ThemedPairsInColour and Write-RawPairsInColour) or $TextSnippets parameter (to Write-InColour). It's incumbent on you to make appropriate use of @() and comma operators to get the result you intended. In fact, in writing this documentation I actually made this silly mistake that highlights this very issue.
 
 An example I was attempting to illustrate is as follows:
@@ -383,3 +390,51 @@ which actually displays this:
 * However, the Pairs passed into Write-ThemedPairsInColour is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
 
 If you keep these points in mind, then hopefully you'll avoid getting errors like the one just illustrated.
+
+### A reminder about single item arrays in PowerShell
+
+Taking the following example,
+
+```powershell
+$PairsToWrite = @(@("Gotchya", "wot no comma op for a single item array?"));
+Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $SunshineTheme;
+```
+
+Assuming that $SunshineTheme is valid theme (which it is), this will blow up at run-time as follows:
+
+> Write-ThemedPairsInColour: Found pair that does not contain 2 items (pair: Gotchya) [!!! Reminder: you need to use the comma op for a single item array]
+
+> Write-ThemedPairsInColour: Found pair that does not contain 2 items (pair: wot no comma op for a single item array?) [!!! Reminder: you need to use the comma op for a single item array]
+{'Gotchya' +++ '' | 'wot no comma op for a single item array?' +++ ''}
+
+We can see that an attempt is being made to pass in a single item array into *Write-ThemedPairsInColour*, and PowerShell being the way it is as previously described, flattens out the array, breaking the structure expected by the function.
+
+To preserve the array structure, ie a single item array, we need to use the comma operator as follows:
+
+```powershell
+$PairsToWrite = @(, @("Gotchya", "ah, that's much better"));
+```
+
+and now this behaves as expected and displays:
+
+> {'Gotchya' +++ 'ah, that's much better'}
+
+### Creating Pairs iteratively using Array.Add()
+
+Remember, this (even though it is the most intuitive way of doing this) won't work on a fixed item array:
+
+```powershell
+$PairsToWrite.Add(@("Another", "Item"))
+```
+
+will blow up with this error message:
+
+> MethodInvocationException: Exception calling "Add" with "1" argument(s): "Collection was of a fixed size."
+
+To resolve this, one should use the += operator which returns a new array
+
+```powershell
+$PairToWrite += , @("Gotchya", "ah, that's much better");
+```
+
+*Note the use of the comma op here! If you omit the preceding comma, the array will be appended to with no issue, but the call to Write-ThemedPairsInColour will fail with the same error as previously described.*
