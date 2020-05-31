@@ -16,12 +16,17 @@ Colourful console writing with PowerShell
     * [Write-InColour](#Write-InColour)<br>
     * [Write-RawPairsInColour](#Write-RawPairsInColour)<br>
     * [Write-ThemedPairsInColour](#Write-ThemedPairsInColour)<br>
+    * [Helper function Get-IsKrayolaLightTerminal](#Helper-function-Get-IsKrayolaLightTerminal)<br>
+    * [Helper function Get-KrayolaTheme](#Helper-function-Get-KrayolaTheme)<br>
     * [Helper function Show-ConsoleColours](#Helper-function-Show-ConsoleColours)<br>
 
   + [Invalid Theme](#Invalid-Theme)<br>
   + [Global pre-defined Themes](#Global-pre-defined-Themes)<br>
 
 [Trouble shooting](#Trouble-shooting)<br>
+  + [Use the correct array dimensions when invoking the writer functions](#Use-the-correct-array-dimensions-when-invoking-the-writer-functions)<br>
+  + [A reminder about single item arrays in PowerShell](#A-reminder-about-single-item-arrays-in-PowerShell)<br>
+  + [Creating Pairs iteratively using Array.Add()](#Creating-Pairs-iteratively-using-Array.Add())<br>
 
 ## Introduction
 
@@ -31,7 +36,7 @@ The module can be installed using the standard **install-module** command:
 
 Krayola provides the capability to write consistent and colourful PowerShell console applications. The key here is that it produces structured output according to user defined formats. There are 3 main ways of writing output:
 
-1. [**Provide a sequence of text snippets each with their own colour descriptions**](##Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions) - [*(Write-Colour)*](#Write-InColour)
+1. [**Provide a sequence of text snippets each with their own colour descriptions**](##Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions) - [*(Write-InColour)*](#Write-InColour)
 2. [**Provide sequence of colour described key/value pairs**](#Provide-sequence-of-colour-described-key/value-pairs) - [*(Write-RawPairsInColour)*](#Write-RawPairsInColour)
 3. [**Provide a theme describing how key/value pairs should be rendered**](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered) - [*(Write-ThemedColoursInPairs)*](#Write-ThemedPairsInColour)
 
@@ -284,6 +289,22 @@ Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Ca
 
 > Catalogue entry:  // {'Artist'='Plastikman' | 'Song'='Marbles'}
 
+#### Helper function Get-IsKrayolaLightTerminal
+
+Gets the value of the environment variable *KRAYOLA-LIGHT-TERMINAL* as a boolean.
+
+For use by applications that need to use a Krayola theme that is dependent on whether a light or dark background colour is in effect in the current terminal.
+
+#### Helper function Get-KrayolaTheme
+
+Helper function that makes it easier for client applications to get a Krayola theme from the environment, which is compatible with the terminal colours being used. This helps keep output from different applications consistent.
+
+The parameters:
+
+* KrayolaThemeName (optional)
+
+If $KrayolaThemeName is specified, then it is used to lookup the theme in the global $KrayolaThemes hash table exposed by the Krayola module. If either the theme specified does not exist or not specified, then a default theme is used. The default theme created should be compatible with the dark/lightness of the background of the terminal currently in use. By default, a dark terminal is assumed and the colours used show up clearly against a dark background. If *KRAYOLA-LIGHT-TERMINAL* is defined as an environment variable (can be set to any string apart from empty string/white space), then the colours chosen show up best against a light background.
+
 #### Helper function Show-ConsoleColours
 
 The module exports a function *Show-ConsoleColours* that simply displays all the available console colours as they are represented in text in the colour they represent. This will aid in defining custom themes. Just invoke the function with no arguments in your PowerShell session.
@@ -315,6 +336,10 @@ Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $KrayolaThemes["SQUARE-THE
 ```
 
 ## Trouble shooting
+
+The following a description of some of the pitfalls that I encountered writing this module mainly due to the esoteric implementation of arrays in PowerShell, that I hope can be avoided by others.
+
+### Use the correct array dimensions when invoking the writer functions
 
 Owing to the nature of how arrays have been implemented in PowerShell, it very easy to tie yourself up in knots when defining multi dimensional arrays as the $Pairs parameter (to Write-ThemedPairsInColour and Write-RawPairsInColour) or $TextSnippets parameter (to Write-InColour). It's incumbent on you to make appropriate use of @() and comma operators to get the result you intended. In fact, in writing this documentation I actually made this silly mistake that highlights this very issue.
 
@@ -365,3 +390,51 @@ which actually displays this:
 * However, the Pairs passed into Write-ThemedPairsInColour is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
 
 If you keep these points in mind, then hopefully you'll avoid getting errors like the one just illustrated.
+
+### A reminder about single item arrays in PowerShell
+
+Taking the following example,
+
+```powershell
+$PairsToWrite = @(@("Gotchya", "wot no comma op for a single item array?"));
+Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $SunshineTheme;
+```
+
+Assuming that $SunshineTheme is valid theme (which it is), this will blow up at run-time as follows:
+
+> Write-ThemedPairsInColour: Found pair that does not contain 2 items (pair: Gotchya) [!!! Reminder: you need to use the comma op for a single item array]
+
+> Write-ThemedPairsInColour: Found pair that does not contain 2 items (pair: wot no comma op for a single item array?) [!!! Reminder: you need to use the comma op for a single item array]
+{'Gotchya' +++ '' | 'wot no comma op for a single item array?' +++ ''}
+
+We can see that an attempt is being made to pass in a single item array into *Write-ThemedPairsInColour*, and PowerShell being the way it is as previously described, flattens out the array, breaking the structure expected by the function.
+
+To preserve the array structure, ie a single item array, we need to use the comma operator as follows:
+
+```powershell
+$PairsToWrite = @(, @("Gotchya", "ah, that's much better"));
+```
+
+and now this behaves as expected and displays:
+
+> {'Gotchya' +++ 'ah, that's much better'}
+
+### Creating Pairs iteratively using Array.Add()
+
+Remember, this (even though it is the most intuitive way of doing this) won't work on a fixed item array:
+
+```powershell
+$PairsToWrite.Add(@("Another", "Item"))
+```
+
+will blow up with this error message:
+
+> MethodInvocationException: Exception calling "Add" with "1" argument(s): "Collection was of a fixed size."
+
+To resolve this, one should use the += operator which returns a new array
+
+```powershell
+$PairToWrite += , @("Gotchya", "ah, that's much better");
+```
+
+*Note the use of the comma op here! If you omit the preceding comma, the array will be appended to with no issue, but the call to Write-ThemedPairsInColour will fail with the same error as previously described.*

@@ -13,7 +13,7 @@ function Write-RawPairsInColour {
       the value.
 
     .PARAMETER Pairs
-      A 3 dimensioal array representing a sequence of key/value pairs where each key and value
+      A 3 dimensional array representing a sequence of key/value pairs where each key and value
       are in themselves a sub-sequence of 2 or 3 items representing text, foreground colour &
       background colours.
 
@@ -71,7 +71,8 @@ function Write-RawPairsInColour {
   # This function is supposed to write to the host, because the output is in colour.
   # Using Write-Host is Krayola's raison d'etre!
   #
-  [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingWriteHost", "")]
+  [Alias('Write-RawPairsInColor')]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '')]
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -80,28 +81,31 @@ function Write-RawPairsInColour {
 
     [Parameter(Mandatory = $false)]
     [string]
-    $Format = "('<%KEY%>'='<%VALUE%>')",
+    $Format = '("<%KEY%>"="<%VALUE%>")',
 
     [Parameter(Mandatory = $false)]
     [string]
-    $KeyPlaceHolder = "<%KEY%>",
+    $KeyPlaceHolder = '<%KEY%>',
 
     [Parameter(Mandatory = $false)]
     [string]
-    $ValuePlaceHolder = "<%VALUE%>",
+    $ValuePlaceHolder = '<%VALUE%>',
 
     [Parameter(Mandatory = $false)]
-    $Open = "=== [",
+    [AllowEmptyString()]
+    $Open = '=== [',
 
+    [AllowEmptyString()]
     [Parameter(Mandatory = $false)]
-    $Close = "] ===",
+    $Close = '] ===',
 
+    [AllowEmptyString()]
     [Parameter(Mandatory = $false)]
-    $Separator = ", ",
+    $Separator = ', ',
 
     [Parameter(Mandatory = $false)]
     [string[]]
-    $MetaColours = @("White"),
+    $MetaColours = @('White'),
 
     [Parameter(Mandatory = $false)]
     [string]
@@ -109,18 +113,18 @@ function Write-RawPairsInColour {
 
     [Parameter(Mandatory = $false)]
     [string[]]
-    $MessageColours = @("White"),
+    $MessageColours = @('White'),
 
+    [AllowEmptyString()]
     [Parameter(Mandatory = $false)]
     [string]
-    $MessageSuffix = " // ",
+    $MessageSuffix = ' // ',
 
     [Switch]$NoNewLine
   )
 
   if (($MetaColours.Length -lt 1) -or ($MetaColours.Length -gt 2)) {
-    Write-Error -ErrorAction Stop `
-      -Message "Bad meta colours spec, aborting (No of colours specified: $($MetaColours.Length))";
+    Write-Error -Message "Bad meta colours spec, aborting (No of colours specified: $($MetaColours.Length))";
   }
 
   # Write the leading message
@@ -197,11 +201,11 @@ function Write-RawPairsInColour {
       Write-InColour -TextSnippets $displayField -NoNewLine;
 
       if ($field.Length -gt 2) {
-        Write-Warning " * Ignoring excess snippets *";
+        Write-Warning ' * Ignoring excess snippets *';
       }
     }
     else {
-      Write-Warning " * Insufficient snippet pair, 2 required, skipping *";
+      Write-Warning ' * Insufficient snippet pair, 2 required, skipping *';
     }
 
     # Field Separator snippet
@@ -223,8 +227,6 @@ function Write-RawPairsInColour {
   }
 
   if (-not($NoNewLine.ToBool())) {
-    Write-Host "";
+    Write-Host '';
   }
 }
-
-Set-Alias -Name Write-RawPairsInColor -Value Write-RawPairsInColour

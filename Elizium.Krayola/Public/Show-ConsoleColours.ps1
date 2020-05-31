@@ -1,5 +1,8 @@
 
 function Show-ConsoleColours {
+
+  [Alias('Show-ConsoleColors')]
+  param ()
   <#
     .NAME
       Show-ConsoleColours
@@ -9,12 +12,10 @@ function Show-ConsoleColours {
       they represent. This willl assist in the development of colour Themes.
   #>
 
-  [Array]$colours = @("Black", "DarkBlue", "DarkGreen", "DarkCyan", "DarkRed", "DarkMagenta", `
-      "DarkYellow", "Gray", "DarkGray", "Blue", "Green", "Cyan", "Red", "Magenta", "Yellow", "White");
+  [Array]$colours = @('Black', 'DarkBlue', 'DarkGreen', 'DarkCyan', 'DarkRed', 'DarkMagenta', `
+      'DarkYellow', 'Gray', 'DarkGray', 'Blue', 'Green', 'Cyan', 'Red', 'Magenta', 'Yellow', 'White');
 
   foreach ($col in $colours) {
     Write-Host -ForegroundColor $col $col;
   }
 }
-
-Set-Alias -Name Show-ConsoleColors -Value Show-ConsoleColours

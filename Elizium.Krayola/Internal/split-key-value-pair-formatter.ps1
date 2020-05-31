@@ -42,10 +42,10 @@ function Split-KeyValuePairFormatter {
     $ValueConstituent,
 
     [string]
-    $KeyPlaceHolder = "<%KEY%>",
+    $KeyPlaceHolder = '<%KEY%>',
 
     [string]
-    $ValuePlaceHolder = "<%VALUE%>"
+    $ValuePlaceHolder = '<%VALUE%>'
   )
 
   [string[]]$constituents = @();
@@ -54,13 +54,11 @@ function Split-KeyValuePairFormatter {
   [int]$valuePosition = $Format.IndexOf($ValuePlaceHolder);
 
   if ($keyPosition -eq -1) {
-    Write-Error -ErrorAction Stop `
-      -Message "Invalid formatter: '$($Format)', key: '$({$KeyPlaceHolder})' not found";
+    Write-Error -Message "Invalid formatter: '$($Format)', key: '$({$KeyPlaceHolder})' not found";
   }
 
   if ($valuePosition -eq -1) {
-    Write-Error -ErrorAction Stop `
-      -Message "Invalid formatter: '$($Format)', value: '$({$ValuePlaceHolder})' not found";
+    Write-Error -Message "Invalid formatter: '$($Format)', value: '$({$ValuePlaceHolder})' not found";
   }
 
   # Need this check just in case the user wants Value=Key!!!, or perhaps something
@@ -68,7 +66,7 @@ function Split-KeyValuePairFormatter {
   # before the value in the format sring.
   #
   if ($keyPosition -lt $valuePosition) {
-    [string]$header = "";
+    [string]$header = '';
 
     if ($keyPosition -ne 0) {
       # Insert everything up to the KeyFormat (the header)
@@ -88,8 +86,7 @@ function Split-KeyValuePairFormatter {
     [int]$midStart = $header.Length + $KeyPlaceHolder.Length;
     [int]$midLength = $valuePosition - $midStart;
     if ($midLength -lt 0) {
-      Write-Error -ErrorAction Stop `
-        -Message "Internal error, couldn't get the middle of the formatter: '$Format'";
+      Write-Error -Message "Internal error, couldn't get the middle of the formatter: '$Format'";
     }
     [string]$middle = $Format.Substring($midStart, $midLength);
     $constituents += $middle;
@@ -110,7 +107,7 @@ function Split-KeyValuePairFormatter {
     $constituents += $tail;
   }
   else {
-    [string]$header = "";
+    [string]$header = '';
 
     if ($valuePosition -ne 0) {
       # Insert everything up to the ValueFormat (the header)
@@ -130,8 +127,7 @@ function Split-KeyValuePairFormatter {
     [int]$midStart = $header.Length + $ValuePlaceHolder.Length;
     [int]$midLength = $keyPosition - $midStart;
     if ($midLength -lt 0) {
-      Write-Error -ErrorAction Stop `
-        -Message "Internal error, couldnt get the middle of the formatter: '$Format'";
+      Write-Error -Message "Internal error, couldnt get the middle of the formatter: '$Format'";
     }
     [string]$middle = $Format.Substring($midStart, $midLength);
     $constituents += $middle;
