@@ -1,5 +1,5 @@
 
-. ./Elizium.Krayola/Internal/split-key-value-pair-formatter.ps1
+. ./Elizium.Krayola/Internal/Split-KeyValuePairFormatter.ps1
 . ./Elizium.Krayola/Public/themes.ps1
 . ./Elizium.Krayola/Public/Get-KrayolaTheme.ps1
 . ./Elizium.Krayola/Public/Get-IsKrayolaLightTerminal.ps1
