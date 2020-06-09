@@ -27,33 +27,38 @@ function Get-KrayolaTheme {
       Position = 0
     )]
     [AllowEmptyString()]
-    [string]$KrayolaThemeName
-  )
+    [string]$KrayolaThemeName,
 
-  # Theme is compatible with dark consoles by default
-  #
-  [System.Collections.Hashtable]$displayTheme = @{
-    'FORMAT'             = '"<%KEY%>" => "<%VALUE%>"';
-    'KEY-PLACE-HOLDER'   = '<%KEY%>';
-    'VALUE-PLACE-HOLDER' = '<%VALUE%>';
-    'KEY-COLOURS'        = @('DarkCyan');
-    'VALUE-COLOURS'      = @('White');
-    'OPEN'               = '[';
-    'CLOSE'              = ']';
-    'SEPARATOR'          = ', ';
-    'META-COLOURS'       = @('Yellow');
-    'MESSAGE-COLOURS'    = @('Cyan');
-    'MESSAGE-SUFFIX'     = ' // ';
-  }
+    [Parameter(Mandatory = $false)]
+    [System.Collections.Hashtable]$Themes = $KrayolaThemes,
+
+    [Parameter(Mandatory = $false)]
+    [System.Collections.Hashtable]$DefaultTheme = @{
+      # DefaultTheme is compatible with dark consoles by default
+      #
+      'FORMAT'             = '"<%KEY%>" => "<%VALUE%>"';
+      'KEY-PLACE-HOLDER'   = '<%KEY%>';
+      'VALUE-PLACE-HOLDER' = '<%VALUE%>';
+      'KEY-COLOURS'        = @('DarkCyan');
+      'VALUE-COLOURS'      = @('White');
+      'OPEN'               = '[';
+      'CLOSE'              = ']';
+      'SEPARATOR'          = ', ';
+      'META-COLOURS'       = @('Yellow');
+      'MESSAGE-COLOURS'    = @('Cyan');
+      'MESSAGE-SUFFIX'     = ' // ';
+    }
+  )
+  [System.Collections.Hashtable]$displayTheme = $DefaultTheme;
 
   # Switch to use colours compatible with light consoles if KRAYOLA-LIGHT-TERMINAL
   # is set.
   #
   if (Get-IsKrayolaLightTerminal) {
-    $displayTheme['KEY-COLOURS'] = 'DarkBlue';
-    $displayTheme['VALUE-COLOURS'] = 'Red';
-    $displayTheme['META-COLOURS'] = 'DarkMagenta';
-    $displayTheme['MESSAGE-COLOURS'] = 'Green';
+    $displayTheme['KEY-COLOURS'] = @('DarkBlue');
+    $displayTheme['VALUE-COLOURS'] = @('Red');
+    $displayTheme['META-COLOURS'] = @('DarkMagenta');
+    $displayTheme['MESSAGE-COLOURS'] = @('Green');
   }
 
   [string]$themeName = $KrayolaThemeName;
@@ -61,11 +66,11 @@ function Get-KrayolaTheme {
   # Get the theme name
   #
   if ([string]::IsNullOrWhiteSpace($themeName)) {
-    $themeName = [System.Environment]::GetEnvironmentVariable('KRAYOLA-THEME-NAME');
+    $themeName = Get-EnvironmentVariable 'KRAYOLA-THEME-NAME';
   }
 
-  if ($KrayolaThemes -and $KrayolaThemes.ContainsKey($themeName)) {
-    $displayTheme = $KrayolaThemes[$themeName];
+  if ($Themes -and $Themes.ContainsKey($themeName)) {
+    $displayTheme = $Themes[$themeName];
   }
 
   return $displayTheme;
