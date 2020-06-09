@@ -2,7 +2,7 @@
 task . Clean, Build, Tests, Stats
 task Tests ImportCompiledModule, Pester
 task CreateManifest CopyPSD, UpdatePublicFunctionsToExport
-task Build Compile, CreateManifest
+task Build Compile, CreateManifest, Ana
 task Stats RemoveStats, WriteStats
 task Ana Analyse
 task Fix ApplyFix
@@ -10,13 +10,14 @@ task Fix ApplyFix
 $script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf
 $script:ModuleRoot = $PSScriptRoot
 $script:OutPutFolder = "$PSScriptRoot/Output"
-$script:ImportFolders = @('Public', 'Internal') # Classes
+$script:ImportFolders = @('Public', 'Internal', 'Classes') 
 $script:PsmPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psm1"
 $script:PsdPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psd1"
 
 $script:PublicFolder = 'Public'
 $script:DSCResourceFolder = 'DSCResources'
 
+$script:SourcePsdPath = Join-Path -Path $PSScriptRoot -ChildPath "$($script:ModuleName).psd1"
 
 task Clean {
   if (-not(Test-Path $script:OutPutFolder)) {
@@ -60,6 +61,19 @@ task Compile @compileParams {
       }
     }
   }
+
+  $sourceDefinition = Import-PowerShellDataFile -Path $script:SourcePsdPath
+
+  if ($sourceDefinition -and $sourceDefinition.ContainsKey('VariablesToExport')) {
+    [string[]]$exportVariables = $sourceDefinition['VariablesToExport'];
+    Write-Verbose "Found VariablesToExport: $exportVariables in source Psd file: $script:SourcePsdPath";
+
+    [string]$variablesArgument = $($exportVariables -join ",") + [System.Environment]::NewLine;
+    [string]$contentToAdd = "Export-ModuleMember -Variable $variablesArgument";
+    Write-Verbose "Adding content: $contentToAdd";
+
+    Add-Content $script:PsmPath "Export-ModuleMember -Variable $variablesArgument";
+  }
 }
 
 task CopyPSD {
@@ -77,12 +91,9 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
   $publicFunctions = (Get-ChildItem -Path $script:PublicFolder |
     Select-Object -ExpandProperty BaseName) -join "', '"
 
-  $publicFunctions = "FunctionsToExport = @('{0}')" -f $publicFunctions
+    $publicFunctions = "FunctionsToExport = @('{0}')" -f $publicFunctions
 
-  # WARNING, the replace token '\*' may be plastform specific. It was previously
-  # set to '/*' which doesn't work on windows.
-  #
-  (Get-Content -Path $script:PsdPath) -replace "FunctionsToExport = '\*'", $publicFunctions |
+  (Get-Content -Path $script:PsdPath) -replace "FunctionsToExport = '/*'", $publicFunctions |
   Set-Content -Path $script:PsdPath
 }
 
