@@ -1,52 +1,53 @@
 Set-StrictMode -Version Latest
 
-[System.Collections.Hashtable]$Global:TestThemes = @{
-  'THEME-ONE' = @{
-    'FORMAT'             = 'one:"<%KEY%>"="<%VALUE%>"';
-    'KEY-PLACE-HOLDER'   = '<%KEY%>';
-    'VALUE-PLACE-HOLDER' = '<%VALUE%>';
-    'KEY-COLOURS'        = @('DarkCyan');
-    'VALUE-COLOURS'      = @('DarkBlue');
-    'OPEN'               = '••• (';
-    'CLOSE'              = ') •••';
-    'SEPARATOR'          = ' @@ ';
-    'META-COLOURS'       = @('Yellow');
-    'MESSAGE-COLOURS'    = @('Cyan');
-    'MESSAGE-SUFFIX'     = ' ~~ '
-  };
-
-  'ENVIRONMENT-THEME' = @{
-    'FORMAT'             = 'env:"<%KEY%>"="<%VALUE%>"';
-    'KEY-PLACE-HOLDER'   = '<%KEY%>';
-    'VALUE-PLACE-HOLDER' = '<%VALUE%>';
-    'KEY-COLOURS'        = @('DarkCyan');
-    'VALUE-COLOURS'      = @('DarkBlue');
-    'OPEN'               = '--- [';
-    'CLOSE'              = '] ---';
-    'SEPARATOR'          = ' ## ';
-    'META-COLOURS'       = @('Black');
-    'MESSAGE-COLOURS'    = @('DarkGreen');
-    'MESSAGE-SUFFIX'     = ' == '
-  };
-}
-
-[System.Collections.Hashtable]$Global:DefaultKrayolaTheme = @{
-  'FORMAT'             = 'def:"<%KEY%>"="<%VALUE%>"';
-  'KEY-PLACE-HOLDER'   = '<%KEY%>';
-  'VALUE-PLACE-HOLDER' = '<%VALUE%>';
-  'KEY-COLOURS'        = @('DarkCyan');
-  'VALUE-COLOURS'      = @('DarkBlue');
-  'OPEN'               = '••• (';
-  'CLOSE'              = ') •••';
-  'SEPARATOR'          = ' @@ ';
-  'META-COLOURS'       = @('Yellow');
-  'MESSAGE-COLOURS'    = @('Cyan');
-  'MESSAGE-SUFFIX'     = ' ~~ '
-}
 Describe 'Get-KrayolaTheme' {
   BeforeAll {
     Get-Module Elizium.Krayola | Remove-Module
     Import-Module .\Elizium.Krayola\Elizium.Krayola.psm1 -ErrorAction 'stop' -DisableNameChecking
+
+    [System.Collections.Hashtable]$Global:DefaultKrayolaTheme = @{
+      'FORMAT'             = 'def:"<%KEY%>"="<%VALUE%>"';
+      'KEY-PLACE-HOLDER'   = '<%KEY%>';
+      'VALUE-PLACE-HOLDER' = '<%VALUE%>';
+      'KEY-COLOURS'        = @('DarkCyan');
+      'VALUE-COLOURS'      = @('DarkBlue');
+      'OPEN'               = '••• (';
+      'CLOSE'              = ') •••';
+      'SEPARATOR'          = ' @@ ';
+      'META-COLOURS'       = @('Yellow');
+      'MESSAGE-COLOURS'    = @('Cyan');
+      'MESSAGE-SUFFIX'     = ' ~~ '
+    }
+
+    [System.Collections.Hashtable]$Global:TestThemes = @{
+      'THEME-ONE'         = @{
+        'FORMAT'             = 'one:"<%KEY%>"="<%VALUE%>"';
+        'KEY-PLACE-HOLDER'   = '<%KEY%>';
+        'VALUE-PLACE-HOLDER' = '<%VALUE%>';
+        'KEY-COLOURS'        = @('DarkCyan');
+        'VALUE-COLOURS'      = @('DarkBlue');
+        'OPEN'               = '••• (';
+        'CLOSE'              = ') •••';
+        'SEPARATOR'          = ' @@ ';
+        'META-COLOURS'       = @('Yellow');
+        'MESSAGE-COLOURS'    = @('Cyan');
+        'MESSAGE-SUFFIX'     = ' ~~ '
+      };
+
+      'ENVIRONMENT-THEME' = @{
+        'FORMAT'             = 'env:"<%KEY%>"="<%VALUE%>"';
+        'KEY-PLACE-HOLDER'   = '<%KEY%>';
+        'VALUE-PLACE-HOLDER' = '<%VALUE%>';
+        'KEY-COLOURS'        = @('DarkCyan');
+        'VALUE-COLOURS'      = @('DarkBlue');
+        'OPEN'               = '--- [';
+        'CLOSE'              = '] ---';
+        'SEPARATOR'          = ' ## ';
+        'META-COLOURS'       = @('Black');
+        'MESSAGE-COLOURS'    = @('DarkGreen');
+        'MESSAGE-SUFFIX'     = ' == '
+      };
+    }
   }
 
   Context 'Dark Theme, "KRAYOLA-THEME-NAME" not defined in Environment' {
