@@ -15,6 +15,6 @@ function Get-IsKrayolaLightTerminal {
   [OutputType([boolean])]
   param()
 
-  return -not([string]::IsNullOrWhiteSpace([System.Environment]::GetEnvironmentVariable(
-    'KRAYOLA-LIGHT-TERMINAL')));
+  return -not([string]::IsNullOrWhiteSpace(
+    (Get-EnvironmentVariable 'KRAYOLA-LIGHT-TERMINAL')));
 }
