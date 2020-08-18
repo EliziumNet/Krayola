@@ -6,11 +6,12 @@ task Build Compile, CreateManifest, Ana
 task Stats RemoveStats, WriteStats
 task Ana Analyse
 task Fix ApplyFix
+task BuildHelp Docs
 
 $script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf
 $script:ModuleRoot = $PSScriptRoot
 $script:OutPutFolder = "$PSScriptRoot/Output"
-$script:ImportFolders = @('Public', 'Internal', 'Classes') 
+$script:ImportFolders = @('Public', 'Internal', 'Classes')
 $script:PsmPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psm1"
 $script:PsdPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psd1"
 
@@ -18,6 +19,15 @@ $script:PublicFolder = 'Public'
 $script:DSCResourceFolder = 'DSCResources'
 
 $script:SourcePsdPath = Join-Path -Path $PSScriptRoot -ChildPath "$($script:ModuleName).psd1"
+$script:TestHelpers = "$PSScriptRoot/Tests/Helpers"
+
+if (Test-Path -Path $script:TestHelpers) {
+  $helpers = Get-ChildItem -Path $script:TestHelpers -Recurse -File -Filter '*.ps1';
+  $helpers | ForEach-Object { Write-Verbose "sourcing helper $_"; . $_; }
+}
+else {
+  Write-Warning "Could not find helpers: $script:TestHelpers"
+}
 
 task Clean {
   if (-not(Test-Path $script:OutPutFolder)) {
@@ -49,12 +59,16 @@ task Compile @compileParams {
   }
   New-Item -Path $script:PsmPath -Force > $null
 
+  "Set-StrictMode -Version 1.0" >> $script:PsmPath
+  # !!!BUG: This should be using whatever is yielded by @compileParams
+  #
   foreach ($folder in $script:ImportFolders) {
     $currentFolder = Join-Path -Path $script:ModuleRoot -ChildPath $folder
     Write-Verbose -Message "Checking folder [$currentFolder]"
 
     if (Test-Path -Path $currentFolder) {
-      $files = Get-ChildItem -Path $currentFolder -File -Filter '*.ps1'
+
+      $files = Get-ChildItem -Path $currentFolder -File -Recurse -Filter '*.ps1'
       foreach ($file in $files) {
         Write-Verbose -Message "Adding $($file.FullName)"
         Get-Content -Path (Resolve-Path $file.FullName) >> $script:PsmPath
@@ -77,7 +91,9 @@ task Compile @compileParams {
 }
 
 task CopyPSD {
-  New-Item -Path (Split-Path $script:PsdPath) -ItemType Directory -ErrorAction 0
+  if (-not(Test-Path (Split-Path $script:PsdPath))) {
+    New-Item -Path (Split-Path $script:PsdPath) -ItemType Directory -ErrorAction 0
+  }
   $copy = @{
     Path        = "$($script:ModuleName).psd1"
     Destination = $script:PsdPath
@@ -91,18 +107,21 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
   $publicFunctions = (Get-ChildItem -Path $script:PublicFolder |
     Select-Object -ExpandProperty BaseName) -join "', '"
 
-    $publicFunctions = "FunctionsToExport = @('{0}')" -f $publicFunctions
+  $publicFunctions = "FunctionsToExport = @('{0}')" -f $publicFunctions
 
-  (Get-Content -Path $script:PsdPath) -replace "FunctionsToExport = '/*'", $publicFunctions |
+  # Make sure in your source psd1 file, FunctionsToExport  is set to ''.
+  # PowerShell has a problem with trying to replace (), so @() does not
+  # work without jumping through hoops.
+  #
+  (Get-Content -Path $script:PsdPath) -replace "FunctionsToExport = ''", $publicFunctions |
   Set-Content -Path $script:PsdPath
 }
 
 
 
 task ImportCompiledModule -if (Test-Path -Path $script:PsmPath) {
-  Get-Module -Name $script:ModuleName |
-  Remove-Module -Force
-  Import-Module -Name $script:PsdPath -Force
+  Get-Module -Name $script:ModuleName | Remove-Module -Force
+  Import-Module -Name $script:PsdPath -Force -DisableNameChecking
 }
 
 task Pester {
@@ -114,7 +133,7 @@ task Pester {
   $configuration.TestResult.Enabled = $true
   $configuration.TestResult.OutputFormat = 'NUnitxml'
   $configuration.TestResult.OutputPath = $resultFile;
-
+  # $configuration.Filter.Tag = 'Current'
   Invoke-Pester -Configuration $configuration
 }
 
@@ -143,4 +162,15 @@ task Analyse {
 
 task ApplyFix {
   Invoke-ScriptAnalyzer -Path .\ -Recurse -Fix
+}
+
+# Before this can be run, this must be run first
+# New-MarkdownHelp -Module <Module> -OutputFolder .\docs
+# (run from the module root, not the repo root)
+# Then update the {{ ... }} place holders in the md files.
+# the docs task generates the external help from the md files
+#
+task Docs {
+  New-ExternalHelp $script:ModuleRoot\docs `
+    -OutputPath $script:OutPutFolder\$script:ModuleName\en-GB
 }
