@@ -1,32 +1,40 @@
 
-# :rainbow: Krayola
+# :rainbow: Elizium.Krayola
+
+[![A B](https://img.shields.io/badge/branching-commonflow-informational?style=flat)](https://commonflow.org)
+[![A B](https://img.shields.io/badge/merge-rebase-informational?style=flat)](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
+[![A B](https://img.shields.io/github/license/plastikfan/krayola)](https://github.com/plastikfan/krayola/blob/master/LICENSE)
+[![A B](https://img.shields.io/powershellgallery/p/Elizium.Krayola)](https://www.powershellgallery.com/packages/Elizium.Krayola)
 
 Colourful console writing with PowerShell
 
 ## Table of contents
 
-[Introduction](#Introduction)<br>
-  + [Provide a sequence of text snippets each with their own colour descriptions](#Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions)<br>
-  + [Provide sequence of colour described key/value pairs](#Provide-sequence-of-colour-described-key/value-pairs)<br>
-  + [Provide a theme describing how key/value pairs should be rendered](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered)<br>
+[Introduction](#Introduction)
 
-[Using The API](#Using-the-API)<br>
-  + [The Theme parameter](#The-Theme-parameter)<br>
-  + [The Public API](#The-Public-API)<br>
-    * [Write-InColour](#Write-InColour)<br>
-    * [Write-RawPairsInColour](#Write-RawPairsInColour)<br>
-    * [Write-ThemedPairsInColour](#Write-ThemedPairsInColour)<br>
-    * [Helper function Get-IsKrayolaLightTerminal](#Helper-function-Get-IsKrayolaLightTerminal)<br>
-    * [Helper function Get-KrayolaTheme](#Helper-function-Get-KrayolaTheme)<br>
-    * [Helper function Show-ConsoleColours](#Helper-function-Show-ConsoleColours)<br>
++ [Provide a sequence of text snippets each with their own colour descriptions](#Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions)
++ [Provide sequence of colour described key/value pairs](#Provide-sequence-of-colour-described-key/value-pairs)
++ [Provide a theme describing how key/value pairs should be rendered](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered)
 
-  + [Invalid Theme](#Invalid-Theme)<br>
-  + [Global pre-defined Themes](#Global-pre-defined-Themes)<br>
+[Using The API](#Using-the-API)
 
-[Trouble shooting](#Trouble-shooting)<br>
-  + [Use the correct array dimensions when invoking the writer functions](#Use-the-correct-array-dimensions-when-invoking-the-writer-functions)<br>
-  + [A reminder about single item arrays in PowerShell](#A-reminder-about-single-item-arrays-in-PowerShell)<br>
-  + [Creating Pairs iteratively using Array.Add()](#Creating-Pairs-iteratively-using-Array.Add())<br>
++ [The Theme parameter](#The-Theme-parameter)
+  + [The Public API](#The-Public-API)
+    + [Write-InColour](#Write-InColour)
+    + [Write-RawPairsInColour](#Write-RawPairsInColour)
+    + [Write-ThemedPairsInColour](#Write-ThemedPairsInColour)
+    + [Helper function Get-IsKrayolaLightTerminal](#Helper-function-Get-IsKrayolaLightTerminal)
+    + [Helper function Get-KrayolaTheme](#Helper-function-Get-KrayolaTheme)
+    + [Helper function Show-ConsoleColours](#Helper-function-Show-ConsoleColours)
+
+  + [Invalid Theme](#Invalid-Theme)
+  + [Global pre-defined Themes](#Global-pre-defined-Themes)
+
+[Trouble shooting](#Trouble-shooting)
+
++ [Use the correct array dimensions when invoking the writer functions](#Use-the-correct-array-dimensions-when-invoking-the-writer-functions)
++ [A reminder about single item arrays in PowerShell](#A-reminder-about-single-item-arrays-in-PowerShell)
++ [Creating Pairs iteratively using Array.Add()](#Creating-Pairs-iteratively-using-Array.Add())
 
 ## Introduction
 
@@ -44,13 +52,13 @@ First, follows a description of the data that needs to be provided to the api, n
 
 ### Provide a sequence of text snippets each with their own colour descriptions
 
-(**api:** *Write-InColour*)<br>
+(**api:** *Write-InColour*)
 
 The sequence provided is just a collection of snippets, where each snippet is a sub collection of 2 or 3 items:
 
- a) The text to be written (mandatory)<br>
- b) The foreground colour of the text (mandatory)<br>
- c) The background colour (optional)<br>
+ a) The text to be written (mandatory)
+ b) The foreground colour of the text (mandatory)
+ c) The background colour (optional)
 
 So for example, consider the collection of text snippets that need to be displayed in different colours:
 
@@ -82,7 +90,7 @@ We can optionally add background colours to any item, by providing a 3rd entry, 
 
 ### Provide sequence of colour described key/value pairs
 
-(**api:** *Write-RawPairsInColour*)<br>
+(**api:** *Write-RawPairsInColour*)
 
 We describe the key/value pair data that needs to be rendered. This is done as a collection of key/value pairs where each part of the pair must contain the same 2 or 3 items previously described:
 
@@ -106,7 +114,7 @@ where the keys are **Artist**, **Song** and **Genre** and the values are **Plast
 
 ### Provide a theme describing how key/value pairs should be rendered
 
-(**api:** *Write-ThemedColoursInPairs*)<br>
+(**api:** *Write-ThemedColoursInPairs*)
 
 If we didn't want the overhead of specify colours for each individual key and value, we can use a theme instead, which helps us keep the output consistent with less overhead.
 
@@ -172,8 +180,8 @@ This is the function to call to invoke the functionality described in section *"
 
 The parameters:
 
-* TextSnippets: (a 2 dimensional array) the collection of text fields with their colour descriptions
-* NoNewLine: switch indicating not to render a new line
++ TextSnippets: (a 2 dimensional array) the collection of text fields with their colour descriptions
++ NoNewLine: switch indicating not to render a new line
 
 Example:
 
@@ -185,9 +193,9 @@ $line = @(
 Write-InColour -TextSnippets $line;
 ```
 
-which displays this:
+which displays this (colour not shown):
 
-> <span style="color:red;">Artist</span><span style="color:green;">Plastikman</span><span style="color:blue;">Song</span><span style="color:yellow;">Marbles</span>
+> ArtistPlastikmanSongMarbles
 
 #### Write-RawPairsInColour
 
@@ -195,7 +203,7 @@ This is the raw function to call (described in *"A sequence of colour described 
 
 The parameters (Most of these are in Theme parameters table above, please see for their descriptions):
 
-* Pairs: (a 3 dimensional array) representing Key/Value pairs, where each Key and Value are themselves an array of 2 or 3 items (*Text, Foreground Colour, Background Colour*), eg:
++ Pairs: (a 3 dimensional array) representing Key/Value pairs, where each Key and Value are themselves an array of 2 or 3 items (*Text, Foreground Colour, Background Colour*), eg:
 
 ```powershell
 $line = @(
@@ -210,28 +218,16 @@ using other defaulted parameters would display this:
 
 > === [('Sport'='Tennis'), ('Star'='Agnieszka Radwanska')] ===
 
-And the colour representation (assuming a dark console; PS, this looks better in a real console):<br>
-
-<span style="color:white;background-color: black;">=== [('</span>
-<span style="color:red;background-color: black;">Sport</span>
-<span style="color:white;background-color: black;">'='</span>
-<span style="color:blue;background-color: yellow;">Tennis</span>
-<span style="color:white;background-color: black;">'), ('</span>
-<span style="color:green;background-color: black;">Star</span>
-<span style="color:white;background-color: black;">'='</span>
-<span style="color:cyan;background-color: black;">Agnieszka Radwanska</span>
-<span style="color:white;background-color: black;">')] ===</span>
-
-* Format
-* KeyPlaceHolder (This MUST be present in Format)
-* ValuePlaceHolder (This MUST be present in Format)
-* Open
-* Close
-* Separator
-* MetaColours
-* Message: (Optional) The textual message to be displayed preceding the Key/Value pair collection
-* MessageColours
-* MessageSuffix
++ Format
++ KeyPlaceHolder (This MUST be present in Format)
++ ValuePlaceHolder (This MUST be present in Format)
++ Open
++ Close
++ Separator
++ MetaColours
++ Message: (Optional) The textual message to be displayed preceding the Key/Value pair collection
++ MessageColours
++ MessageSuffix
 
 #### Write-ThemedPairsInColour
 
@@ -239,9 +235,9 @@ This is the function to call is invoke the functionality describe in section *"P
 
 The parameters
 
-* Pairs
-* Theme
-* Message
++ Pairs
++ Theme
++ Message
 
 Eg:
 
@@ -269,18 +265,6 @@ The above would display as follows:
 
 > {'Artist'='Plastikman' | 'Song'='Marbles'}
 
-and in colour:<br>
-
-<span style="color:cyan;background-color: black;">{'</span>
-<span style="color:red;background-color: black;">Artist</span>
-<span style="color:cyan;background-color: black;">'='</span>
-<span style="color:blue;background-color: black;">Plastikman</span>
-<span style="color:cyan;background-color: black;"> | </span>
-<span style="color:blue;background-color: black;">Song</span>
-<span style="color:cyan;background-color: black;">'='</span>
-<span style="color:cyan;background-color: black;">Marbles</span>
-<span style="color:cyan;background-color: black;">'}</span>
-
 and with a custom message:
 
 ```powershell
@@ -301,7 +285,7 @@ Helper function that makes it easier for client applications to get a Krayola th
 
 The parameters:
 
-* KrayolaThemeName (optional)
++ KrayolaThemeName (optional)
 
 If $KrayolaThemeName is specified, then it is used to lookup the theme in the global $KrayolaThemes hash table exposed by the Krayola module. If either the theme specified does not exist or not specified, then a default theme is used. The default theme created should be compatible with the dark/lightness of the background of the terminal currently in use. By default, a dark terminal is assumed and the colours used show up clearly against a dark background. If *KRAYOLA-LIGHT-TERMINAL* is defined as an environment variable (can be set to any string apart from empty string/white space), then the colours chosen show up best against a light background.
 
@@ -356,7 +340,7 @@ Write-InColour -TextSnippets $line
 
 You run this and you'll see it blow up :bomb: in your face :rage: :
 
-```
+```powershell
 Write-Host: /Users/Plastikfan/.local/share/powershell/Modules/Krayola/Public/write-in-colour.ps1:74
 Line |
   74 |        Write-Host $snippet[0] -NoNewline -ForegroundColor $snippet[1];
@@ -382,12 +366,9 @@ which actually displays this:
 
 > ArtistPlastikmanSongMarbles
 
-> <span style="color:red;">Artist</span><span style="color:green;">Plastikman</span><span style="color:blue;">Song</span><span style="color:yellow;">Marbles</span>
-<br>
-
-* The important thing you need to remember when using Write-InColour, is that it is not working with Key/Value pairs ($TextSnippets is simply a 2 dimensional array). Its working with a collection of *snippets*, where each snippet is a sub sequence of 2 or 3 items (text, foreground colour & background colour).
-* The Pairs parameter passed into Write-RawPairsInColours is a series of key/value pairs, and since the key and the value are multiple entry *snippets*, Pairs is a 3 dimensional array.
-* However, the Pairs passed into Write-ThemedPairsInColour is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
++ The important thing you need to remember when using Write-InColour, is that it is not working with Key/Value pairs ($TextSnippets is simply a 2 dimensional array). Its working with a collection of *snippets*, where each snippet is a sub sequence of 2 or 3 items (text, foreground colour & background colour).
++ The Pairs parameter passed into Write-RawPairsInColours is a series of key/value pairs, and since the key and the value are multiple entry *snippets*, Pairs is a 3 dimensional array.
++ However, the Pairs passed into Write-ThemedPairsInColour is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
 
 If you keep these points in mind, then hopefully you'll avoid getting errors like the one just illustrated.
 
