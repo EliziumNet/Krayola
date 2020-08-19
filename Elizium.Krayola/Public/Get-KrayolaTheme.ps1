@@ -11,7 +11,7 @@ function Get-KrayolaTheme {
 
     .DESCRIPTION
       If $KrayolaThemeName is specified, then it is used to lookup the theme in the global
-    $KrayolaThemes hashtable exposed by the Krayola module. If either the theme specified
+    $KrayolaThemes hash-table exposed by the Krayola module. If either the theme specified
     does not exist or not specified, then a default theme is used. The default theme created
     should be compatible with the dark/lightness of the background of the terminal currently
     in use. By default, a dark terminal is assumed and the colours used show up clearly
@@ -41,6 +41,7 @@ function Get-KrayolaTheme {
       'VALUE-PLACE-HOLDER' = '<%VALUE%>';
       'KEY-COLOURS'        = @('DarkCyan');
       'VALUE-COLOURS'      = @('White');
+      "AFFIRM-COLOURS"     = @("Red");
       'OPEN'               = '[';
       'CLOSE'              = ']';
       'SEPARATOR'          = ', ';
@@ -57,6 +58,7 @@ function Get-KrayolaTheme {
   if (Get-IsKrayolaLightTerminal) {
     $displayTheme['KEY-COLOURS'] = @('DarkBlue');
     $displayTheme['VALUE-COLOURS'] = @('Red');
+    $displayTheme['AFFIRM-COLOURS'] = @('Magenta');
     $displayTheme['META-COLOURS'] = @('DarkMagenta');
     $displayTheme['MESSAGE-COLOURS'] = @('Green');
   }

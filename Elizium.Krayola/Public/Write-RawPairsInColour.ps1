@@ -76,6 +76,7 @@ function Write-RawPairsInColour {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
+    [AllowEmptyCollection()]
     [string[][][]]
     $Pairs,
 
@@ -122,6 +123,10 @@ function Write-RawPairsInColour {
 
     [Switch]$NoNewLine
   )
+
+  if ($Pairs.Length -eq 0) {
+    return;
+  }
 
   if (($MetaColours.Length -lt 1) -or ($MetaColours.Length -gt 2)) {
     Write-Error -Message "Bad meta colours spec, aborting (No of colours specified: $($MetaColours.Length))";
