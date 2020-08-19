@@ -1,6 +1,4 @@
 
-[int]$MandatoryNoOfThemeEntries = 11;
-
 function Write-ThemedPairsInColour {
   <#
     .NAME
@@ -12,7 +10,7 @@ function Write-ThemedPairsInColour {
     .DESCRIPTION
       The Pairs defined here are colour-less, instead colours coming from the KEY-COLOURS
       and VALUE-COLOURS in the theme. The implications of this are firstly, the Pairs are
-      simpler to specify. However, the colour representation is more restricted, becauuse
+      simpler to specify. However, the colour representation is more restricted, because
       all Keys displayed must be of the same colour and the same goes for the values.
 
       When using Write-RawPairsInColour directly, the user has to specify each element of a
@@ -34,6 +32,13 @@ function Write-ThemedPairsInColour {
         -Pairs $PairsToWriteInColour -Format "'<%KEY%>'<--->'<%VALUE%>'" `
         -MetaColours @(,"Blue") -Open " ••• <<" -Close ">> •••"
 
+      A value can be highlighted by specifying a boolean affirmation value after the
+      key/value pair. So the 'value' of a pair, eg 'Tennis' of @("Sport", "Tennis") can
+      be highlighted by the addition of a boolean value: @("Sport", "Tennis", $true),
+      will result in 'Tennis' being highlighted; written with a different colour
+      value. This colour value is taken from the 'AFFIRM-COLOURS' entry in the theme. If
+      the affirmation value is false, eg @("Sport", "Tennis", $false), then the value
+      'Tennis' will be written as per-normal using the 'VALUE-COLOURS' entry.
 
       You can create your own theme, using this template for assistance:
 
@@ -43,6 +48,7 @@ function Write-ThemedPairsInColour {
         "VALUE-PLACE-HOLDER" = "<%VALUE%>";
         "KEY-COLOURS" = @("Red");
         "VALUE-COLOURS" = @("Magenta");
+        "AFFIRM-COLOURS" = @("White");
         "OPEN" = "(";
         "CLOSE" = ")";
         "SEPARATOR" = ", ";
@@ -52,10 +58,10 @@ function Write-ThemedPairsInColour {
       }
 
     .PARAMETER Pairs
-      A 2 dimesional array representing the key/value pairs to be rendered.
+      A 2 dimensional array representing the key/value pairs to be rendered.
 
     .PARAMETER Theme
-      Hastable that must contain all the following fields
+      Hash-table that must contain all the following fields
       FORMAT
       KEY-PLACE-HOLDER
       VALUE-PLACE-HOLDER
@@ -76,6 +82,7 @@ function Write-ThemedPairsInColour {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
+    [AllowEmptyCollection()]
     [string[][]]
     $Pairs,
 
@@ -88,6 +95,10 @@ function Write-ThemedPairsInColour {
     $Message
   )
 
+  if (0 -eq $Pairs.Length) {
+    return;
+  }
+
   [boolean]$inEmergency = $false;
 
   function isThemeValid {
@@ -95,13 +106,14 @@ function Write-ThemedPairsInColour {
       [System.Collections.Hashtable]$themeToValidate
     )
 
-    return ($themeToValidate -and ($themeToValidate.Count -eq $MandatoryNoOfThemeEntries))
+    [int]$minimumNoOfThemeEntries = 11;
+    return ($themeToValidate -and ($themeToValidate.Count -ge $minimumNoOfThemeEntries))
   }
 
   if (-not(isThemeValid($Theme))) {
     $Theme = $KrayolaThemes['EMERGENCY-THEME'];
 
-    # Incase the user has compromised the EMERGENCY theme, which should be modifyable (because we
+    # In case the user has compromised the EMERGENCY theme, which should be modify-able (because we
     # can't be sure that the emergency theme we have defined is suitable for their console),
     # we'll use this internal emergency theme ...
     #
@@ -132,14 +144,39 @@ function Write-ThemedPairsInColour {
   [string[]]$valueColours = $Theme['VALUE-COLOURS'];
 
   foreach ($pair in $Pairs) {
-    if ($pair.Length -ne 2) {
+    if (1 -ge $pair.Length) {
+      [string[]]$transformedKey = @('!INVALID!') + $keyColours;
+      [string[]]$transformedValue = @('---') + $valueColours;
+
       Write-Error "Found pair that does not contain 2 items (pair: $($pair)) [!!! Reminder: you need to use the comma op for a single item array]";
+    } else {
+      [string[]]$transformedKey = @($pair[0]) + $keyColours;
+      [string[]]$transformedValue = @($pair[1]) + $valueColours;
+
+      # Apply affirmation
+      #
+      if ((3 -eq $pair.Length)) {
+        if (($pair[2] -ieq 'true')) {
+          if ($Theme.ContainsKey('AFFIRM-COLOURS')) {
+            $transformedValue = @($pair[1]) + $Theme['AFFIRM-COLOURS'];
+          }
+          else {
+            # Since the affirmation colour is missing, use another way of highlighting the value
+            # ie, surround in asterisks
+            # 
+            $transformedValue = @("*{0}*" -f $pair[1]) + $valueColours;
+          }
+        }
+        elseif (-not($pair[2] -ieq 'false')) {
+          Write-Error "Invalid affirm value found; not boolean value, found: $($pair[2]) [!!! Reminder: you need to use the comma op for a single item array]"
+        } 
+      } elseif (3 -lt $pair.Length) {
+        Write-Error "Found pair with excess items (pair: $($pair)) [!!! Reminder: you need to use the comma op for a single item array]"
+      }
     }
 
-    [string[]]$transfomedKey = @($pair[0]) + $keyColours;
-    [string[]]$transfomedValue = @($pair[1]) + $valueColours;
-    $transformedPair = , @($transfomedKey, $transfomedValue);
-    $pairsToWriteInColour += $transformedPair;
+    $transformedPair = , @($transformedKey, $transformedValue);
+    $pairsToWriteInColour += $transformedPair;  
   }
 
   [System.Collections.Hashtable]$parameters = @{

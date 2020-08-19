@@ -145,6 +145,7 @@ This is just a hash table, which must contain the following items:
 | VALUE-PLACE-HOLDER | string   | The place holder that identifies the Value in the FORMAT string.
 | KEY-COLOURS        | string[] | Array of 1 or 2 items only, the first is the foreground colour and the optional second value is the background colour, that specifies how Keys are displayed
 | VALUE-COLOURS      | string[] | The same as KEY-COLOURS but it applies to Values
+| AFFIRM-COLOURS     | string[] | The highlight colour applied to affirmed Values
 | OPEN               | string   | Specifies the leading wrapper around the whole key/value pair collection, typically '('
 | CLOSE              | string   | Specifies the tail wrapper around the whole key/value pair collection typically ')'
 | SEPARATOR          | string   | Specifies a sequence of characters that separates the Key/Vale pairs, typically ','
@@ -231,7 +232,7 @@ using other defaulted parameters would display this:
 
 #### Write-ThemedPairsInColour
 
-This is the function to call is invoke the functionality describe in section *"Provide a theme describing how key/value pairs should be rendered"*.
+This is the function to call to invoke the functionality described in section *"Provide a theme describing how key/value pairs should be rendered"*.
 
 The parameters
 
@@ -248,6 +249,7 @@ $ExampleTheme = @{
   "VALUE-PLACE-HOLDER" = "<%VALUE%>";
   "KEY-COLOURS"        = @("Red");
   "VALUE-COLOURS"      = @("Blue");
+  "AFFIRM-COLOURS"     = @("Yellow");
   "OPEN"               = "{";
   "CLOSE"              = "}";
   "SEPARATOR"          = " | ";
@@ -270,6 +272,14 @@ and with a custom message:
 ```powershell
 Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Catalogue entry: "
 ```
+
+A value can be highlighted by specifying a boolean affirmation value after the
+key/value pair. So the 'value' of a pair, eg 'Tennis' of @("Sport", "Tennis") can
+be highlighted by the addition of a boolean value: @("Sport", "Tennis", $true),
+will result in 'Tennis' being highlighted; written with a different colour
+value. This colour value is taken from the 'AFFIRM-COLOURS' entry in the theme. If
+the affirmation value is false, eg @("Sport", "Tennis", $false), then the value
+'Tennis' will be written as per-normal using the 'VALUE-COLOURS' entry.
 
 > Catalogue entry:  // {'Artist'='Plastikman' | 'Song'='Marbles'}
 
