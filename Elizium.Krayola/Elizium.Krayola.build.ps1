@@ -104,7 +104,7 @@ task CopyPSD {
 }
 
 task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
-  $publicFunctions = (Get-ChildItem -Path $script:PublicFolder |
+  $publicFunctions = (Get-ChildItem -Path $script:PublicFolder | Where-Object { $_.Name -like '*-*' } |
     Select-Object -ExpandProperty BaseName) -join "', '"
 
   $publicFunctions = "FunctionsToExport = @('{0}')" -f $publicFunctions
