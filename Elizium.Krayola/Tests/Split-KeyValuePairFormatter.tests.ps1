@@ -2,7 +2,7 @@
 Describe 'Split-KeyValuePairFormatter' {
   BeforeAll {
     Get-Module Elizium.Krayola | Remove-Module
-    Import-Module .\Elizium.Krayola\Elizium.Krayola.psm1 -ErrorAction 'stop' -DisableNameChecking
+    Import-Module .\Output\Elizium.Krayola\Elizium.Krayola.psm1 -ErrorAction 'stop' -DisableNameChecking
   }
 
   InModuleScope Elizium.Krayola {
