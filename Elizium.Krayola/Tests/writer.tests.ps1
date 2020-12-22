@@ -80,6 +80,83 @@ Describe 'writer' {
       }
     }
   }
+
+  Context 'and: structured write' {
+    It 'should: parse structured text' -Tag 'Current' {
+      [regex]$expression = [regex]::new('\^\[(?<api>[\w]+)\]');
+      #
+      #                 '01234567890123456789012345678901234567890123'
+      [string]$source = '^[blue]something ^[red] evil, walks this way';
+      #                         ----------      --------------------- TEXT
+      #                  =======          ====== API
+
+      [MatchCollection]$mc = $expression.Matches($source);
+
+      Write-Host "Found '$($mc.Count)' matches";
+
+      [match]$previousMatch = $null;
+      [PSCustomObject []]$operations = @()
+      [int]$count = 0;
+      foreach ($m in $mc) {
+        [string]$api = $m.Groups['api'];
+        Write-host "--- api >>> '$api', count: '$count'";
+
+        if ($previousMatch) {
+          [int]$snippetStart = $previousMatch.Index + $previousMatch.Length;
+          [int]$snippetEnd = $m.Index;
+          [int]$snippetSize = $snippetEnd - $snippetStart;
+          [string]$snippet = $source.Substring($snippetStart, $snippetSize);
+          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+          $operations += [PSCustomObject] @{ Api = $api; }
+
+          Write-Host "!! SNIPPET: '$snippet'"
+        }
+        else {
+          [string]$snippet = if ($m.Index -eq 0) {
+            [int]$snippetStart = -1;
+            [int]$snippetEnd = -1;
+            [string]::Empty
+          } else {
+            [int]$snippetStart = 0;
+            [int]$snippetEnd = $m.Index;
+            $source.Substring($snippetStart, $snippetEnd);
+          }
+          Write-Host "?? SNIPPET: '$snippet'"
+          if ([string]::IsNullOrEmpty($snippet)) {
+            $operations += [PSCustomObject] @{ Api = $api; }
+          } else {
+            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+          }
+        }
+        $previousMatch = $m;
+        $count++;
+
+        if ($count -eq $mc.Count) {
+          [int]$lastSnippetStart = $m.Index + $m.Length;
+          [string]$snippet = $source.Substring($lastSnippetStart);
+          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+        }
+      }
+
+      foreach ($op in $operations) {
+        if ($op.psobject.properties.match('Arg') -and $op.Arg) {
+          Write-Host "--> '$($op.Api)' => Text: '$($op.Arg)'";
+        } else {
+          Write-Host "--> '$($op.Api)'";
+        }
+      }
+
+      foreach ($op in $operations) {
+        if ($op.psobject.properties.match('Arg') -and $op.Arg) {
+          $_writer.($op.Api)($op.Arg);
+        }
+        else {
+          $_writer.($op.Api)();
+        }
+      }
+      $_writer.Cr();
+    }
+  }
 }
 
 Describe 'Writer code generator' {
