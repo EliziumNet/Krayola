@@ -31,23 +31,6 @@ class line {
   }
 }
 
-function KP {
-  param(
-    [Parameter()]
-    [string[]]$couplet
-  )
-
-  return [couplet]::new($couplet);
-}
-
-function KL {
-  param(
-    [Parameter()]
-    [couplet[]]$couplets
-  )
-  return [line]::new($couplets);
-}
-
 class writer {
   static [array]$ThemeColours = @('affirm', 'key', 'message', 'meta', 'value');
 
@@ -500,16 +483,4 @@ class writer {
     }
     return $operations;
   }
-}
-
-function New-Writer {
-  param(
-    [Parameter()]
-    [hashtable]$Theme = $(Get-KrayolaTheme),
-
-    [Parameter()]
-    [regex]$Expression = [regex]::new('&\[(?<api>[\w]+)\]')
-  )
-
-  return [writer]::new($Theme, $Expression);
 }

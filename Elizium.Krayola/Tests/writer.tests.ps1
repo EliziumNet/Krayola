@@ -49,8 +49,8 @@ Describe 'writer' {
 
     Context 'and: pair is couplet' {
       It 'should: write pair' {
-        $_writer.Pair($(KP('a-key', 'a-value'))).Ln();
-        $_writer.PairLn($(KP('a-key', 'a-value', $true)));
+        $_writer.Pair($(kp('a-key', 'a-value'))).Ln();
+        $_writer.PairLn($(kp('a-key', 'a-value', $true)));
       }
     }
   } # given: pair
@@ -59,24 +59,24 @@ Describe 'writer' {
     Context 'and: without message' {
       It 'should: write line' {
         [array]$pairs = @(
-          $(KP('name', 'art vanderlay')),
-          $(KP('occupation', 'architect')),
-          $(KP('quip', "i'm back baby, i'm back", $true))
+          $(kp('name', 'art vanderlay')),
+          $(kp('occupation', 'architect')),
+          $(kp('quip', "i'm back baby, i'm back", $true))
         );
 
-        $_writer.Line($(KL($pairs)));
+        $_writer.Line($(kl($pairs)));
       }
     }
 
     Context 'and: with message' {
       It 'should: write line' {
         [array]$pairs = @(
-          $(KP('name', 'frank')),
-          $(KP('festivity', "The airance of grievances", $true))
+          $(kp('name', 'frank')),
+          $(kp('festivity', "The airance of grievances", $true))
         );
 
         [string]$message = 'Festivus for the rest of us';
-        $_writer.Line($message, $(KL($pairs)));
+        $_writer.Line($message, $(kl($pairs)));
       }
     }
   }
