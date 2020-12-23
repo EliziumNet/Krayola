@@ -1,5 +1,4 @@
 
-
 class couplet {
   [string]$_key;
   [string]$_value;
@@ -30,10 +29,6 @@ class line {
     $this._message = $message;
     $this._line = $couplets.Clone();
   }
-}
-
-class page {
-
 }
 
 function KP {
@@ -76,7 +71,9 @@ class writer {
   [string]$_separator;
   [string]$_messageSuffix;
 
-  writer([hashtable]$theme) {
+  [regex]$_expression;
+
+  writer([hashtable]$theme, [regex]$expression) {
     $this._theme = $theme;
 
     $this._defaultFgc = (Get-Host).ui.rawui.ForegroundColor;
@@ -98,6 +95,8 @@ class writer {
     $this._close = $theme['CLOSE'];
     $this._separator = $theme['SEPARATOR'];
     $this._messageSuffix = $theme['MESSAGE-SUFFIX'];
+
+    $this._expression = $expression;
   }
 
   [writer] Text([string]$value) {
@@ -106,7 +105,7 @@ class writer {
   }
 
   [writer] TextLn([string]$value) {
-    return $this.Text($value).Cr();
+    return $this.Text($value).Ln();
   }
 
   [writer] Pair([couplet]$couplet) {
@@ -115,7 +114,7 @@ class writer {
   }
 
   [writer] PairLn([couplet]$couplet) {
-    return $this.Pair($couplet).Cr();
+    return $this.Pair($couplet).Ln();
   }
 
   [writer] Pair([PSCustomObject]$couplet) {
@@ -124,7 +123,7 @@ class writer {
   }
 
   [writer] PairLn([PSCustomObject]$couplet) {
-    return $this.Pair([couplet]::new($couplet)).Cr();
+    return $this.Pair([couplet]::new($couplet)).Ln();
   }
 
   [writer] Line([line]$line) {
@@ -141,7 +140,7 @@ class writer {
     }
 
     $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._close);
-    return $this.Reset().Cr();
+    return $this.Reset().Ln();
   }
 
   [writer] Line([string]$message, [line]$line) {
@@ -156,7 +155,8 @@ class writer {
       [array]$cols = $this._theme[$($val.ToUpper() + '-COLOURS')];
       $this._fgc = $cols[0];
       $this._bgc = $cols.Length -eq 2 ? $cols[1] : $this._defaultBgc;
-    } else {
+    }
+    else {
       Write-Host "writer.ThemeColour: ignoring invalid theme colour: '$val'"
     }
     return $this;
@@ -168,7 +168,7 @@ class writer {
     return $this;
   }
 
-  [writer] Cr() {
+  [writer] Ln() {
     # We need to reset the background colour before a CR to prevent the colour
     # from flooding the whole line because of the carriage return.
     #
@@ -176,6 +176,27 @@ class writer {
     $this._printLn('');
 
     return $this;
+  }
+
+  [writer] Scribble([string]$source) {
+    [PSCustomObject []]$operations = $this._parse($source);
+
+    if ($operations.Count -gt 0) {
+      foreach ($op in $operations) {
+        if ($op.psobject.properties.match('Arg') -and $op.Arg) {
+          $this.($op.Api)($op.Arg);
+        }
+        else {
+          $this.($op.Api)();
+        }
+      }
+    }
+
+    return $this;
+  }
+
+  [writer] ScribbleLn([string]$source) {
+    return $this.Scribble($source).Ln();
   }
 
   # Foreground Colours
@@ -427,13 +448,68 @@ class writer {
     }
     return $thc;
   }
+
+  [array] _parse ([string]$source) {
+
+    [System.Text.RegularExpressions.MatchCollection]$mc = $this._expression.Matches($source);
+    [System.Text.RegularExpressions.Match]$previousMatch = $null;
+    [PSCustomObject []]$operations = @()
+    [int]$count = 0;
+    foreach ($m in $mc) {
+      [string]$api = $m.Groups['api'];
+
+      if ($previousMatch) {
+        [int]$snippetStart = $previousMatch.Index + $previousMatch.Length;
+        [int]$snippetEnd = $m.Index;
+        [int]$snippetSize = $snippetEnd - $snippetStart;
+        [string]$snippet = $source.Substring($snippetStart, $snippetSize);
+        if (-not([string]::IsNullOrEmpty($snippet))) {
+          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+        }
+        $operations += [PSCustomObject] @{ Api = $api; }
+      }
+      else {
+        [string]$snippet = if ($m.Index -eq 0) {
+          [int]$snippetStart = -1;
+          [int]$snippetEnd = -1;
+          [string]::Empty
+        }
+        else {
+          [int]$snippetStart = 0;
+          [int]$snippetEnd = $m.Index;
+          $source.Substring($snippetStart, $snippetEnd);
+        }
+
+        if (-not([string]::IsNullOrEmpty($snippet))) {
+          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+        }
+
+        $operations += [PSCustomObject] @{ Api = $api; }
+      }
+      $previousMatch = $m;
+      $count++;
+
+      if ($count -eq $mc.Count) {
+        [int]$lastSnippetStart = $m.Index + $m.Length;
+        [string]$snippet = $source.Substring($lastSnippetStart);
+
+        if (-not([string]::IsNullOrEmpty($snippet))) {
+          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+        }
+      }
+    }
+    return $operations;
+  }
 }
 
 function New-Writer {
   param(
     [Parameter()]
-    [hashtable]$theme = $(Get-KrayolaTheme)
+    [hashtable]$Theme = $(Get-KrayolaTheme),
+
+    [Parameter()]
+    [regex]$Expression = [regex]::new('&\[(?<api>[\w]+)\]')
   )
 
-  return [writer]::new($theme);
+  return [writer]::new($Theme, $Expression);
 }

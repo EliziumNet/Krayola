@@ -42,14 +42,14 @@ Describe 'writer' {
   Context 'given: pair' {
     Context 'and: pair is PSCustomObject' {
       It 'should: write pair' {
-        $_writer.Pair(@{ Key = 'Greetings'; Value = 'Earthlings'; Affirm = $true; }).Cr();
+        $_writer.Pair(@{ Key = 'Greetings'; Value = 'Earthlings'; Affirm = $true; }).Ln();
         $_writer.PairLn(@{ Key = 'Greetings'; Value = 'Earthlings'; });
       }
     }
 
     Context 'and: pair is couplet' {
       It 'should: write pair' {
-        $_writer.Pair($(KP('a-key', 'a-value'))).Cr();
+        $_writer.Pair($(KP('a-key', 'a-value'))).Ln();
         $_writer.PairLn($(KP('a-key', 'a-value', $true)));
       }
     }
@@ -82,82 +82,155 @@ Describe 'writer' {
   }
 
   Context 'and: structured write' {
-    It 'should: parse structured text' -Tag 'Current' {
-      [regex]$expression = [regex]::new('\^\[(?<api>[\w]+)\]');
-      #
-      #                 '01234567890123456789012345678901234567890123'
-      [string]$source = '^[blue]something ^[red] evil, walks this way';
-      #                         ----------      --------------------- TEXT
-      #                  =======          ====== API
+    Context 'and: Custom expression' {
+      It 'should: perform structured write' {
+        [regex]$expression = [regex]::new('`\{(?<api>[\w]+)\}');
+        $writer = New-Writer $_theme $expression;
+        [string]$source = '`{red}Fields `{blue}Of The `{cyan}`{bgDarkMagenta}Nephilim, Love `{green}Under Will`{Ln}';
+        $writer.Scribble($source);
 
-      [MatchCollection]$mc = $expression.Matches($source);
+        [PSCustomObject []]$operations = $writer._parse($source);
+        $operations | Should -HaveCount 10;
+      }
+    }
 
-      Write-Host "Found '$($mc.Count)' matches";
+    Context 'and: valid structured string' {
+      Context 'and: leading text snippet' {
+        Context 'and: single api call' {
+          It 'should: perform structured write' {
+            [string]$source = 'I need to be alone &[red]today';
+            $_writer.Scribble($source);
 
-      [match]$previousMatch = $null;
-      [PSCustomObject []]$operations = @()
-      [int]$count = 0;
-      foreach ($m in $mc) {
-        [string]$api = $m.Groups['api'];
-        Write-host "--- api >>> '$api', count: '$count'";
-
-        if ($previousMatch) {
-          [int]$snippetStart = $previousMatch.Index + $previousMatch.Length;
-          [int]$snippetEnd = $m.Index;
-          [int]$snippetSize = $snippetEnd - $snippetStart;
-          [string]$snippet = $source.Substring($snippetStart, $snippetSize);
-          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
-          $operations += [PSCustomObject] @{ Api = $api; }
-
-          Write-Host "!! SNIPPET: '$snippet'"
-        }
-        else {
-          [string]$snippet = if ($m.Index -eq 0) {
-            [int]$snippetStart = -1;
-            [int]$snippetEnd = -1;
-            [string]::Empty
-          } else {
-            [int]$snippetStart = 0;
-            [int]$snippetEnd = $m.Index;
-            $source.Substring($snippetStart, $snippetEnd);
-          }
-          Write-Host "?? SNIPPET: '$snippet'"
-          if ([string]::IsNullOrEmpty($snippet)) {
-            $operations += [PSCustomObject] @{ Api = $api; }
-          } else {
-            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 3;
+            Write-Host '';
           }
         }
-        $previousMatch = $m;
-        $count++;
 
-        if ($count -eq $mc.Count) {
-          [int]$lastSnippetStart = $m.Index + $m.Length;
-          [string]$snippet = $source.Substring($lastSnippetStart);
-          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+        Context 'and: multiple api calls' {
+          It 'should: perform structured write' {
+            [string]$source = 'Smother &[cyan]me or &[blue]suffer &[green]me';
+            $_writer.Scribble($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 7;
+            Write-Host '';
+          }
+
+          It 'should: perform structured write' {
+            [string]$source = 'Lay &[red]&[bgMagenta]down I''ll die today';
+            $_writer.ScribbleLn($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 4;
+          }
         }
       }
 
-      foreach ($op in $operations) {
-        if ($op.psobject.properties.match('Arg') -and $op.Arg) {
-          Write-Host "--> '$($op.Api)' => Text: '$($op.Arg)'";
-        } else {
-          Write-Host "--> '$($op.Api)'";
+      Context 'given: leading api call' {
+        Context 'and: single api call' {
+          It 'should: perform structured write' {
+            [string]$source = '&[cyan]Smother me or suffer me';
+            $_writer.ScribbleLn($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 2;
+          }
+        }
+
+        Context 'and: multiple api calls' {
+          It 'should: perform structured write' {
+            [string]$source = '&[cyan]When &[red]I''m gone &[yellow]wait here';
+            $_writer.ScribbleLn($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 6;
+          }
+
+          It 'should: perform structured write' {
+            [string]$source = '&[cyan]Discover &[red]&[bgYellow]all of &[magenta]life''s surprises';
+            $_writer.ScribbleLn($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 7;
+          }
         }
       }
 
-      foreach ($op in $operations) {
-        if ($op.psobject.properties.match('Arg') -and $op.Arg) {
-          $_writer.($op.Api)($op.Arg);
+      Context 'given: trailing api call' {
+        Context 'and: single api call' {
+          It 'should: perform structured write' {
+            [string]$source = 'When I''m gone wait here&[Ln]';
+            $_writer.Scribble($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 2;
+          }
         }
-        else {
-          $_writer.($op.Api)();
+
+        Context 'and: multiple api calls' {
+          It 'should: perform structured write' {
+            [string]$source = '&[white]When &[green]I''m gone &[yellow]wait here&[Ln]';
+            $_writer.Scribble($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 7;
+          }
+
+          It 'should: perform structured write' {
+            [string]$source = 'I''ll &[green]send my child my last &[yellow]&[bgDarkBlue]good smile&[Ln]';
+            $_writer.Scribble($source);
+
+            [PSCustomObject []]$operations = $_writer._parse($source);
+            $operations | Should -HaveCount 7;
+          }
         }
       }
-      $_writer.Cr();
+    }
+
+    Context 'and: invalid structured string' {
+      Context 'and: invalid colour' {
+        It 'should: throw' {
+          {
+            [string]$source = 'I''ll love her ''til i &[orange]die[Ln]';
+            $_writer.Scribble($source);
+          } | Should -Throw;
+          Write-Host '';
+        }
+      }
+
+      Context 'and: structure string contains an invalid call to "Text"' {
+        It 'should: throw' {
+          {
+            [string]$source = 'Then rest in peace can''t you &[Text]see[Ln]';
+            $_writer.Scribble($source);
+          } | Should -Throw;
+          Write-Host '';
+        }
+      }
+    }
+
+    Context 'given: non colour api calls' {
+      It 'should: perform structured write' {
+        [string]$source = '&[red]If you pass &[reset]through my soul today&[Ln]';
+        $_writer.Scribble($source);
+
+        [PSCustomObject []]$operations = $_writer._parse($source);
+        $operations | Should -HaveCount 5;
+      }
+    }
+
+    Context 'given: unusual string' {
+      It 'should: should not write any text' {
+        [string]$source = '&[red]&[red]&[red]&[red]&[red]&[red]';
+        $_writer.ScribbleLn($source);
+
+        [PSCustomObject []]$operations = $_writer._parse($source);
+        $operations | Should -HaveCount 6;
+      }
     }
   }
-}
+} # writer
 
 Describe 'Writer code generator' {
   It 'should: generate colour methods' -Skip {
@@ -210,4 +283,4 @@ Describe 'Writer code generator' {
       Write-Host ""
     }
   }  
-}
+} # Writer code generator
