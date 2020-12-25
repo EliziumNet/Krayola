@@ -134,13 +134,14 @@ class writer {
   }
 
   [writer] ThemeColour([string]$val) {
-    if ([writer]::ThemeColours -contains $val) {
-      [array]$cols = $this._theme[$($val.ToUpper() + '-COLOURS')];
+    [string]$trimmedValue = $val.Trim();
+    if ([writer]::ThemeColours -contains $trimmedValue) {
+      [array]$cols = $this._theme[$($trimmedValue.ToUpper() + '-COLOURS')];
       $this._fgc = $cols[0];
       $this._bgc = $cols.Length -eq 2 ? $cols[1] : $this._defaultBgc;
     }
     else {
-      Write-Host "writer.ThemeColour: ignoring invalid theme colour: '$val'"
+      Write-Host "writer.ThemeColour: ignoring invalid theme colour: '$trimmedValue'"
     }
     return $this;
   }
@@ -457,13 +458,29 @@ class writer {
           [int]$snippetEnd = $m.Index;
           [int]$snippetSize = $snippetEnd - $snippetStart;
           [string]$snippet = $source.Substring($snippetStart, $snippetSize);
-          if (-not([string]::IsNullOrEmpty($parm))) {
-            $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
-          }
+
+          # If we find a text snippet, it must be applied before the current api invoke
+          # 
           if (-not([string]::IsNullOrEmpty($snippet))) {
             $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
           }
-          $operations += [PSCustomObject] @{ Api = $api; }
+          # else {
+          # }
+          if (-not([string]::IsNullOrEmpty($parm))) {
+            $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
+          }
+          else {
+            $operations += [PSCustomObject] @{ Api = $api; }
+          }
+
+          # if (-not([string]::IsNullOrEmpty($parm))) {
+          #   $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
+          # }
+          # if (-not([string]::IsNullOrEmpty($snippet))) {
+          #   $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+          # } else {
+          #   $operations += [PSCustomObject] @{ Api = $api; }
+          # }
         }
         else {
           [string]$snippet = if ($m.Index -eq 0) {

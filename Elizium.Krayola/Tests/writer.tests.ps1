@@ -125,13 +125,27 @@ Describe 'writer' {
             $operations | Should -HaveCount 4;
           }
         }
-      }
 
-      Context 'and: Message' {
-        It 'should: perform message write' {
-          [string]$message = '*** Love under will';
-          $_writer.Message($message);
-          Write-Host '';
+        Context 'and: api invoke with param' {
+          Context 'and: Message' {
+            It 'should: perform message write' {
+              [string]$message = '*** Love under will';
+              $_writer.Message($message);
+              Write-Host '';
+            }
+
+            It 'should: perform message write' {
+              [string]$message = '!!! Love under will';
+              $_writer.MessageLn($message);
+            }
+          }
+
+          Context 'and: ThemeColour' {
+            It 'should: perform message write' {
+              [string]$source = '&[ThemeColour, affirm]$$$ Love under will';
+              $_writer.ScribbleLn($source);
+            }
+          }
         }
       }
 
@@ -180,6 +194,14 @@ Describe 'writer' {
 
               [PSCustomObject []]$operations = $_writer._parse($source);
               $operations | Should -HaveCount 4;
+            }
+
+            It 'should: invoke api with param' {
+              [string]$source = '&[ThemeColour,meta][🚀] ====== [ &[ThemeColour,message]Children of the Damned&[ThemeColour,meta] ] ==='
+              $_writer.ScribbleLn($source);
+
+              [PSCustomObject []]$operations = $_writer._parse($source);
+              $operations | Should -HaveCount 6;
             }
           }
         }
