@@ -128,7 +128,7 @@ class writer {
 
   [writer] Line([string]$message, [line]$line) {
     $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($message);
-    $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._messageSuffix);
+    $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($this._messageSuffix);
 
     return $this.Line($line);
   }
@@ -147,7 +147,7 @@ class writer {
 
   [writer] Message([string]$message) {
     $this.ThemeColour('message');
-    return $this.Text($message);
+    return $this.Text($message).Text($this._messageSuffix);
   }
 
   [writer] MessageLn([string]$message) {
@@ -442,54 +442,64 @@ class writer {
   }
 
   [array] _parse ([string]$source) {
-
-    [System.Text.RegularExpressions.MatchCollection]$mc = $this._expression.Matches($source);
     [System.Text.RegularExpressions.Match]$previousMatch = $null;
     [PSCustomObject []]$operations = @()
-    [int]$count = 0;
-    foreach ($m in $mc) {
-      [string]$api = $m.Groups['api'];
 
-      if ($previousMatch) {
-        [int]$snippetStart = $previousMatch.Index + $previousMatch.Length;
-        [int]$snippetEnd = $m.Index;
-        [int]$snippetSize = $snippetEnd - $snippetStart;
-        [string]$snippet = $source.Substring($snippetStart, $snippetSize);
-        if (-not([string]::IsNullOrEmpty($snippet))) {
-          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
-        }
-        $operations += [PSCustomObject] @{ Api = $api; }
-      }
-      else {
-        [string]$snippet = if ($m.Index -eq 0) {
-          [int]$snippetStart = -1;
-          [int]$snippetEnd = -1;
-          [string]::Empty
+    if ($this._expression.IsMatch($source)) {
+      [System.Text.RegularExpressions.MatchCollection]$mc = $this._expression.Matches($source);
+      [int]$count = 0;
+      foreach ($m in $mc) {
+        [string]$api = $m.Groups['api'];
+        [string]$parm = $m.Groups['p'];
+
+        if ($previousMatch) {
+          [int]$snippetStart = $previousMatch.Index + $previousMatch.Length;
+          [int]$snippetEnd = $m.Index;
+          [int]$snippetSize = $snippetEnd - $snippetStart;
+          [string]$snippet = $source.Substring($snippetStart, $snippetSize);
+          if (-not([string]::IsNullOrEmpty($parm))) {
+            $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
+          }
+          if (-not([string]::IsNullOrEmpty($snippet))) {
+            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+          }
+          $operations += [PSCustomObject] @{ Api = $api; }
         }
         else {
-          [int]$snippetStart = 0;
-          [int]$snippetEnd = $m.Index;
-          $source.Substring($snippetStart, $snippetEnd);
+          [string]$snippet = if ($m.Index -eq 0) {
+            [int]$snippetStart = -1;
+            [int]$snippetEnd = -1;
+            [string]::Empty
+          }
+          else {
+            [int]$snippetStart = 0;
+            [int]$snippetEnd = $m.Index;
+            $source.Substring($snippetStart, $snippetEnd);
+          }
+          if (-not([string]::IsNullOrEmpty($snippet))) {
+            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+          }
+
+          if (-not([string]::IsNullOrEmpty($parm))) {
+            $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
+          } else {
+            $operations += [PSCustomObject] @{ Api = $api; }
+          }
         }
+        $previousMatch = $m;
+        $count++;
 
-        if (-not([string]::IsNullOrEmpty($snippet))) {
-          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+        if ($count -eq $mc.Count) {
+          [int]$lastSnippetStart = $m.Index + $m.Length;
+          [string]$snippet = $source.Substring($lastSnippetStart);
+
+          if (-not([string]::IsNullOrEmpty($snippet))) {
+            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+          }
         }
-
-        $operations += [PSCustomObject] @{ Api = $api; }
-      }
-      $previousMatch = $m;
-      $count++;
-
-      if ($count -eq $mc.Count) {
-        [int]$lastSnippetStart = $m.Index + $m.Length;
-        [string]$snippet = $source.Substring($lastSnippetStart);
-
-        if (-not([string]::IsNullOrEmpty($snippet))) {
-          $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
-        }
-      }
+      } # foreach $m
     }
+
     return $operations;
   }
 }

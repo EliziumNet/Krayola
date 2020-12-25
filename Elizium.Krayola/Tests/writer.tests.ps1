@@ -144,6 +144,16 @@ Describe 'writer' {
             [PSCustomObject []]$operations = $_writer._parse($source);
             $operations | Should -HaveCount 2;
           }
+
+          Context 'and: with api param' {
+            It 'should: invoke api with param' {
+              [string]$source = '&[message,Love Under Will]';  
+              $_writer.ScribbleLn($source);
+
+              [PSCustomObject []]$operations = $_writer._parse($source);
+              $operations | Should -HaveCount 1;
+            }
+          }
         }
 
         Context 'and: multiple api calls' {
@@ -161,6 +171,16 @@ Describe 'writer' {
 
             [PSCustomObject []]$operations = $_writer._parse($source);
             $operations | Should -HaveCount 7;
+          }
+
+          Context 'and: with api param' {
+            It 'should: invoke api with param' {
+              [string]$source = 'The Nephilim; &[message,Love Under Will]&[red]*The Winter Solstace';
+              $_writer.ScribbleLn($source);
+
+              [PSCustomObject []]$operations = $_writer._parse($source);
+              $operations | Should -HaveCount 4;
+            }
           }
         }
       }
