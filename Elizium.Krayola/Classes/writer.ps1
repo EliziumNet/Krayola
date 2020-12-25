@@ -145,6 +145,15 @@ class writer {
     return $this;
   }
 
+  [writer] Message([string]$message) {
+    $this.ThemeColour('message');
+    return $this.Text($message);
+  }
+
+  [writer] MessageLn([string]$message) {
+    return $this.Message($message).Ln();
+  }
+
   [writer] Reset() {
     $this._fgc = $this._defaultFgc;
     $this._bgc = $this._defaultBgc;

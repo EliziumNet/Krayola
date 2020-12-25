@@ -127,6 +127,14 @@ Describe 'writer' {
         }
       }
 
+      Context 'and: Message' {
+        It 'should: perform message write' {
+          [string]$message = '*** Love under will';
+          $_writer.Message($message);
+          Write-Host '';
+        }
+      }
+
       Context 'given: leading api call' {
         Context 'and: single api call' {
           It 'should: perform structured write' {
