@@ -1,33 +1,33 @@
 
 class couplet {
-  [string]$_key;
-  [string]$_value;
-  [boolean]$_affirm;
+  [string]$Key;
+  [string]$Value;
+  [boolean]$Affirm;
 
   couplet([string[]]$couplet) {
-    $this._key = $couplet[0];
-    $this._value = $couplet[1];
-    $this._affirm = $couplet.Length -gt 2 ? [boolean]$couplet[2] : $false;
+    $this.Key = $couplet[0];
+    $this.Value = $couplet[1];
+    $this.Affirm = $couplet.Length -gt 2 ? [boolean]$couplet[2] : $false;
   }
 
   couplet([PSCustomObject]$couplet) {
-    $this._key = $couplet.Key;
-    $this._value = $couplet.Value;
-    $this._affirm = $couplet.psobject.properties.match('Affirm') -and $couplet.Affirm;
+    $this.Key = $couplet.Key;
+    $this.Value = $couplet.Value;
+    $this.Affirm = $couplet.psobject.properties.match('Affirm') -and $couplet.Affirm;
   }
 }
 
 class line {
-  [array]$_line;
-  [string]$_message;
+  [couplet[]]$Line;
+  [string]$Message;
 
   line([couplet[]]$couplets) {
-    $this._line = $couplets.Clone();
+    $this.Line = $couplets.Clone();
   }
 
   line([string]$message, [couplet[]]$couplets) {
-    $this._message = $message;
-    $this._line = $couplets.Clone();
+    $this.Message = $message;
+    $this.Line = $couplets.Clone();
   }
 }
 
@@ -38,10 +38,10 @@ class writer {
   #
   [string]$ApiFormatWithArg;
   [string]$ApiFormat;
+  [hashtable]$Theme;
 
   # Logically private properties
   #
-  [hashtable]$_theme;
   [string]$_fgc;
   [string]$_bgc;
   [string]$_defaultFgc;
@@ -64,7 +64,7 @@ class writer {
   [regex]$_expression;
 
   writer([hashtable]$theme, [regex]$expression, [string]$FormatWithArg, [string]$Format) {
-    $this._theme = $theme;
+    $this.Theme = $theme;
 
     $this._defaultFgc = (Get-Host).ui.rawui.ForegroundColor;
     $this._defaultBgc = (Get-Host).ui.rawui.BackgroundColor;
@@ -122,11 +122,11 @@ class writer {
     $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._open);
 
     [int]$count = 0;
-    foreach ($couplet in $line._line) {
+    foreach ($couplet in $line.Line) {
       $this.Pair($couplet);
       $count++;
 
-      if ($count -lt $line._line.Count) {
+      if ($count -lt $line.Line.Count) {
         $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._separator);
       }
     }
@@ -145,7 +145,7 @@ class writer {
   [writer] ThemeColour([string]$val) {
     [string]$trimmedValue = $val.Trim();
     if ([writer]::ThemeColours -contains $trimmedValue) {
-      [array]$cols = $this._theme[$($trimmedValue.ToUpper() + '-COLOURS')];
+      [array]$cols = $this.Theme[$($trimmedValue.ToUpper() + '-COLOURS')];
       $this._fgc = $cols[0];
       $this._bgc = $cols.Length -eq 2 ? $cols[1] : $this._defaultBgc;
     }
@@ -399,7 +399,7 @@ class writer {
   #
   [void] _couplet([couplet]$couplet) {
     [string[]]$constituents = Split-KeyValuePairFormatter -Format $this._format `
-      -KeyConstituent $couplet._key -ValueConstituent $couplet._value `
+      -KeyConstituent $couplet.Key -ValueConstituent $couplet.Value `
       -KeyPlaceHolder $this._keyPlaceHolder -ValuePlaceHolder $this._valuePlaceHolder;
 
     # header
@@ -422,8 +422,8 @@ class writer {
 
     # value
     #
-    $this._fgc = ($couplet._affirm) ? $this._affirmColours[0] : $this._valueColours[0];
-    $this._bgc = ($couplet._affirm) ? $this._affirmColours[1] : $this._valueColours[1];
+    $this._fgc = ($couplet.Affirm) ? $this._affirmColours[0] : $this._valueColours[0];
+    $this._bgc = ($couplet.Affirm) ? $this._affirmColours[1] : $this._valueColours[1];
     $this._print($constituents[3]);
 
     # tail
@@ -444,7 +444,7 @@ class writer {
   }
 
   [array] _initThemeColours([string]$coloursKey) {
-    [array]$thc = $this._theme[$coloursKey];
+    [array]$thc = $this.Theme[$coloursKey];
     if ($thc.Length -eq 1) {
       $thc += $this._defaultBgc;
     }
@@ -473,23 +473,13 @@ class writer {
           if (-not([string]::IsNullOrEmpty($snippet))) {
             $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
           }
-          # else {
-          # }
+
           if (-not([string]::IsNullOrEmpty($parm))) {
             $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
           }
           else {
             $operations += [PSCustomObject] @{ Api = $api; }
           }
-
-          # if (-not([string]::IsNullOrEmpty($parm))) {
-          #   $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
-          # }
-          # if (-not([string]::IsNullOrEmpty($snippet))) {
-          #   $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
-          # } else {
-          #   $operations += [PSCustomObject] @{ Api = $api; }
-          # }
         }
         else {
           [string]$snippet = if ($m.Index -eq 0) {
