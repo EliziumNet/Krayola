@@ -84,9 +84,11 @@ Describe 'writer' {
   Context 'and: structured write' {
     Context 'and: Custom expression' {
       It 'should: perform structured write' {
-        [regex]$expression = [regex]::new('`\{(?<api>[\w]+)\}');
-        $writer = New-Writer $_theme $expression;
-        [string]$source = '`{red}Fields `{blue}Of The `{cyan}`{bgDarkMagenta}Nephilim, Love `{green}Under Will`{Ln}';
+        [regex]$expression = [regex]::new('`\((?<api>[\w]+)(,(?<p>[^\)]+))?\)');
+        [string]$formatWithArg = '`({0},{1})';
+        [string]$format = '`({0})';
+        $writer = New-Writer $_theme $expression $formatWithArg $format;
+        [string]$source = '`(red)Fields `(blue)Of The `(cyan)`(bgDarkMagenta)Nephilim, Love `(green)Under Will`(Ln)';
         $writer.Scribble($source);
 
         [PSCustomObject []]$operations = $writer._parse($source);

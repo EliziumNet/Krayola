@@ -34,6 +34,13 @@ class line {
 class writer {
   static [array]$ThemeColours = @('affirm', 'key', 'message', 'meta', 'value');
 
+  # Logically public properties
+  #
+  [string]$ApiFormatWithArg;
+  [string]$ApiFormat;
+
+  # Logically private properties
+  #
   [hashtable]$_theme;
   [string]$_fgc;
   [string]$_bgc;
@@ -56,7 +63,7 @@ class writer {
 
   [regex]$_expression;
 
-  writer([hashtable]$theme, [regex]$expression) {
+  writer([hashtable]$theme, [regex]$expression, [string]$FormatWithArg, [string]$Format) {
     $this._theme = $theme;
 
     $this._defaultFgc = (Get-Host).ui.rawui.ForegroundColor;
@@ -80,6 +87,8 @@ class writer {
     $this._messageSuffix = $theme['MESSAGE-SUFFIX'];
 
     $this._expression = $expression;
+    $this.ApiFormatWithArg = $FormatWithArg;
+    $this.ApiFormat = $Format;
   }
 
   [writer] Text([string]$value) {
@@ -499,7 +508,8 @@ class writer {
 
           if (-not([string]::IsNullOrEmpty($parm))) {
             $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
-          } else {
+          }
+          else {
             $operations += [PSCustomObject] @{ Api = $api; }
           }
         }
