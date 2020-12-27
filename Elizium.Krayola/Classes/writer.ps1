@@ -4,16 +4,31 @@ class couplet {
   [string]$Value;
   [boolean]$Affirm;
 
-  couplet([string[]]$couplet) {
-    $this.Key = $couplet[0];
-    $this.Value = $couplet[1];
-    $this.Affirm = $couplet.Length -gt 2 ? [boolean]$couplet[2] : $false;
+  couplet () {
   }
 
-  couplet([PSCustomObject]$couplet) {
-    $this.Key = $couplet.Key;
-    $this.Value = $couplet.Value;
-    $this.Affirm = $couplet.psobject.properties.match('Affirm') -and $couplet.Affirm;
+  couplet([string[]]$props) {
+    $this.Key = $props[0];
+    $this.Value = $props[1];
+    $this.Affirm = $props.Length -gt 2 ? [boolean]$props[2] : $false;
+  }
+
+  couplet ([string]$key, [string]$value, [boolean]$affirm) {
+    $this.Key = $key;
+    $this.Value = $value;
+    $this.Affirm = $affirm;
+  }
+
+  couplet ([string]$key, [string]$value) {
+    $this.Key = $key;
+    $this.Value = $value;
+    $this.Affirm = $false;
+  }
+
+  couplet([PSCustomObject]$custom) {
+    $this.Key = $custom.Key;
+    $this.Value = $custom.Value;
+    $this.Affirm = $custom.psobject.properties.match('Affirm') -and $custom.Affirm;
   }
 }
 
@@ -28,6 +43,20 @@ class line {
   line([string]$message, [couplet[]]$couplets) {
     $this.Message = $message;
     $this.Line = $couplets.Clone();
+  }
+
+  line([line]$line) {
+    $this.Line = $line.Line.Clone();
+  }
+
+  [line] append([couplet]$couplet) {
+    $this.Line += $couplet;
+    return $this;
+  }
+
+  [line] append([couplet[]]$couplet) {
+    $this.Line += $couplet;
+    return $this;
   }
 }
 
