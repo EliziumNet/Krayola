@@ -58,6 +58,11 @@ class line {
     $this.Line += $couplet;
     return $this;
   }
+
+  [line] append([line]$other) {
+    $this.Line += $other.Line;
+    return $this;
+  }
 }
 
 class writer {

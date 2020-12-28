@@ -5,15 +5,21 @@ Describe 'writer' {
       Get-Module Elizium.Krayola | Remove-Module -Force
       Import-Module .\Output\Elizium.Krayola\Elizium.Krayola.psm1 `
         -ErrorAction 'stop' -DisableNameChecking
-
-      [hashtable]$script:_theme = $(Get-KrayolaTheme);
     }
   }
 
   BeforeEach {
     InModuleScope Elizium.Krayola {
       [hashtable]$script:_theme = $(Get-KrayolaTheme);
-      [writer]$script:_writer = New-Writer ($_theme);
+
+      # Why can't we type this as [writer] without getting an error?
+      #
+      # [-] writer.given: line.and: append to line.should: write line 26ms (25ms | 1ms)
+      # PSInvalidCastException: Cannot convert the "writer" value of type "writer" to type "writer".
+      # ArgumentTransformationMetadataException: Cannot convert the "writer" value of type "writer" to type "writer".
+      # at <ScriptBlock>, C:\Users\Plastikfan\dev\github\PoSh\Krayola\Elizium.Krayola\Tests\writer.tests.ps1:14
+      #
+      $script:_writer = New-Writer ($_theme);
     }
   }
 
@@ -178,6 +184,27 @@ Describe 'writer' {
           $appendLine.append($otherLine.Line);
 
           $_writer.Line($appendLine);
+          $appendLine.Line.Length | Should -Be 6;
+        }
+      }
+
+      It 'should: write line' {
+        InModuleScope Elizium.Krayola {
+          [line]$originalLine = kl(@(
+              $(kp('one', 'Eve of Destruction')),
+              $(kp('two', 'Bango', $true)),
+              $(kp('three', "No Geography"))
+            ));
+
+          [line]$appendLine = kl(@(
+              $(kp('four', 'Got to Keep On', $true)),
+              $(kp('five', 'Gravity Drops')),
+              $(kp('six', 'No Geography', $true))
+            ));
+          $originalLine.append($appendLine);
+
+          $_writer.Line($originalLine);
+          $originalLine.Line.Length | Should -Be 6;
         }
       }
     }

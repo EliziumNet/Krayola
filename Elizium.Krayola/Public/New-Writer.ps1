@@ -1,5 +1,6 @@
 
 function New-Writer {
+  [OutputType([writer])]
   param(
     [Parameter()]
     [hashtable]$Theme = $(Get-KrayolaTheme),
