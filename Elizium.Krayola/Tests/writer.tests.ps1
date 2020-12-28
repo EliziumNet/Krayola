@@ -1,4 +1,4 @@
-# using module Elizium.Krayola;
+
 Describe 'writer' {
   BeforeAll {
     InModuleScope Elizium.Krayola {
@@ -112,7 +112,7 @@ Describe 'writer' {
     }
 
     Context 'and: pair created via New-Pair' {
-      It 'should: write pair'  {
+      It 'should: write pair' {
         InModuleScope Elizium.Krayola {
           [couplet]$couplet = $(New-Pair @('Five', 'Shaping the Pelm', $true));
           $_writer.Pair($couplet).Ln();
@@ -453,6 +453,102 @@ Describe 'writer' {
     }
   }
 } # writer
+
+Describe 'line' {
+  BeforeAll {
+    InModuleScope Elizium.Krayola {
+      Get-Module Elizium.Krayola | Remove-Module -Force
+      Import-Module .\Output\Elizium.Krayola\Elizium.Krayola.psm1 `
+        -ErrorAction 'stop' -DisableNameChecking
+    }
+  }
+
+  Context 'given: 2 equal lines' {
+    It 'should: compare equal' {
+      InModuleScope Elizium.Krayola {
+        [line]$originalLine = $(kl(@(
+              $(kp('one', 'Eve of Destruction')),
+              $(kp('two', 'Bango', $true)),
+              $(kp('three', "No Geography"))
+            )));
+
+        [line]$otherLine = $(kl(@(
+              $(kp('one', 'Eve of Destruction')),
+              $(kp('two', 'Bango', $true)),
+              $(kp('three', "No Geography"))
+            )));
+
+        [boolean]$result = $originalLine.equal($otherLine);
+        $result | Should -BeTrue;
+      }
+    }
+  }
+
+  Context 'given: 2 non equal lines' {
+    It 'should: NOT compare equal' {
+      InModuleScope Elizium.Krayola {
+        [line]$originalLine = $(kl(@(
+              $(kp('one', 'Eve of Destruction')),
+              $(kp('two', 'Bango', $true)),
+              $(kp('three', "No Geography"))
+            )));
+
+        [line]$otherLine = $(kl(@(
+              $(kp('four', '(Paradise Regained)')),
+              $(kp('five', "Submission", $true)),
+              $(kp('six', "Sumerland (What Dreams May Come)", $true))
+            )));
+
+        [boolean]$result = $originalLine.equal($otherLine);
+        $result | Should -BeFalse;
+      }
+    }
+  }
+}
+
+Describe 'couplet' {
+  BeforeAll {
+    InModuleScope Elizium.Krayola {
+      Get-Module Elizium.Krayola | Remove-Module -Force
+      Import-Module .\Output\Elizium.Krayola\Elizium.Krayola.psm1 `
+        -ErrorAction 'stop' -DisableNameChecking
+    }
+  }
+
+  Context 'given: 2 equal couplets' {
+    It 'should: compare equal' {
+      InModuleScope Elizium.Krayola {
+        [couplet]$first = $(kp('one', 'Eve of Destruction'));
+        [couplet]$second = $(kp('one', 'Eve of Destruction'));
+        [boolean]$result = $first.cequal($second);
+        $result | Should -BeTrue;
+
+      }
+    }
+  }
+
+  Context 'given: 2 non equal couplets' {
+    It 'should: NOT compare equal' {
+      InModuleScope Elizium.Krayola {
+        [couplet]$first = $(kp('one', 'Eve of Destruction'));
+        [couplet]$second = $(kp('two', 'Bango'));
+        [boolean]$result = $first.cequal($second);
+        $result | Should -BeFalse;
+      }
+    }
+
+    Context 'and: differs by case only' {
+      It 'should: NOT compare equal' {
+        InModuleScope Elizium.Krayola {
+          [couplet]$first = $(kp('one', 'Eve of Destruction'));
+          [couplet]$second = $(kp('ONE', 'EVE of Destruction'));
+          [boolean]$result = $first.cequal($second);
+          $result | Should -BeFalse;
+        }
+      }
+    }
+  }
+}
 
 Describe 'Writer code generator' {
   It 'should: generate colour methods' -Skip {

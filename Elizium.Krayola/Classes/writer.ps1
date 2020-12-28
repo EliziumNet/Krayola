@@ -30,7 +30,15 @@ class couplet {
     $this.Value = $custom.Value;
     $this.Affirm = $custom.psobject.properties.match('Affirm') -and $custom.Affirm;
   }
-}
+
+  [boolean] equal ([couplet]$other) {
+    return ($this.Key -eq $other.Key) -and ($this.Value -eq $other.Value) -and ($this.Affirm -eq $other.Affirm);
+  }
+
+  [boolean] cequal ([couplet]$other) {
+    return ($this.Key -ceq $other.Key) -and ($this.Value -ceq $other.Value) -and ($this.Affirm -ceq $other.Affirm);
+  }
+} # couplet
 
 class line {
   [couplet[]]$Line;
@@ -63,7 +71,35 @@ class line {
     $this.Line += $other.Line;
     return $this;
   }
-}
+
+  [boolean] equal ([line]$other) {
+    [boolean]$result = $true;
+
+    if ($this.Line.Length -eq $other.Line.Length) {
+      for ($index = 0; ($index -lt $this.Line.Length -and $result); $index++) {
+        $result = $this.Line[$index].equal($other.line[$index]);
+      }
+    }
+    else {
+      $result = $false;
+    }
+    return $result;
+  }
+
+  [boolean] cequal ([line]$other) {
+    [boolean]$result = $true;
+
+    if ($this.Line.Length -eq $other.Line.Length) {
+      for ($index = 0; ($index -lt $this.Line.Length -and $result); $index++) {
+        $result = $this.Line[$index].cequal($other.line[$index]);
+      }
+    }
+    else {
+      $result = $false;
+    }
+    return $result;
+  }
+} # line
 
 class writer {
   static [array]$ThemeColours = @('affirm', 'key', 'message', 'meta', 'value');
@@ -553,4 +589,4 @@ class writer {
 
     return $operations;
   }
-}
+} # writer
