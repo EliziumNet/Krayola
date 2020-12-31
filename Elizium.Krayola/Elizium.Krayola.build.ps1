@@ -28,7 +28,7 @@ if (Test-Path -Path $script:TestHelpers) {
 }
 
 function Get-FunctionExportList {
-  (Get-ChildItem -Path $script:PublicFolder | Where-Object { $_.Name -like '*-*' } |
+  (Get-ChildItem -Path $script:PublicFolder -Recurse | Where-Object { $_.Name -like '*-*' } |
     Select-Object -ExpandProperty BaseName)
 }
 
