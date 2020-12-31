@@ -38,11 +38,18 @@ class couplet {
   [boolean] cequal ([couplet]$other) {
     return ($this.Key -ceq $other.Key) -and ($this.Value -ceq $other.Value) -and ($this.Affirm -ceq $other.Affirm);
   }
+
+  [string] ToString() {
+    return "Key: '$($this.Key)', Value: '$($this.Value)', Affirm: '$($this.Affirm)'";
+  }
 } # couplet
 
 class line {
   [couplet[]]$Line;
   [string]$Message;
+
+  line() {
+  }
 
   line([couplet[]]$couplets) {
     $this.Line = $couplets.Clone();
@@ -98,6 +105,10 @@ class line {
       $result = $false;
     }
     return $result;
+  }
+
+  [string] ToString() {
+    return $($this.Line -join '; ');
   }
 } # line
 
