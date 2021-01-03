@@ -200,25 +200,25 @@ class writer {
   }
 
   [writer] Line([line]$line) {
-    $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._open);
+    $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._open);
 
     [int]$count = 0;
     foreach ($couplet in $line.Line) {
-      $this.Pair($couplet);
+      $null = $this.Pair($couplet);
       $count++;
 
       if ($count -lt $line.Line.Count) {
-        $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._separator);
+        $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._separator);
       }
     }
 
-    $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._close);
+    $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._close);
     return $this.Reset().Ln();
   }
 
   [writer] Line([string]$message, [line]$line) {
-    $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($message);
-    $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($this._messageSuffix);
+    $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($message);
+    $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($this._messageSuffix);
 
     return $this.Line($line);
   }
@@ -237,7 +237,7 @@ class writer {
   }
 
   [writer] Message([string]$message) {
-    $this.ThemeColour('message');
+    $null = $this.ThemeColour('message');
     return $this.Text($message).Text($this._messageSuffix);
   }
 
@@ -267,10 +267,10 @@ class writer {
     if ($operations.Count -gt 0) {
       foreach ($op in $operations) {
         if ($op.psobject.properties.match('Arg') -and $op.Arg) {
-          $this.($op.Api)($op.Arg);
+          $null = $this.($op.Api)($op.Arg);
         }
         else {
-          $this.($op.Api)();
+          $null = $this.($op.Api)();
         }
       }
     }
@@ -513,7 +513,7 @@ class writer {
     $this._bgc = $this._metaColours[1];
     $this._print($constituents[4]);
 
-    $this.Reset();
+    $null = $this.Reset();
   } # _couplet
 
   [void] _print([string]$text) {
