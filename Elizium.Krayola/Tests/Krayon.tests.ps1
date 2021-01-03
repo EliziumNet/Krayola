@@ -1,5 +1,5 @@
 
-Describe 'writer' {
+Describe 'Krayon' {
   BeforeAll {
     InModuleScope Elizium.Krayola {
       Get-Module Elizium.Krayola | Remove-Module -Force
@@ -12,45 +12,45 @@ Describe 'writer' {
     InModuleScope Elizium.Krayola {
       [hashtable]$script:_theme = $(Get-KrayolaTheme);
 
-      # Why can't we type this as [writer] without getting an error?
+      # Why can't we type this as [Krayon] without getting an error?
       #
-      # [-] writer.given: line.and: append to line.should: write line 26ms (25ms | 1ms)
-      # PSInvalidCastException: Cannot convert the "writer" value of type "writer" to type "writer".
-      # ArgumentTransformationMetadataException: Cannot convert the "writer" value of type "writer" to type "writer".
-      # at <ScriptBlock>, C:\Users\Plastikfan\dev\github\PoSh\Krayola\Elizium.Krayola\Tests\writer.tests.ps1:14
+      # [-] Krayon.given: line.and: append to line.should: write line 26ms (25ms | 1ms)
+      # PSInvalidCastException: Cannot convert the "Krayon" value of type "Krayon" to type "Krayon".
+      # ArgumentTransformationMetadataException: Cannot convert the "Krayon" value of type "Krayon" to type "Krayon".
+      # at <ScriptBlock>, C:\Users\Plastikfan\dev\github\PoSh\Krayola\Elizium.Krayola\Tests\Krayon.tests.ps1:14
       #
-      $script:_writer = New-Writer ($_theme);
+      $script:_krayon = New-Krayon ($_theme);
     }
   }
 
   Context 'given: ad-hoc' {
     It 'should: write in colour' {
       InModuleScope Elizium.Krayola {
-        $_writer.red().Text('Are you master of your domain? '). `
+        $_krayon.red().Text('Are you master of your domain? '). `
           blue().TextLn('Yeah, Im still king of the county!');
 
-        $_writer.red().bgMagenta().Text('Are you master of your domain? '). `
+        $_krayon.red().bgMagenta().Text('Are you master of your domain? '). `
           blue().bgDarkCyan().TextLn('Yeah, Im still lord of the manner!');
       }
     }
 
     It 'should: write in theme colours' {
       InModuleScope Elizium.Krayola {
-        $_writer.ThemeColour('affirm').TextLn('This is affirmed text');
-        $_writer.ThemeColour('key').TextLn('This is key text');
-        $_writer.ThemeColour('message').TextLn('This is message text');
-        $_writer.ThemeColour('meta').TextLn('This is meta text');
-        $_writer.ThemeColour('value').TextLn('This is value text');        
+        $_krayon.ThemeColour('affirm').TextLn('This is affirmed text');
+        $_krayon.ThemeColour('key').TextLn('This is key text');
+        $_krayon.ThemeColour('message').TextLn('This is message text');
+        $_krayon.ThemeColour('meta').TextLn('This is meta text');
+        $_krayon.ThemeColour('value').TextLn('This is value text');        
       }
     }
 
     Context 'and: style' {
       It 'should: not affect text display' {
         InModuleScope Elizium.Krayola {
-          $_writer.bold().TextLn('This is *bold* text');
-          $_writer.italic().TextLn('This is /italic/ text');
-          $_writer.strike().TextLn('This is s-t-r-i-k-e--t-h-r-u text');
-          $_writer.under().TextLn('This is _underlined_ text');
+          $_krayon.bold().TextLn('This is *bold* text');
+          $_krayon.italic().TextLn('This is /italic/ text');
+          $_krayon.strike().TextLn('This is s-t-r-i-k-e--t-h-r-u text');
+          $_krayon.under().TextLn('This is _underlined_ text');
         }
       }
     }
@@ -60,8 +60,8 @@ Describe 'writer' {
     Context 'and: pair is PSCustomObject' {
       It 'should: write pair' {
         InModuleScope Elizium.Krayola {
-          $_writer.Pair(@{ Key = 'Album'; Value = 'Pungent Effulgent'; Affirm = $true; }).Ln();
-          $_writer.PairLn(@{ Key = 'Nine'; Value = 'Wreltch'; });
+          $_krayon.Pair(@{ Key = 'Album'; Value = 'Pungent Effulgent'; Affirm = $true; }).Ln();
+          $_krayon.PairLn(@{ Key = 'Nine'; Value = 'Wreltch'; });
         }
       }
     }
@@ -73,13 +73,13 @@ Describe 'writer' {
           $couplet.Key = 'Album';
           $couplet.Value = 'Pungent Effulgent';
           $couplet.Affirm = $true;
-          $_writer.Pair($couplet).Ln();
+          $_krayon.Pair($couplet).Ln();
 
           [couplet]$couplet = [couplet]::new();
           $couplet.Key = 'Artist';
           $couplet.Value = 'Ozric Tentacles';
 
-          $_writer.PairLn($couplet);
+          $_krayon.PairLn($couplet);
         }
       }
     }
@@ -89,12 +89,12 @@ Describe 'writer' {
         InModuleScope Elizium.Krayola {
           [string[]]$properties = @('One', 'Disolution (The Clouds Disperse)', $true);
           [couplet]$couplet = [couplet]::new($properties);
-          $_writer.Pair($couplet).Ln();
+          $_krayon.Pair($couplet).Ln();
 
           [string[]]$properties = @('Two', '0-1');
           [couplet]$couplet = [couplet]::new($properties);
 
-          $_writer.PairLn($couplet);
+          $_krayon.PairLn($couplet);
         }
       }
     }
@@ -103,10 +103,10 @@ Describe 'writer' {
       It 'should: write pair' {
         InModuleScope Elizium.Krayola {
           [couplet]$couplet = [couplet]::new('Three', 'Phalarn Dawn', $true);
-          $_writer.Pair($couplet).Ln();
+          $_krayon.Pair($couplet).Ln();
 
           [couplet]$couplet = [couplet]::new('Four', '04 - The Domes of G''Bal', $false);
-          $_writer.PairLn($couplet);
+          $_krayon.PairLn($couplet);
         }
       }
     }
@@ -115,10 +115,10 @@ Describe 'writer' {
       It 'should: write pair' {
         InModuleScope Elizium.Krayola {
           [couplet]$couplet = $(New-Pair @('Five', 'Shaping the Pelm', $true));
-          $_writer.Pair($couplet).Ln();
+          $_krayon.Pair($couplet).Ln();
 
           [couplet]$couplet = $(New-Pair @('six', '06 - Ayurvedic'));
-          $_writer.PairLn($couplet);
+          $_krayon.PairLn($couplet);
         }
       }
     }
@@ -127,10 +127,10 @@ Describe 'writer' {
       It 'should: write pair' {
         InModuleScope Elizium.Krayola {
           [couplet]$couplet = $(kp(@('Seven', 'Kick Muck', $true)));
-          $_writer.Pair($couplet).Ln();
+          $_krayon.Pair($couplet).Ln();
 
           [couplet]$couplet = $(kp(@('Eight', 'Agog in the Ether')));
-          $_writer.PairLn($couplet);
+          $_krayon.PairLn($couplet);
         }
       }
     }
@@ -146,7 +146,7 @@ Describe 'writer' {
             $(kp('quip', "i'm back baby, i'm back", $true))
           );
 
-          $_writer.Line($(kl($pairs)));
+          $_krayon.Line($(kl($pairs)));
         }
       }
     }
@@ -160,7 +160,7 @@ Describe 'writer' {
           );
 
           [string]$message = 'Festivus for the rest of us';
-          $_writer.Line($message, $(kl($pairs)));
+          $_krayon.Line($message, $(kl($pairs)));
         }
       }
     }
@@ -183,7 +183,7 @@ Describe 'writer' {
           $otherLine = $(kl($otherAppend));        
           $appendLine.append($otherLine.Line);
 
-          $_writer.Line($appendLine);
+          $_krayon.Line($appendLine);
           $appendLine.Line.Length | Should -Be 6;
         }
       }
@@ -203,7 +203,7 @@ Describe 'writer' {
             ));
           $originalLine.append($appendLine);
 
-          $_writer.Line($originalLine);
+          $_krayon.Line($originalLine);
           $originalLine.Line.Length | Should -Be 6;
         }
       }
@@ -217,11 +217,11 @@ Describe 'writer' {
           [regex]$expression = [regex]::new('`\((?<api>[\w]+)(,(?<p>[^\)]+))?\)');
           [string]$formatWithArg = '`({0},{1})';
           [string]$format = '`({0})';
-          $writer = New-Writer $_theme $expression $formatWithArg $format;
+          $Krayon = New-Krayon $_theme $expression $formatWithArg $format;
           [string]$source = '`(red)Fields `(blue)Of The `(cyan)`(bgDarkMagenta)Nephilim, Love `(green)Under Will`(Ln)';
-          $writer.Scribble($source);
+          $Krayon.Scribble($source);
 
-          [PSCustomObject []]$operations = $writer._parse($source);
+          [PSCustomObject []]$operations = $Krayon._parse($source);
           $operations | Should -HaveCount 10;
         
         }
@@ -234,9 +234,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = 'I need to be alone &[red]today';
-              $_writer.Scribble($source);
+              $_krayon.Scribble($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 3;
               Write-Host '';        
             }
@@ -247,9 +247,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = 'Smother &[cyan]me or &[blue]suffer &[green]me';
-              $_writer.Scribble($source);
+              $_krayon.Scribble($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 7;
               Write-Host '';
             }
@@ -258,9 +258,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = 'Lay &[red]&[bgMagenta]down I''ll die today';
-              $_writer.ScribbleLn($source);
+              $_krayon.ScribbleLn($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 4;
             }
           }
@@ -271,7 +271,7 @@ Describe 'writer' {
             It 'should: perform message write' {
               InModuleScope Elizium.Krayola {
                 [string]$message = '*** Love under will';
-                $_writer.Message($message);
+                $_krayon.Message($message);
                 Write-Host '';        
               }
             }
@@ -279,7 +279,7 @@ Describe 'writer' {
             It 'should: perform message write' {
               InModuleScope Elizium.Krayola {
                 [string]$message = '!!! Love under will';
-                $_writer.MessageLn($message);        
+                $_krayon.MessageLn($message);        
               }
             }
           }
@@ -288,7 +288,7 @@ Describe 'writer' {
             It 'should: perform message write' {
               InModuleScope Elizium.Krayola {
                 [string]$source = '&[ThemeColour, affirm]$$$ Love under will';
-                $_writer.ScribbleLn($source);        
+                $_krayon.ScribbleLn($source);        
               }
             }
           }
@@ -300,9 +300,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = '&[cyan]Smother me or suffer me';
-              $_writer.ScribbleLn($source);
+              $_krayon.ScribbleLn($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 2;
             }
           }
@@ -311,9 +311,9 @@ Describe 'writer' {
             It 'should: invoke api with param' {
               InModuleScope Elizium.Krayola {
                 [string]$source = '&[message,Love Under Will]';  
-                $_writer.ScribbleLn($source);
+                $_krayon.ScribbleLn($source);
 
-                [PSCustomObject []]$operations = $_writer._parse($source);
+                [PSCustomObject []]$operations = $_krayon._parse($source);
                 $operations | Should -HaveCount 1;
               }
             }
@@ -324,9 +324,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = '&[cyan]When &[red]I''m gone &[yellow]wait here';
-              $_writer.ScribbleLn($source);
+              $_krayon.ScribbleLn($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 6;        
             }
           }
@@ -334,9 +334,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = '&[cyan]Discover &[red]&[bgYellow]all of &[magenta]life''s surprises';
-              $_writer.ScribbleLn($source);
+              $_krayon.ScribbleLn($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 7;
             }
           }
@@ -345,9 +345,9 @@ Describe 'writer' {
             It 'should: invoke api with param' {
               InModuleScope Elizium.Krayola {
                 [string]$source = 'The Nephilim; &[message,Love Under Will]&[red]*The Winter Solstace';
-                $_writer.ScribbleLn($source);
+                $_krayon.ScribbleLn($source);
 
-                [PSCustomObject []]$operations = $_writer._parse($source);
+                [PSCustomObject []]$operations = $_krayon._parse($source);
                 $operations | Should -HaveCount 4;
               }
             }
@@ -355,9 +355,9 @@ Describe 'writer' {
             It 'should: invoke api with param' {
               InModuleScope Elizium.Krayola {
                 [string]$source = '&[ThemeColour,meta][🚀] ====== [ &[ThemeColour,message]Children of the Damned&[ThemeColour,meta] ] ==='
-                $_writer.ScribbleLn($source);
+                $_krayon.ScribbleLn($source);
 
-                [PSCustomObject []]$operations = $_writer._parse($source);
+                [PSCustomObject []]$operations = $_krayon._parse($source);
                 $operations | Should -HaveCount 6;
               }
             }
@@ -370,9 +370,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = 'When I''m gone wait here&[Ln]';
-              $_writer.Scribble($source);
+              $_krayon.Scribble($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 2;        
             }
           }
@@ -382,9 +382,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = '&[white]When &[green]I''m gone &[yellow]wait here&[Ln]';
-              $_writer.Scribble($source);
+              $_krayon.Scribble($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 7;
             }
           }
@@ -392,9 +392,9 @@ Describe 'writer' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = 'I''ll &[green]send my child my last &[yellow]&[bgDarkBlue]good smile&[Ln]';
-              $_writer.Scribble($source);
+              $_krayon.Scribble($source);
 
-              [PSCustomObject []]$operations = $_writer._parse($source);
+              [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 7;        
             }
           }
@@ -408,7 +408,7 @@ Describe 'writer' {
           InModuleScope Elizium.Krayola {
             {
               [string]$source = 'I''ll love her ''til i &[orange]die[Ln]';
-              $_writer.Scribble($source);
+              $_krayon.Scribble($source);
             } | Should -Throw;
             Write-Host '';        
           }
@@ -420,7 +420,7 @@ Describe 'writer' {
           InModuleScope Elizium.Krayola {
             {
               [string]$source = 'Then rest in peace can''t you &[Text]see[Ln]';
-              $_writer.Scribble($source);
+              $_krayon.Scribble($source);
             } | Should -Throw;
             Write-Host '';        
           }
@@ -432,9 +432,9 @@ Describe 'writer' {
       It 'should: perform structured write' {
         InModuleScope Elizium.Krayola {
           [string]$source = '&[red]If you pass &[reset]through my soul today&[Ln]';
-          $_writer.Scribble($source);
+          $_krayon.Scribble($source);
 
-          [PSCustomObject []]$operations = $_writer._parse($source);
+          [PSCustomObject []]$operations = $_krayon._parse($source);
           $operations | Should -HaveCount 5;
         }
       }
@@ -444,15 +444,15 @@ Describe 'writer' {
       It 'should: should not write any text' {
         InModuleScope Elizium.Krayola {
           [string]$source = '&[red]&[red]&[red]&[red]&[red]&[red]';
-          $_writer.ScribbleLn($source);
+          $_krayon.ScribbleLn($source);
 
-          [PSCustomObject []]$operations = $_writer._parse($source);
+          [PSCustomObject []]$operations = $_krayon._parse($source);
           $operations | Should -HaveCount 6;
         }
       }
     }
   }
-} # writer
+} # Krayon
 
 Describe 'line' {
   BeforeAll {
@@ -550,7 +550,7 @@ Describe 'couplet' {
   }
 }
 
-Describe 'Writer code generator' {
+Describe 'Krayon code generator' {
   It 'should: generate colour methods' -Skip {
     # Use this test to make updates to colour methods, without having to code up
     # every method manually.
@@ -566,13 +566,13 @@ Describe 'Writer code generator' {
     foreach ($col in $fgColours) {
       # Current state:
       #
-      # [writer] black() {
+      # [Krayon] black() {
       #   $this._fgc = 'black';
       #   return $this;
       # }
       # -----------------------------------------------
 
-      $code = '[writer] {0}()';
+      $code = '[Krayon] {0}()';
       Write-Host "$($code -f $col)";
       Write-Host "{"
 
@@ -587,7 +587,7 @@ Describe 'Writer code generator' {
     }
 
     foreach ($col in $bgColours) {
-      $code = '[writer] {0}()';
+      $code = '[Krayon] {0}()';
       Write-Host "$($code -f $col)";
       Write-Host "{"
 
@@ -601,4 +601,4 @@ Describe 'Writer code generator' {
       Write-Host ""
     }
   }  
-} # Writer code generator
+} # Krayon code generator
