@@ -112,7 +112,7 @@ class line {
   }
 } # line
 
-class writer {
+class Krayon {
   static [array]$ThemeColours = @('affirm', 'key', 'message', 'meta', 'value');
 
   # Logically public properties
@@ -144,7 +144,7 @@ class writer {
 
   [regex]$_expression;
 
-  writer([hashtable]$theme, [regex]$expression, [string]$FormatWithArg, [string]$Format) {
+  Krayon([hashtable]$theme, [regex]$expression, [string]$FormatWithArg, [string]$Format) {
     $this.Theme = $theme;
 
     $this._defaultFgc = (Get-Host).ui.rawui.ForegroundColor;
@@ -172,34 +172,34 @@ class writer {
     $this.ApiFormat = $Format;
   }
 
-  [writer] Text([string]$value) {
+  [Krayon] Text([string]$value) {
     $this._print($value);
     return $this;
   }
 
-  [writer] TextLn([string]$value) {
+  [Krayon] TextLn([string]$value) {
     return $this.Text($value).Ln();
   }
 
-  [writer] Pair([couplet]$couplet) {
+  [Krayon] Pair([couplet]$couplet) {
     $this._couplet($couplet);
     return $this;
   }
 
-  [writer] PairLn([couplet]$couplet) {
+  [Krayon] PairLn([couplet]$couplet) {
     return $this.Pair($couplet).Ln();
   }
 
-  [writer] Pair([PSCustomObject]$couplet) {
+  [Krayon] Pair([PSCustomObject]$couplet) {
     $this._couplet([couplet]::new($couplet));     
     return $this;
   }
 
-  [writer] PairLn([PSCustomObject]$couplet) {
+  [Krayon] PairLn([PSCustomObject]$couplet) {
     return $this.Pair([couplet]::new($couplet)).Ln();
   }
 
-  [writer] Line([line]$line) {
+  [Krayon] Line([line]$line) {
     $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._open);
 
     [int]$count = 0;
@@ -216,42 +216,42 @@ class writer {
     return $this.Reset().Ln();
   }
 
-  [writer] Line([string]$message, [line]$line) {
+  [Krayon] Line([string]$message, [line]$line) {
     $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($message);
     $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($this._messageSuffix);
 
     return $this.Line($line);
   }
 
-  [writer] ThemeColour([string]$val) {
+  [Krayon] ThemeColour([string]$val) {
     [string]$trimmedValue = $val.Trim();
-    if ([writer]::ThemeColours -contains $trimmedValue) {
+    if ([Krayon]::ThemeColours -contains $trimmedValue) {
       [array]$cols = $this.Theme[$($trimmedValue.ToUpper() + '-COLOURS')];
       $this._fgc = $cols[0];
       $this._bgc = $cols.Length -eq 2 ? $cols[1] : $this._defaultBgc;
     }
     else {
-      Write-Host "writer.ThemeColour: ignoring invalid theme colour: '$trimmedValue'"
+      Write-Host "Krayon.ThemeColour: ignoring invalid theme colour: '$trimmedValue'"
     }
     return $this;
   }
 
-  [writer] Message([string]$message) {
+  [Krayon] Message([string]$message) {
     $null = $this.ThemeColour('message');
     return $this.Text($message).Text($this._messageSuffix);
   }
 
-  [writer] MessageLn([string]$message) {
+  [Krayon] MessageLn([string]$message) {
     return $this.Message($message).Ln();
   }
 
-  [writer] Reset() {
+  [Krayon] Reset() {
     $this._fgc = $this._defaultFgc;
     $this._bgc = $this._defaultBgc;
     return $this;
   }
 
-  [writer] Ln() {
+  [Krayon] Ln() {
     # We need to reset the background colour before a CR to prevent the colour
     # from flooding the whole line because of the carriage return.
     #
@@ -261,7 +261,7 @@ class writer {
     return $this;
   }
 
-  [writer] Scribble([string]$source) {
+  [Krayon] Scribble([string]$source) {
     [PSCustomObject []]$operations = $this._parse($source);
 
     if ($operations.Count -gt 0) {
@@ -278,201 +278,201 @@ class writer {
     return $this;
   }
 
-  [writer] ScribbleLn([string]$source) {
+  [Krayon] ScribbleLn([string]$source) {
     return $this.Scribble($source).Ln();
   }
 
   # Foreground Colours
   #
-  [writer] black() {
+  [Krayon] black() {
     $this._fgc = 'black';
     return $this;
   }
 
-  [writer] darkBlue() {
+  [Krayon] darkBlue() {
     $this._fgc = 'darkBlue';
     return $this;
   }
 
-  [writer] darkGreen() {
+  [Krayon] darkGreen() {
     $this._fgc = 'darkGreen';
     return $this;
   }
 
-  [writer] darkCyan() {
+  [Krayon] darkCyan() {
     $this._fgc = 'darkCyan';
     return $this;
   }
 
-  [writer] darkRed() {
+  [Krayon] darkRed() {
     $this._fgc = 'darkRed';
     return $this;
   }
 
-  [writer] darkMagenta() {
+  [Krayon] darkMagenta() {
     $this._fgc = 'darkMagenta';
     return $this;
   }
 
-  [writer] darkYellow() {
+  [Krayon] darkYellow() {
     $this._fgc = 'darkYellow';
     return $this;
   }
 
-  [writer] gray() {
+  [Krayon] gray() {
     $this._fgc = 'gray';
     return $this;
   }
 
-  [writer] darkGray() {
+  [Krayon] darkGray() {
     $this._fgc = 'darkGray';
     return $this;
   }
 
-  [writer] blue() {
+  [Krayon] blue() {
     $this._fgc = 'blue';
     return $this;
   }
 
-  [writer] green() {
+  [Krayon] green() {
     $this._fgc = 'green';
     return $this;
   }
 
-  [writer] cyan() {
+  [Krayon] cyan() {
     $this._fgc = 'cyan';
     return $this;
   }
 
-  [writer] red() {
+  [Krayon] red() {
     $this._fgc = 'red';
     return $this;
   }
 
-  [writer] magenta() {
+  [Krayon] magenta() {
     $this._fgc = 'magenta';
     return $this;
   }
 
-  [writer] yellow() {
+  [Krayon] yellow() {
     $this._fgc = 'yellow';
     return $this;
   }
 
-  [writer] white() {
+  [Krayon] white() {
     $this._fgc = 'white';
     return $this;
   }
 
   # Background Colours
   #
-  [writer] bgBlack() {
+  [Krayon] bgBlack() {
     $this._bgc = 'Black';
     return $this;
   }
 
-  [writer] bgDarkBlue() {
+  [Krayon] bgDarkBlue() {
     $this._bgc = 'DarkBlue';
     return $this;
   }
 
-  [writer] bgDarkGreen() {
+  [Krayon] bgDarkGreen() {
     $this._bgc = 'DarkGreen';
     return $this;
   }
 
-  [writer] bgDarkCyan() {
+  [Krayon] bgDarkCyan() {
     $this._bgc = 'DarkCyan';
     return $this;
   }
 
-  [writer] bgDarkRed() {
+  [Krayon] bgDarkRed() {
     $this._bgc = 'DarkRed';
     return $this;
   }
 
-  [writer] bgDarkMagenta() {
+  [Krayon] bgDarkMagenta() {
     $this._bgc = 'DarkMagenta';
     return $this;
   }
 
-  [writer] bgDarkYellow() {
+  [Krayon] bgDarkYellow() {
     $this._bgc = 'DarkYellow';
     return $this;
   }
 
-  [writer] bgGray() {
+  [Krayon] bgGray() {
     $this._bgc = 'Gray';
     return $this;
   }
 
-  [writer] bgDarkGray() {
+  [Krayon] bgDarkGray() {
     $this._bgc = 'DarkGray';
     return $this;
   }
 
-  [writer] bgBlue() {
+  [Krayon] bgBlue() {
     $this._bgc = 'Blue';
     return $this;
   }
 
-  [writer] bgGreen() {
+  [Krayon] bgGreen() {
     $this._bgc = 'Green';
     return $this;
   }
 
-  [writer] bgCyan() {
+  [Krayon] bgCyan() {
     $this._bgc = 'Cyan';
     return $this;
   }
 
-  [writer] bgRed () {
+  [Krayon] bgRed () {
     $this._bgc = 'Red,';
     return $this;
   }
 
-  [writer] bgMagenta() {
+  [Krayon] bgMagenta() {
     $this._bgc = 'Magenta';
     return $this;
   }
 
-  [writer] bgYellow() {
+  [Krayon] bgYellow() {
     $this._bgc = 'Yellow';
     return $this;
   }
 
-  [writer] bgWhite() {
+  [Krayon] bgWhite() {
     $this._bgc = 'White';
     return $this;
   }
 
   # Dynamic
   #
-  [writer] fore([string]$colour) {
+  [Krayon] fore([string]$colour) {
     $this._fgc = $colour;
     return $this;
   }
 
-  [writer] back([string]$colour) {
+  [Krayon] back([string]$colour) {
     $this._bgc = $colour;
     return $this;
   }
 
   # styles (don't exist yet; virtual terminal sequences?)
   #
-  [writer] bold() {
+  [Krayon] bold() {
     return $this;
   }
 
-  [writer] italic() {
+  [Krayon] italic() {
     return $this;
   }
 
-  [writer] strike() {
+  [Krayon] strike() {
     return $this;
   }
 
-  [writer] under() {
+  [Krayon] under() {
     return $this;
   }
 
@@ -600,10 +600,10 @@ class writer {
 
     return $operations;
   }
-} # writer
+} # Krayon
 
-function New-Writer {
-  [OutputType([writer])]
+function New-Krayon {
+  [OutputType([Krayon])]
   param(
     [Parameter()]
     [hashtable]$Theme = $(Get-KrayolaTheme),
@@ -620,14 +620,14 @@ function New-Writer {
 
   [string]$dummyWithArg = $WriterFormatWithArg -replace "\{\d{1,2}\}", 'dummy';
   if (-not($Expression.IsMatch($dummyWithArg))) {
-    throw "New-Writer: invalid WriterFormatWithArg ('$WriterFormatWithArg'), does not match the provided Expression: '$($Expression.ToString())'";
+    throw "New-Krayon: invalid WriterFormatWithArg ('$WriterFormatWithArg'), does not match the provided Expression: '$($Expression.ToString())'";
   }
 
   [string]$dummy = $WriterFormat -replace "\{\d{1,2}\}", 'dummy';
   if (-not($Expression.IsMatch($dummy))) {
-    throw "New-Writer: invalid WriterFormat ('$WriterFormat'), does not match the provided Expression: '$($Expression.ToString())'";
+    throw "New-Krayon: invalid WriterFormat ('$WriterFormat'), does not match the provided Expression: '$($Expression.ToString())'";
   }
-  return [writer]::new($Theme, $Expression, $WriterFormatWithArg, $WriterFormat);
+  return [Krayon]::new($Theme, $Expression, $WriterFormatWithArg, $WriterFormat);
 }
 
 
