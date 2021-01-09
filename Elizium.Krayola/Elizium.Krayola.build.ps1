@@ -13,8 +13,8 @@ $script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf
 $script:ModuleRoot = $PSScriptRoot
 $script:OutPutFolder = "$PSScriptRoot/Output"
 $script:ImportFolders = @('Public', 'Internal', 'Classes')
-$script:PsmPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psm1"
-$script:PsdPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psd1"
+$script:OutPsmPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psm1"
+$script:OutPsdPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psd1"
 
 $script:PublicFolder = 'Public'
 $script:DSCResourceFolder = 'DSCResources'
@@ -27,9 +27,41 @@ if (Test-Path -Path $script:TestHelpers) {
   $helpers | ForEach-Object { Write-Verbose "sourcing helper $_"; . $_; }
 }
 
+[string]$AdditionExportsPath = "$PSScriptRoot/Init/additional-exports.ps1";
+if (Test-Path -Path $AdditionExportsPath) {
+  . $AdditionExportsPath;
+}
+
+function Get-AdditionalFnExports {
+  [string []]$additional = @()
+
+  if ($AdditionalFnExports -and ($AdditionalFnExports -is [array])) {
+    $additional = $AdditionalFnExports;
+  }
+
+  Write-Verbose "---> Get-AdditionalFnExports: $($additional -join ', ')";
+
+  return $additional;
+}
+
+function Get-AdditionalAliasExports {
+  [string []]$additionalAliases = @()
+
+  if ($AdditionalAliasExports -and ($AdditionalAliasExports -is [array])) {
+    $additionalAliases = $AdditionalAliasExports;
+  }
+
+  Write-Verbose "===> Get-AdditionalAliasExports: $($additionalAliases -join ', ')";
+
+  return $additionalAliases;
+}
+
 function Get-FunctionExportList {
-  (Get-ChildItem -Path $script:PublicFolder -Recurse | Where-Object { $_.Name -like '*-*' } |
-    Select-Object -ExpandProperty BaseName)
+  [string[]]$fnExports = (Get-ChildItem -Path $script:PublicFolder -Recurse | Where-Object { $_.Name -like '*-*' } |
+    Select-Object -ExpandProperty BaseName);
+
+  $fnExports += Get-AdditionalFnExports;
+  return $fnExports;
 }
 
 function Get-PublicFunctionAliasesToExport {
@@ -55,6 +87,8 @@ function Get-PublicFunctionAliasesToExport {
     }
   };
 
+  $aliases += Get-AdditionalAliasExports
+
   $aliases;
 }
 
@@ -78,17 +112,17 @@ $compileParams = @{
   }
 
   Output = {
-    $script:PsmPath
+    $script:OutPsmPath
   }
 }
 
 task Compile @compileParams {
-  if (Test-Path -Path $script:PsmPath) {
-    Remove-Item -Path (Resolve-Path $script:PsmPath) -Recurse -Force
+  if (Test-Path -Path $script:OutPsmPath) {
+    Remove-Item -Path (Resolve-Path $script:OutPsmPath) -Recurse -Force
   }
-  New-Item -Path $script:PsmPath -Force > $null
+  New-Item -Path $script:OutPsmPath -Force > $null
 
-  "Set-StrictMode -Version 1.0" >> $script:PsmPath
+  "Set-StrictMode -Version 1.0" >> $script:OutPsmPath
   # !!!BUG: This should be using whatever is yielded by @compileParams
   #
   foreach ($folder in $script:ImportFolders) {
@@ -100,7 +134,7 @@ task Compile @compileParams {
       $files = Get-ChildItem -Path $currentFolder -File -Recurse -Filter '*.ps1'
       foreach ($file in $files) {
         Write-Verbose -Message "Adding $($file.FullName)"
-        Get-Content -Path (Resolve-Path $file.FullName) >> $script:PsmPath
+        Get-Content -Path (Resolve-Path $file.FullName) >> $script:OutPsmPath
       }
     }
   }
@@ -115,9 +149,9 @@ task Compile @compileParams {
       if (-not([string]::IsNullOrEmpty($exportVariables))) {
         [string]$variablesArgument = $($exportVariables -join ", ") + [System.Environment]::NewLine;
         [string]$contentToAdd = "Export-ModuleMember -Variable $variablesArgument";
-        Write-Verbose "Adding content: $contentToAdd";
+        Write-Verbose "Adding Psm content: $contentToAdd";
 
-        Add-Content $script:PsmPath "Export-ModuleMember -Variable $variablesArgument";
+        Add-Content $script:OutPsmPath "Export-ModuleMember -Variable $variablesArgument";
       }
     }
 
@@ -130,7 +164,7 @@ task Compile @compileParams {
         Write-Verbose "Found AliasesToExport: $aliasesArgument in source Psd file: $script:SourcePsdPath";
         [string]$contentToAdd = "Export-ModuleMember -Alias $aliasesArgument";
 
-        Add-Content $script:PsmPath "Export-ModuleMember -Alias $aliasesArgument";
+        Add-Content $script:OutPsmPath "Export-ModuleMember -Alias $aliasesArgument";
       } 
     }
   }
@@ -138,30 +172,34 @@ task Compile @compileParams {
   $publicFunctions = Get-FunctionExportList;
 
   if ($publicFunctions.Length -gt 0) {
-    Add-Content $script:PsmPath "Export-ModuleMember -Function $($publicFunctions -join ', ')";
+    Add-Content $script:OutPsmPath "Export-ModuleMember -Function $($publicFunctions -join ', ')";
   }
 
   # Insert custom module initialisation (./Init/module.ps1)
   #
   $initFolder = Join-Path -Path $script:ModuleRoot -ChildPath 'Init'
   if (Test-Path -Path $initFolder) {
-    Write-Verbose "Injecting custom module initialisation code";
-    "" >> $script:PsmPath;
-    "# Custom Module Initialisation" >> $script:PsmPath;
-    "#" >> $script:PsmPath;
     $moduleInitPath = Join-Path -Path $initFolder -ChildPath 'module.ps1';
-    $moduleInitContent = Get-Content -LiteralPath $moduleInitPath;
-    $moduleInitContent >> $script:PsmPath;
+
+    if (Test-Path -Path $moduleInitPath) {
+      Write-Verbose "Injecting custom module initialisation code";
+      "" >> $script:OutPsmPath;
+      "# Custom Module Initialisation" >> $script:OutPsmPath;
+      "#" >> $script:OutPsmPath;
+    
+      $moduleInitContent = Get-Content -LiteralPath $moduleInitPath;
+      $moduleInitContent >> $script:OutPsmPath;
+    }
   }
 }
 
 task CopyPSD {
-  if (-not(Test-Path (Split-Path $script:PsdPath))) {
-    New-Item -Path (Split-Path $script:PsdPath) -ItemType Directory -ErrorAction 0
+  if (-not(Test-Path (Split-Path $script:OutPsdPath))) {
+    New-Item -Path (Split-Path $script:OutPsdPath) -ItemType Directory -ErrorAction 0
   }
   $copy = @{
     Path        = "$($script:ModuleName).psd1"
-    Destination = $script:PsdPath
+    Destination = $script:OutPsdPath
     Force       = $true
     Verbose     = $true
   }
@@ -174,7 +212,7 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
   $publicFunctions = (Get-FunctionExportList) -join "', '"
 
   if (-not([string]::IsNullOrEmpty($publicFunctions))) {
-    Write-Verbose "Functions to export: $publicFunctions"
+    Write-Verbose "Functions to export (psd): $publicFunctions"
 
     $publicFunctions = "FunctionsToExport = @('{0}')" -f $publicFunctions
 
@@ -182,28 +220,28 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
     # PowerShell has a problem with trying to replace (), so @() does not
     # work without jumping through hoops. (Same goes for AliasesToExport)
     #
-    (Get-Content -Path $script:PsdPath) -replace "FunctionsToExport = ''", $publicFunctions |
-    Set-Content -Path $script:PsdPath
+    (Get-Content -Path $script:OutPsdPath) -replace "FunctionsToExport = ''", $publicFunctions |
+    Set-Content -Path $script:OutPsdPath
   }
 
-  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:PsdPath
+  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:SourcePsdPath
   if ($sourceDefinition.ContainsKey('AliasesToExport')) {
     [string[]]$aliases = Get-PublicFunctionAliasesToExport;
 
     if ($aliases.Count -gt 0) {      
       [string]$aliasesArgument = $($aliases -join "', '");
       $aliasesStatement = "AliasesToExport = @('{0}')" -f $aliasesArgument
-      Write-Verbose "AliasesToExport statement: $aliasesStatement"
+      Write-Verbose "AliasesToExport (psd) statement: $aliasesStatement"
 
-      (Get-Content -Path $script:PsdPath) -replace "AliasesToExport = ''", $aliasesStatement |
-      Set-Content -Path $script:PsdPath
+      (Get-Content -Path $script:OutPsdPath) -replace "AliasesToExport\s*=\s*''", $aliasesStatement |
+      Set-Content -Path $script:OutPsdPath
     }
   }
 }
 
-task ImportCompiledModule -if (Test-Path -Path $script:PsmPath) {
+task ImportCompiledModule -if (Test-Path -Path $script:OutPsmPath) {
   Get-Module -Name $script:ModuleName | Remove-Module -Force
-  Import-Module -Name $script:PsdPath -Force -DisableNameChecking
+  Import-Module -Name $script:OutPsdPath -Force -DisableNameChecking
 }
 
 task Pester {
