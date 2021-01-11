@@ -40,7 +40,7 @@ class couplet {
   }
 
   [string] ToString() {
-    return "Key: '$($this.Key)', Value: '$($this.Value)', Affirm: '$($this.Affirm)'";
+    return "[Key: '$($this.Key)', Value: '$($this.Value)', Affirm: '$($this.Affirm)']";
   }
 } # couplet
 
@@ -648,6 +648,7 @@ function New-Pair {
     [Parameter()]
     [string[]]$couplet
   )
-
-  return [couplet]::new($couplet);
+  return ($couplet.Count -ge 3) `
+    ? [couplet]::new($couplet[0], $couplet[1], [System.Convert]::ToBoolean($couplet[2])) `
+    : [couplet]::new($couplet[0], $couplet[1]);
 }
