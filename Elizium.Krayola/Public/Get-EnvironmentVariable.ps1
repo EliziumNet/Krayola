@@ -1,5 +1,4 @@
-function Get-EnvironmentVariable
-{
+function Get-EnvironmentVariable {
   <#
     .NAME
       Get-EnvironmentVariable
@@ -15,13 +14,20 @@ function Get-EnvironmentVariable
     .EXAMPLE
       Get-EnvironmentVariable 'KRAYOLA-THEME-NAME'
   #>
-    [CmdletBinding()]
-    [OutputType([string])]
-    Param
-    (
-      [Parameter(Mandatory = $true)]
-      [string]$Variable
-    )
+  [CmdletBinding()]
+  [OutputType([string])]
+  Param
+  (
+    [Parameter(Mandatory = $true, Position=0)]
+    [string]$Variable,
 
-  return [System.Environment]::GetEnvironmentVariable($Variable);
+    [Parameter(Position = 1)]
+    $Default
+  )
+  $value = [System.Environment]::GetEnvironmentVariable($Variable);
+
+  if (-not($value) -and ($Default)) {
+    $value = $Default;
+  }
+  return $value;
 }
