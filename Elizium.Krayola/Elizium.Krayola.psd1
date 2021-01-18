@@ -98,10 +98,10 @@
       Tags       = @('Console', 'Write', 'Colour', 'Color')
 
       # A URL to the license for this module.
-      LicenseUri = 'https://github.com/plastikfan/Krayola/blob/master/LICENSE'
+      LicenseUri = 'https://github.com/eliziumnet/Krayola/blob/master/LICENSE'
 
       # A URL to the main website for this project.
-      ProjectUri = 'https://github.com/plastikfan/Krayola'
+      ProjectUri = 'https://github.com/eliziumnet/Krayola'
 
       # A URL to an icon representing this module.
       # IconUri = ''
