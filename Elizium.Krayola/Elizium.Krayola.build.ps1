@@ -1,4 +1,5 @@
-﻿using namespace System.Text.RegularExpressions;
+﻿# KRAYOLA
+using namespace System.Text.RegularExpressions;
 
 task . Clean, Build, Tests, Stats
 task Tests ImportCompiledModule, Pester
@@ -19,7 +20,7 @@ $script:OutPsdPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:
 $script:PublicFolder = 'Public'
 $script:DSCResourceFolder = 'DSCResources'
 
-$script:SourcePsdPath = Join-Path -Path $PSScriptRoot -ChildPath "$($script:ModuleName).psd1"
+$script:SourceOutPsdPath = Join-Path -Path $PSScriptRoot -ChildPath "$($script:ModuleName).psd1"
 $script:TestHelpers = "$PSScriptRoot/Tests/Helpers"
 
 if (Test-Path -Path $script:TestHelpers) {
@@ -122,7 +123,22 @@ task Compile @compileParams {
   }
   New-Item -Path $script:OutPsmPath -Force > $null
 
+  # Insert custom module using statements (./Init/using.ps1)
+  #
+  $initFolder = Join-Path -Path $script:ModuleRoot -ChildPath 'Init'
+  if (Test-Path -Path $initFolder) {
+    Write-Verbose "Injecting module using statements";
+
+    $usingPath = Join-Path -Path $initFolder -ChildPath 'using.ps1';
+
+    if (Test-Path -Path $usingPath) {
+      $moduleUsingContent = Get-Content -LiteralPath $usingPath;
+      $moduleUsingContent >> $script:OutPsmPath;
+    }
+  }
+
   "Set-StrictMode -Version 1.0" >> $script:OutPsmPath
+
   # !!!BUG: This should be using whatever is yielded by @compileParams
   #
   foreach ($folder in $script:ImportFolders) {
@@ -139,12 +155,12 @@ task Compile @compileParams {
     }
   }
 
-  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:SourcePsdPath
+  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:SourceOutPsdPath
 
   if ($sourceDefinition) {
     if ($sourceDefinition.ContainsKey('VariablesToExport')) {
       [string[]]$exportVariables = $sourceDefinition['VariablesToExport'];
-      Write-Verbose "Found VariablesToExport: $exportVariables in source Psd file: $script:SourcePsdPath";
+      Write-Verbose "Found VariablesToExport: $exportVariables in source Psd file: $script:SourceOutPsdPath";
 
       if (-not([string]::IsNullOrEmpty($exportVariables))) {
         [string]$variablesArgument = $($exportVariables -join ", ") + [System.Environment]::NewLine;
@@ -161,11 +177,11 @@ task Compile @compileParams {
       if ($functionAliases.Count -gt 0) {
         [string]$aliasesArgument = $($functionAliases -join ", ") + [System.Environment]::NewLine;
 
-        Write-Verbose "Found AliasesToExport: $aliasesArgument in source Psd file: $script:SourcePsdPath";
+        Write-Verbose "Found AliasesToExport: $aliasesArgument in source Psd file: $script:SourceOutPsdPath";
         [string]$contentToAdd = "Export-ModuleMember -Alias $aliasesArgument";
 
         Add-Content $script:OutPsmPath "Export-ModuleMember -Alias $aliasesArgument";
-      } 
+      }
     }
   }
 
@@ -224,11 +240,11 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
     Set-Content -Path $script:OutPsdPath
   }
 
-  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:SourcePsdPath
+  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:SourceOutPsdPath
   if ($sourceDefinition.ContainsKey('AliasesToExport')) {
     [string[]]$aliases = Get-PublicFunctionAliasesToExport;
 
-    if ($aliases.Count -gt 0) {      
+    if ($aliases.Count -gt 0) {
       [string]$aliasesArgument = $($aliases -join "', '");
       $aliasesStatement = "AliasesToExport = @('{0}')" -f $aliasesArgument
       Write-Verbose "AliasesToExport (psd) statement: $aliasesStatement"
