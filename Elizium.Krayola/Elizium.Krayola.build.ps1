@@ -269,7 +269,11 @@ task Pester {
   $configuration.TestResult.Enabled = $true
   $configuration.TestResult.OutputFormat = 'NUnitxml'
   $configuration.TestResult.OutputPath = $resultFile;
-  # $configuration.Filter.Tag = 'Current'
+
+  if (-not([string]::IsNullOrEmpty($env:tag))) {
+    $configuration.Filter.Tag = $env:tag
+  }
+
   Invoke-Pester -Configuration $configuration
 }
 
