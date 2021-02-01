@@ -261,6 +261,8 @@ class Krayon {
     return $this;
   }
 
+  [void] End() {}
+
   [Krayon] Scribble([string]$source) {
     [PSCustomObject []]$operations = $this._parse($source);
 

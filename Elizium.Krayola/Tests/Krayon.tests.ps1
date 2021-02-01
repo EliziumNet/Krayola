@@ -11,15 +11,7 @@ Describe 'Krayon' {
   BeforeEach {
     InModuleScope Elizium.Krayola {
       [hashtable]$script:_theme = $(Get-KrayolaTheme);
-
-      # Why can't we type this as [Krayon] without getting an error?
-      #
-      # [-] Krayon.given: line.and: append to line.should: write line 26ms (25ms | 1ms)
-      # PSInvalidCastException: Cannot convert the "Krayon" value of type "Krayon" to type "Krayon".
-      # ArgumentTransformationMetadataException: Cannot convert the "Krayon" value of type "Krayon" to type "Krayon".
-      # at <ScriptBlock>, C:\Users\Plastikfan\dev\github\PoSh\Krayola\Elizium.Krayola\Tests\Krayon.tests.ps1:14
-      #
-      $script:_krayon = New-Krayon ($_theme);
+      [Krayon]$script:_krayon = New-Krayon ($_theme);
     }
   }
 
@@ -27,10 +19,10 @@ Describe 'Krayon' {
     It 'should: write in colour' {
       InModuleScope Elizium.Krayola {
         $_krayon.red().Text('Are you master of your domain? '). `
-          blue().TextLn('Yeah, Im still king of the county!');
+          blue().TextLn('Yeah, Im still king of the county!').End();
 
         $_krayon.red().bgMagenta().Text('Are you master of your domain? '). `
-          blue().bgDarkCyan().TextLn('Yeah, Im still lord of the manner!');
+          blue().bgDarkCyan().TextLn('Yeah, Im still lord of the manner!').End();
       }
     }
 
