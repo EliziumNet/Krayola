@@ -147,9 +147,7 @@ class Krayon {
   Krayon([hashtable]$theme, [regex]$expression, [string]$FormatWithArg, [string]$Format) {
     $this.Theme = $theme;
 
-    $this._defaultFgc = (Get-Host).ui.rawui.ForegroundColor;
-    $this._defaultBgc = (Get-Host).ui.rawui.BackgroundColor;
-
+    $this._defaultFgc, $this._defaultBgc = Get-DefaultHostUiColours
     $this._fgc = $this._defaultFgc;
     $this._bgc = $this._defaultBgc;
 
