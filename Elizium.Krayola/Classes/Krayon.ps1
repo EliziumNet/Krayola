@@ -143,8 +143,9 @@ class Krayon {
   [string]$_messageSuffix;
 
   [regex]$_expression;
+  [regex]$_nativeExpression;
 
-  Krayon([hashtable]$theme, [regex]$expression, [string]$FormatWithArg, [string]$Format) {
+  Krayon([hashtable]$theme, [regex]$expression, [string]$FormatWithArg, [string]$Format, [regex]$NativeExpression) {
     $this.Theme = $theme;
 
     $this._defaultFgc, $this._defaultBgc = Get-DefaultHostUiColours
@@ -166,6 +167,7 @@ class Krayon {
     $this._messageSuffix = $theme['MESSAGE-SUFFIX'];
 
     $this._expression = $expression;
+    $this._nativeExpression = $NativeExpression;
     $this.ApiFormatWithArg = $FormatWithArg;
     $this.ApiFormat = $Format;
   }
@@ -280,6 +282,10 @@ class Krayon {
 
   [Krayon] ScribbleLn([string]$source) {
     return $this.Scribble($source).Ln();
+  }
+
+  [string] Native([string]$structured) {
+    return $this._nativeExpression.Replace($structured, '');
   }
 
   # Foreground Colours
@@ -615,7 +621,10 @@ function New-Krayon {
     [string]$WriterFormatWithArg = '&[{0},{1}]',
 
     [Parameter()]
-    [string]$WriterFormat = '&[{0}]'
+    [string]$WriterFormat = '&[{0}]',
+
+    [Parameter()]
+    [string]$NativeExpression = [regex]::new('&\[[\w\s\-_]+(?:,\s*[\w\s\-_]+)?\]')
   )
 
   [string]$dummyWithArg = $WriterFormatWithArg -replace "\{\d{1,2}\}", 'dummy';
@@ -627,7 +636,7 @@ function New-Krayon {
   if (-not($Expression.IsMatch($dummy))) {
     throw "New-Krayon: invalid WriterFormat ('$WriterFormat'), does not match the provided Expression: '$($Expression.ToString())'";
   }
-  return [Krayon]::new($Theme, $Expression, $WriterFormatWithArg, $WriterFormat);
+  return [Krayon]::new($Theme, $Expression, $WriterFormatWithArg, $WriterFormat, $NativeExpression);
 }
 
 

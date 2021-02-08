@@ -1,5 +1,5 @@
 
-Describe 'Krayon' {
+Describe 'Krayon' -Tag 'Current' {
   BeforeAll {
     InModuleScope Elizium.Krayola {
       Get-Module Elizium.Krayola | Remove-Module -Force
@@ -11,7 +11,7 @@ Describe 'Krayon' {
   BeforeEach {
     InModuleScope Elizium.Krayola {
       [hashtable]$script:_theme = $(Get-KrayolaTheme);
-      [Krayon]$script:_krayon = New-Krayon ($_theme);
+      [Krayon]$script:_krayon = New-Krayon -Theme $_theme;
     }
   }
 
@@ -209,7 +209,8 @@ Describe 'Krayon' {
           [regex]$expression = [regex]::new('`\((?<api>[\w]+)(,(?<p>[^\)]+))?\)');
           [string]$formatWithArg = '`({0},{1})';
           [string]$format = '`({0})';
-          $Krayon = New-Krayon $_theme $expression $formatWithArg $format;
+          [regex]$nativeExpression = [regex]::new('');
+          $Krayon = New-Krayon $_theme $expression $formatWithArg $format $nativeExpression;
           [string]$source = '`(red)Fields `(blue)Of The `(cyan)`(bgDarkMagenta)Nephilim, Love `(green)Under Will`(Ln)';
           $Krayon.Scribble($source);
 
@@ -440,6 +441,76 @@ Describe 'Krayon' {
 
           [PSCustomObject []]$operations = $_krayon._parse($source);
           $operations | Should -HaveCount 6;
+        }
+      }
+    }
+  }
+
+  Describe 'given: native' {
+    Context 'and: structured string with api invokes without arguments' {
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = '&[red]hello world';
+          [string]$expected = 'hello world';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = 'hello world&[blue]';
+          [string]$expected = 'hello world';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = 'hello &[green]world';
+          [string]$expected = 'hello world';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = 'who &[magenta]watches &[cyan]the &[gray]watchers';
+          [string]$expected = 'who watches the watchers';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+    }
+
+    Context 'and: structured string with api invokes without arguments' {
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = '&[fore,red]hello world';
+          [string]$expected = 'hello world';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = 'hello world&[back,blue]';
+          [string]$expected = 'hello world';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = 'hello &[ThemeColour,green]world';
+          [string]$expected = 'hello world';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+
+      It 'should: return native string' {
+        InModuleScope Elizium.Krayola {
+          [string]$structured = 'who &[ThemeColour,magenta]watches &[Message,Silk Spectre]the &[gray]watchers';
+          [string]$expected = 'who watches the watchers';
+          $_krayon.Native($structured) | Should -BeExactly $expected;
         }
       }
     }
