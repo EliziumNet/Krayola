@@ -629,6 +629,9 @@ class Krayon {
         }
       } # foreach $m
     }
+    else {
+      $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $source; }
+    }
 
     return $operations;
   }

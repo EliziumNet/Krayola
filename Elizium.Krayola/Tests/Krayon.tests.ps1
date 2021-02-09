@@ -24,7 +24,7 @@ Describe 'Krayon' {
         $_krayon.red().bgMagenta().Text('Are you master of your domain? '). `
           blue().bgDarkCyan().TextLn('Yeah, Im still lord of the manner!').End();
       }
-    }
+    } # should: write in colour
 
     It 'should: write in theme colours' {
       InModuleScope Elizium.Krayola {
@@ -34,7 +34,7 @@ Describe 'Krayon' {
         $_krayon.ThemeColour('meta').TextLn('This is meta text');
         $_krayon.ThemeColour('value').TextLn('This is value text');        
       }
-    }
+    } # should: write in theme colours
 
     Context 'and: style' {
       It 'should: not affect text display' {
@@ -45,8 +45,8 @@ Describe 'Krayon' {
           $_krayon.under().TextLn('This is _underlined_ text');
         }
       }
-    }
-  }
+    } # and: style
+  } # given: ad-hoc
 
   Context 'given: pair' {
     Context 'and: pair is PSCustomObject' {
@@ -74,7 +74,7 @@ Describe 'Krayon' {
           $_krayon.PairLn($couplet);
         }
       }
-    }
+    } # and: pair created via default constructor
 
     Context 'and: pair created via array constructor' {
       It 'should: write pair' {
@@ -89,7 +89,7 @@ Describe 'Krayon' {
           $_krayon.PairLn($couplet);
         }
       }
-    }
+    } # and: pair created via array constructor
 
     Context 'and: pair created via discrete parameter constructor' {
       It 'should: write pair' {
@@ -101,7 +101,7 @@ Describe 'Krayon' {
           $_krayon.PairLn($couplet);
         }
       }
-    }
+    } # and: pair created via discrete parameter constructor
 
     Context 'and: pair created via New-Pair' {
       It 'should: write pair' {
@@ -113,7 +113,7 @@ Describe 'Krayon' {
           $_krayon.PairLn($couplet);
         }
       }
-    }
+    } # and: pair created via New-Pair
 
     Context 'and: pair created via kp alias' {
       It 'should: write pair' {
@@ -125,7 +125,7 @@ Describe 'Krayon' {
           $_krayon.PairLn($couplet);
         }
       }
-    }
+    } # and: pair created via kp alias
   } # given: pair
 
   Context 'given: line' {
@@ -141,7 +141,7 @@ Describe 'Krayon' {
           $_krayon.Line($(kl($pairs)));
         }
       }
-    }
+    } # and: without message
 
     Context 'and: with message' {
       It 'should: write line' {
@@ -155,7 +155,7 @@ Describe 'Krayon' {
           $_krayon.Line($message, $(kl($pairs)));
         }
       }
-    }
+    } # and: with message
 
     Context 'and: append to line' {
       It 'should: write line' {
@@ -178,7 +178,7 @@ Describe 'Krayon' {
           $_krayon.Line($appendLine);
           $appendLine.Line.Length | Should -Be 6;
         }
-      }
+      } # should: write line
 
       It 'should: write line' {
         InModuleScope Elizium.Krayola {
@@ -198,12 +198,12 @@ Describe 'Krayon' {
           $_krayon.Line($originalLine);
           $originalLine.Line.Length | Should -Be 6;
         }
-      }
-    }
-  }
+      } # should: write line
+    } # and: append to line
+  } # given: line
 
-  Context 'and: structured write' {
-    Context 'and: Custom expression' {
+  Describe 'Scribble' {
+    Context 'given: Custom expression' {
       It 'should: perform structured write' {
         InModuleScope Elizium.Krayola {
           [regex]$expression = [regex]::new('`\((?<api>[\w]+)(,(?<p>[^\)]+))?\)');
@@ -219,7 +219,7 @@ Describe 'Krayon' {
         
         }
       }
-    }
+    } # given: Custom expression
 
     Context 'and: valid structured string' {
       Context 'and: leading text snippet' {
@@ -257,7 +257,7 @@ Describe 'Krayon' {
               $operations | Should -HaveCount 4;
             }
           }
-        }
+        } # and: multiple api calls
 
         Context 'and: api invoke with param' {
           Context 'and: Message' {
@@ -285,8 +285,8 @@ Describe 'Krayon' {
               }
             }
           }
-        }
-      }
+        } # and: api invoke with param
+      } # and: leading text snippet
 
       Context 'given: leading api call' {
         Context 'and: single api call' {
@@ -311,7 +311,7 @@ Describe 'Krayon' {
               }
             }
           }
-        }
+        } # and: single api call
 
         Context 'and: multiple api calls' {
           It 'should: perform structured write' {
@@ -355,8 +355,8 @@ Describe 'Krayon' {
               }
             }
           }
-        }
-      }
+        } # and: multiple api calls
+      } # given: leading api call
 
       Context 'given: trailing api call' {
         Context 'and: single api call' {
@@ -392,8 +392,8 @@ Describe 'Krayon' {
             }
           }
         }
-      }
-    }
+      } # given: trailing api call
+    } # and: valid structured string
 
     Context 'and: invalid structured string' {
       Context 'and: invalid colour' {
@@ -424,11 +424,23 @@ Describe 'Krayon' {
     Context 'given: non colour api calls' {
       It 'should: perform structured write' {
         InModuleScope Elizium.Krayola {
-          [string]$source = '&[red]If you pass &[reset]through my soul today&[Ln]';
+          [string]$source = '&[red]If you pass &[reset]through my soul tonight&[Ln]';
           $_krayon.Scribble($source);
 
           [PSCustomObject []]$operations = $_krayon._parse($source);
           $operations | Should -HaveCount 5;
+        }
+      }
+    }
+
+    Context 'given: Vanilla string' {
+      It 'should: write test as is' -Tag 'Current' {
+        InModuleScope Elizium.Krayola {
+          [string]$source = 'Gather all his troubles';
+          $_krayon.ScribbleLn($source).End();
+
+          [PSCustomObject []]$operations = $_krayon._parse($source);
+          $operations | Should -HaveCount 1;
         }
       }
     }
@@ -444,7 +456,7 @@ Describe 'Krayon' {
         }
       }
     }
-  }
+  } # Scribble
 
   Describe 'given: native' {
     Context 'and: structured string with api invokes without arguments' {
