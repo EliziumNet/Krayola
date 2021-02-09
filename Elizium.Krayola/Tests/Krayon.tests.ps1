@@ -46,6 +46,14 @@ Describe 'Krayon' {
         }
       }
     } # and: style
+
+    Context 'and: text with background colour and new line' {
+      It 'should: write text with background without flooding with background colour' {
+        InModuleScope Elizium.Krayola {
+          $_krayon.black().bgCyan().TextLn('Text with background colour')
+        }
+      }
+    }
   } # given: ad-hoc
 
   Context 'given: pair' {
@@ -434,7 +442,7 @@ Describe 'Krayon' {
     }
 
     Context 'given: Vanilla string' {
-      It 'should: write test as is' -Tag 'Current' {
+      It 'should: write test as is' {
         InModuleScope Elizium.Krayola {
           [string]$source = 'Gather all his troubles';
           $_krayon.ScribbleLn($source).End();
