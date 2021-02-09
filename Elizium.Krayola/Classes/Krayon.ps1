@@ -472,6 +472,24 @@ class Krayon {
     return $this;
   }
 
+  [Krayon] defaultFore([string]$colour) {
+    $this._defaultFgc = $colour;
+    return $this;
+  }
+
+  [Krayon] defaultBack([string]$colour) {
+    $this._defaultBgc = $colour;
+    return $this;
+  }
+
+  [string] getDefaultFore() {
+    return $this._defaultFgc;
+  }
+
+  [string] getDefaultBack() {
+    return $this._defaultBgc;
+  }
+
   # styles (don't exist yet; virtual terminal sequences?)
   #
   [Krayon] bold() {
