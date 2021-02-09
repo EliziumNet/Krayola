@@ -1,5 +1,5 @@
 
-Describe 'Krayon' -Tag 'Current' {
+Describe 'Krayon' {
   BeforeAll {
     InModuleScope Elizium.Krayola {
       Get-Module Elizium.Krayola | Remove-Module -Force
@@ -511,6 +511,28 @@ Describe 'Krayon' -Tag 'Current' {
           [string]$structured = 'who &[ThemeColour,magenta]watches &[Message,Silk Spectre]the &[gray]watchers';
           [string]$expected = 'who watches the watchers';
           $_krayon.Native($structured) | Should -BeExactly $expected;
+        }
+      }
+    }
+  }
+
+  Describe 'Snippets' {
+    Context 'given: single api' {
+      It 'should: return snippet' {
+        InModuleScope Elizium.Krayola {
+          [string[]]$source = @('red');
+          [string]$expected = '&[red]';
+          $_krayon.Snippets($source) | Should -BeExactly $expected;
+        }
+      }
+    }
+
+    Context 'given: double api' {
+      It 'should: return double snippet' {
+        InModuleScope Elizium.Krayola {
+          [string[]]$source = @('red', 'bgRed');
+          [string]$expected = '&[red]&[bgRed]';
+          $_krayon.Snippets($source) | Should -BeExactly $expected;
         }
       }
     }

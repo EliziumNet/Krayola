@@ -288,6 +288,14 @@ class Krayon {
     return $this._nativeExpression.Replace($structured, '');
   }
 
+  [string] Snippets ([string[]]$Items) {
+    [string]$result = [string]::Empty;
+    foreach ($i in $Items) {
+      $result += $($this.ApiFormat -f $i);
+    }
+    return $result;
+  }
+
   # Foreground Colours
   #
   [Krayon] black() {
@@ -570,8 +578,8 @@ class Krayon {
         }
         else {
           [string]$snippet = if ($m.Index -eq 0) {
-            [int]$snippetStart = -1;
-            [int]$snippetEnd = -1;
+            [int]$snippetStart = - 1;
+            [int]$snippetEnd = - 1;
             [string]::Empty
           }
           else {
