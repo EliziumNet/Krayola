@@ -213,7 +213,7 @@ class Krayon {
     }
 
     $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._close);
-    return $this.Reset().Ln();
+    return $this.Ln();
   }
 
   [Krayon] Line([string]$message, [line]$line) {
@@ -252,12 +252,10 @@ class Krayon {
   }
 
   [Krayon] Ln() {
-    # We need to reset the background colour before a CR to prevent the colour
-    # from flooding the whole line because of the carriage return.
+    # Write a non-breaking space (0xA0)
+    # https://en.wikipedia.org/wiki/Non-breaking_space
     #
-    $this._bgc = $this._defaultBgc;
-    $this._printLn('');
-
+    Write-Host ([char]0xA0);
     return $this;
   }
 
