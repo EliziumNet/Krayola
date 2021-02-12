@@ -401,6 +401,17 @@ Describe 'Krayon' {
           }
         }
       } # given: trailing api call
+
+      Context 'and: empty string' {
+        It 'should: ignore' -Tag 'Current' {
+          InModuleScope Elizium.Krayola {
+            {
+              [string]$source = [string]::Empty;
+              $_krayon.Scribble($source);
+            } | Should -Not -Throw;
+          }
+        }
+      }
     } # and: valid structured string
 
     Context 'and: invalid structured string' {

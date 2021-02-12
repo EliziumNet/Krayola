@@ -262,15 +262,17 @@ class Krayon {
   [void] End() {}
 
   [Krayon] Scribble([string]$source) {
-    [PSCustomObject []]$operations = $this._parse($source);
+    if (-not([string]::IsNullOrEmpty($source))) {
+      [PSCustomObject []]$operations = $this._parse($source);
 
-    if ($operations.Count -gt 0) {
-      foreach ($op in $operations) {
-        if ($op.psobject.properties.match('Arg') -and $op.Arg) {
-          $null = $this.($op.Api)($op.Arg);
-        }
-        else {
-          $null = $this.($op.Api)();
+      if ($operations.Count -gt 0) {
+        foreach ($op in $operations) {
+          if ($op.psobject.properties.match('Arg') -and $op.Arg) {
+            $null = $this.($op.Api)($op.Arg);
+          }
+          else {
+            $null = $this.($op.Api)();
+          }
         }
       }
     }
