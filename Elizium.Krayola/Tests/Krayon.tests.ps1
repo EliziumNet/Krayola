@@ -443,7 +443,7 @@ Describe 'Krayon' {
     Context 'given: non colour api calls' {
       It 'should: perform structured write' {
         InModuleScope Elizium.Krayola {
-          [string]$source = '&[red]If you pass &[reset]through my soul tonight&[Ln]';
+          [string]$source = '&[bgRed]If you pass &[reset]through my soul tonight&[Ln]';
           $_krayon.Scribble($source);
 
           [PSCustomObject []]$operations = $_krayon._parse($source);

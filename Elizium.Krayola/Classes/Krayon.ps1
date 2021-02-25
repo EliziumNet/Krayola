@@ -441,7 +441,7 @@ class Krayon {
   }
 
   [Krayon] bgRed () {
-    $this._bgc = 'Red,';
+    $this._bgc = 'Red';
     return $this;
   }
 
