@@ -8,20 +8,20 @@ class couplet {
   }
 
   couplet([string[]]$props) {
-    $this.Key = $props[0];
-    $this.Value = $props[1];
+    $this.Key = $props[0].Replace('\,', ',').Replace('\;', ';');
+    $this.Value = $props[1].Replace('\,', ',').Replace('\;', ';');
     $this.Affirm = $props.Length -gt 2 ? [boolean]$props[2] : $false;
   }
 
   couplet ([string]$key, [string]$value, [boolean]$affirm) {
-    $this.Key = $key;
-    $this.Value = $value;
+    $this.Key = $key.Replace('\,', ',').Replace('\;', ';');
+    $this.Value = $value.Replace('\,', ',').Replace('\;', ';');
     $this.Affirm = $affirm;
   }
 
   couplet ([string]$key, [string]$value) {
-    $this.Key = $key;
-    $this.Value = $value;
+    $this.Key = $key.Replace('\,', ',').Replace('\;', ';');
+    $this.Value = $value.Replace('\,', ',').Replace('\;', ';');
     $this.Affirm = $false;
   }
 
@@ -141,6 +141,7 @@ class Krayon {
   [string]$_close;
   [string]$_separator;
   [string]$_messageSuffix;
+  [string]$_messageSuffixFiller;
 
   [regex]$_expression;
   [regex]$_nativeExpression;
@@ -165,6 +166,7 @@ class Krayon {
     $this._close = $theme['CLOSE'];
     $this._separator = $theme['SEPARATOR'];
     $this._messageSuffix = $theme['MESSAGE-SUFFIX'];
+    $this._messageSuffixFiller = [string]::new(' ', $this._messageSuffix.Length);
 
     $this._expression = $expression;
     $this._nativeExpression = $NativeExpression;
@@ -191,8 +193,21 @@ class Krayon {
   }
 
   [Krayon] Pair([PSCustomObject]$couplet) {
-    $this._couplet([couplet]::new($couplet));     
+    $this._couplet([couplet]::new($couplet));
     return $this;
+  }
+
+  [Krayon] Pair([string]$csv) {
+    [string[]]$constituents = $csv -split '(?<!\\),';
+
+    [couplet]$pair = New-Pair $constituents;
+    $this._couplet($pair);
+
+    return $this;
+  }
+
+  [Krayon] PairLn([string]$csv) {
+    return $this.Pair($csv).Ln();
   }
 
   [Krayon] PairLn([PSCustomObject]$couplet) {
@@ -202,6 +217,26 @@ class Krayon {
   [Krayon] Line([line]$line) {
     $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._open);
 
+    $this._coreLine($line);
+
+    $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._close);
+    return $this.Ln();
+  }
+
+  [Krayon] NakedLine([line]$nakedLine) {
+    $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text(
+      [string]::new(' ', $this._open.Length)
+    );
+
+    $this._coreLine($nakedLine);
+
+    $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text(
+      [string]::new(' ', $this._open.Length)
+    );
+    return $this.Ln();
+  }
+
+  [void] _coreLine([line]$line) {
     [int]$count = 0;
     foreach ($couplet in $line.Line) {
       $null = $this.Pair($couplet);
@@ -211,16 +246,63 @@ class Krayon {
         $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._separator);
       }
     }
+  }
 
-    $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._close);
-    return $this.Ln();
+  [string] Escape([string]$value) {
+    return $value.Replace(';', '\;').Replace(',', '\,');
+  }
+
+  [Krayon] Line([string]$semiColonSV) {
+    return $this._lineFromSemiColonSV($semiColonSV, 'Line');
+  }
+
+  [Krayon] NakedLine([string]$semiColonSV) {
+    return $this._lineFromSemiColonSV($semiColonSV, 'NakedLine');
+  }
+
+  [Krayon] _lineFromSemiColonSV([string]$semiColonSV, [string]$op) {
+    [string[]]$constituents = $semiColonSV -split '(?<!\\);', 0, 'RegexMatch';
+    [string]$message, [string[]]$remainder = $constituents;
+
+    [string]$unescapedComma = '(?<!\\),';
+    if ($message -match $unescapedComma) {
+      [line]$line = $this._convertToLine($constituents);
+      $null = $this.$op($line);
+    }
+    else {
+      [line]$line = $this._convertToLine($remainder);
+      $null = $this.$op($message, $line);
+    }
+
+    return $this;
   }
 
   [Krayon] Line([string]$message, [line]$line) {
-    $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($message);
-    $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($this._messageSuffix);
+    $this._lineWithMessage($message, $line);
 
     return $this.Line($line);
+  }
+
+  [Krayon] NakedLine([string]$message, [line]$line) {
+    $this._lineWithMessage($message, $line);
+
+    return $this.NakedLine($line);
+  }
+
+  [void] _lineWithMessage([string]$message, [line]$line) {
+    $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text($message);
+    $null = $this.fore($this._messageColours[0]).back($this._messageColours[1]).Text(
+      [string]::IsNullOrEmpty($message.Trim()) ? $this._messageSuffixFiller : $this._messageSuffix
+    );
+  }
+
+  [line] _convertToLine([string[]]$constituents) {
+    [couplet[]]$couplets = ($constituents | ForEach-Object {
+        New-Pair $($_ -split '(?<!\\),', 0, 'RegexMatch');
+      });
+    [line]$line = New-Line $couplets;
+
+    return $line;
   }
 
   [Krayon] ThemeColour([string]$val) {
@@ -231,7 +313,7 @@ class Krayon {
       $this._bgc = $cols.Length -eq 2 ? $cols[1] : $this._defaultBgc;
     }
     else {
-      Write-Host "Krayon.ThemeColour: ignoring invalid theme colour: '$trimmedValue'"
+      Write-Debug "Krayon.ThemeColour: ignoring invalid theme colour: '$trimmedValue'"
     }
     return $this;
   }
@@ -243,6 +325,15 @@ class Krayon {
 
   [Krayon] MessageLn([string]$message) {
     return $this.Message($message).Ln();
+  }
+
+  [Krayon] MessageNoSuffix([string]$message) {
+    $null = $this.ThemeColour('message');
+    return $this.Text($message).Text($this._messageSuffixFiller);
+  }
+
+  [Krayon] MessageNoSuffixLn([string]$message) {
+    return $this.MessageNoSuffix($message).Ln();
   }
 
   [Krayon] Reset() {
@@ -286,14 +377,6 @@ class Krayon {
 
   [string] Native([string]$structured) {
     return $this._nativeExpression.Replace($structured, '');
-  }
-
-  [string] Snippets ([string[]]$Items) {
-    [string]$result = [string]::Empty;
-    foreach ($i in $Items) {
-      $result += $($this.ApiFormat -f $i);
-    }
-    return $result;
   }
 
   # Foreground Colours
@@ -644,16 +727,20 @@ function New-Krayon {
     [hashtable]$Theme = $(Get-KrayolaTheme),
 
     [Parameter()]
-    [regex]$Expression = [regex]::new('&\[(?<api>[\w]+)(,(?<p>[^\]]+))?\]'),
+    # OLD: '&\[(?<api>[\w]+)(,(?<p>[^\]]+))?\]'
+    [regex]$Expression = [regex]::new("µ«(?<api>[\w]+)(,(?<p>[^»]+))?»"),
 
     [Parameter()]
-    [string]$WriterFormatWithArg = '&[{0},{1}]',
+    # OLD: '&[{0},{1}]'
+    [string]$WriterFormatWithArg = "µ«{0},{1}»",
 
     [Parameter()]
-    [string]$WriterFormat = '&[{0}]',
+    # OLD: '&[{0}]'
+    [string]$WriterFormat = "µ«{0}»",
 
     [Parameter()]
-    [string]$NativeExpression = [regex]::new('&\[[\w\s\-_]+(?:,\s*[\w\s\-_]+)?\]')
+    # OLD: '&\[[\w\s\-_]+(?:,\s*[\w\s\-_]+)?\]'
+    [string]$NativeExpression = [regex]::new("µ«[\w\s\-_]+(?:,\s*[\w\s\-_]+)?»")
   )
 
   [string]$dummyWithArg = $WriterFormatWithArg -replace "\{\d{1,2}\}", 'dummy';
@@ -689,4 +776,173 @@ function New-Pair {
   return ($couplet.Count -ge 3) `
     ? [couplet]::new($couplet[0], $couplet[1], [System.Convert]::ToBoolean($couplet[2])) `
     : [couplet]::new($couplet[0], $couplet[1]);
+}
+
+class Scribbler {
+  [System.Text.StringBuilder]$Builder;
+  [System.Text.StringBuilder]$_session;
+  [Krayon]$Krayon;
+
+  Scribbler([System.Text.StringBuilder]$builder, [Krayon]$krayon,
+    [System.Text.StringBuilder]$Session) {
+    $this.Builder = $builder;
+    $this.Krayon = $krayon;
+    $this._session = $Session;
+  }
+
+  [string] Snippets ([string[]]$Items) {
+    [string]$result = [string]::Empty;
+    foreach ($i in $Items) {
+      $result += $($this.Krayon.ApiFormat -f $i);
+    }
+    return $result;
+  }
+
+  [string] WithArgSnippet([string]$api, [string]$arg) {
+    return "$($this.Krayon.ApiFormatWithArg -f $api, $arg)";
+  }
+
+  [void] _coreScribbleLine([string]$message, [line]$line, [string]$lineType) {
+
+    [string]$structuredLine = $(($Line.Line | ForEach-Object {
+          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
+        }) -join ';');
+
+    if (-not([string]::IsNullOrEmpty($message))) {
+      $structuredLine = "$message;" + $structuredLine;
+    }
+
+    [string]$lineSnippet = $this.WithArgSnippet(
+      $lineType, $structuredLine
+    )
+    $this.Scribble("$($lineSnippet)");
+  }
+
+  [void] ScribbleLine([string]$message, [line]$line) {
+    $this._coreScribbleLine($message, $line, 'Line');
+  }
+
+  [void] ScribbleLine([line]$line) {
+    $this.ScribbleLine([string]::Empty, $line);
+  }
+
+  [void] ScribbleNakedLine([string]$message, [line]$nakedLine) {
+    $this._coreScribbleLine($message, $nakedLine, 'NakedLine');
+  }
+
+  [void] ScribbleNakedLine([line]$nakedLine) {
+    $this.ScribbleNakedLine([string]::Empty, $nakedLine);
+  }
+
+  [void] Scribble([string]$structuredContent) {
+    $null = $this.Builder.Append($structuredContent);
+  }
+
+  [string] Pair([couplet]$pair) {
+
+    [string]$key = $this.krayon.Escape($pair.Key);
+    [string]$value = $this.krayon.Escape($pair.Value);
+
+    [string]$csv = "$($key),$($value),$($pair.Affirm)";
+    [string]$pairSnippet = $this.WithArgSnippet(
+      'Pair', $csv
+    )
+    return $pairSnippet;
+  }
+
+  [string] Line([line]$line) {
+    [string]$structuredLine = $(($line.Line | ForEach-Object {
+          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
+        }) -join ';');
+
+    [string]$lineSnippet = $this.WithArgSnippet(
+      'Line', $structuredLine
+    )
+    return $lineSnippet;
+  }
+
+  [void] Flush () {
+    $this.Krayon.Scribble($this.Builder.ToString());
+
+    $this._clear();
+  }
+
+  [void] Restart() {
+    if ($this._session) {
+      $this._session.Clear();
+    }
+    $this.Builder.Clear();
+    $this.Krayon.Reset().End();
+  }
+
+  [void] _clear() {
+    if ($this._session) {
+      $this._session.Append($this.Builder);
+    }
+
+    $this.Builder.Clear();
+  }
+
+  [void] Save([string]$fullPath) {
+    [string]$directoryPath = [System.IO.Path]::GetDirectoryName($fullPath);
+    [string]$fileName = [System.IO.Path]::GetFileName($fullPath) + '.struct.txt';
+    [string]$writeFullPath = Join-Path -Path $directoryPath -ChildPath $fileName;
+
+    if ($this._session) {
+      if (-not(Test-Path -Path $writeFullPath)) {
+        Set-Content -LiteralPath $writeFullPath -Value $this._session.ToString();
+      }
+      else {
+        Write-Warning -Message $(
+          "Can't write session to '$writeFullPath'. (file already exists)."
+        );        
+      }
+    }
+    else {
+      Write-Warning -Message $(
+        "Can't write session to '$writeFullPath'. (session not set)."
+      );
+    }
+  }
+}
+
+class QuietScribbler: Scribbler {
+  QuietScribbler([System.Text.StringBuilder]$builder, [Krayon]$krayon,
+    [System.Text.StringBuilder]$Session):base($builder, $krayon, $Session) { }
+
+  [void] Flush () {
+    $this._clear();
+  }
+}
+
+function New-Scribbler {
+  [OutputType([Scribbler])]
+  param(
+    [Parameter()]
+    [Krayon]$Krayon,
+
+    [Parameter()]
+    [switch]$Test,
+
+    [Parameter()]
+    [switch]$Save,
+
+    [switch]$Silent
+  )
+  [System.text.StringBuilder]$builder = [System.text.StringBuilder]::new();
+  [System.text.StringBuilder]$session = $Save.ToBool() ? [System.text.StringBuilder]::new() : $null;
+
+  [Scribbler]$scribbler = if ($Test) {
+    $($null -eq (Get-EnvironmentVariable 'EliziumTest')) `
+      ? [QuietScribbler]::New($builder, $Krayon, $session) `
+      : [Scribbler]::New($builder, $Krayon, $session);
+  }
+  elseif ($Silent) {
+    [QuietScribbler]::New($builder, $Krayon, $null);
+  }
+  else {
+    [Scribbler]::New($builder, $Krayon, $session);
+  }
+
+  return $scribbler;
 }
