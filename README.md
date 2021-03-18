@@ -8,6 +8,8 @@
 
 Colourful console writing with PowerShell
 
+:warning: A lot of the documentation here is now out of date, it will be updated in due course and work is currently taking place to produce more comprehensive documentation at github pages. Also, the write in colour functions are now deprecated. The new write functionality is implemented in the Scribbler and Krayon objects; information coming ...
+
 ## Table of contents
 
 [Introduction](#Introduction)
