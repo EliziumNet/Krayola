@@ -7,6 +7,8 @@ function Write-RawPairsInColour {
     .SYNOPSIS
 
     .DESCRIPTION
+      !! DEPRECATED, use Scribbler/Krayon instead.
+
       The snippets passed in as element of $Pairs are in the same format as
       those passed into Write-InColour as TextSnippets. The only difference is that
       each snippet can only have 2 entries, the first being the key and the second being

@@ -1,18 +1,18 @@
 function Get-EnvironmentVariable {
   <#
-    .NAME
-      Get-EnvironmentVariable
+  .NAME
+    Get-EnvironmentVariable
 
-    .Synopsis
-      Wrapper around [System.Environment]::GetEnvironmentVariable to support
-    unit testing.
+  .Synopsis
+    Wrapper around [System.Environment]::GetEnvironmentVariable to support
+  unit testing.
 
-    .DESCRIPTION
-      Retrieve the value of the environment variable specified. Returns
-    $null if variable is not found.
+  .DESCRIPTION
+    Retrieve the value of the environment variable specified. Returns
+  $null if variable is not found.
 
-    .EXAMPLE
-      Get-EnvironmentVariable 'KRAYOLA-THEME-NAME'
+  .EXAMPLE
+    Get-EnvironmentVariable 'KRAYOLA-THEME-NAME'
   #>
   [CmdletBinding()]
   [OutputType([string])]

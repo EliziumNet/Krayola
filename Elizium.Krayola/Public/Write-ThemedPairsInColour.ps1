@@ -8,6 +8,8 @@ function Write-ThemedPairsInColour {
       Writes a collection of key/value pairs in colour according to a specified Theme.
 
     .DESCRIPTION
+      !! DEPRECATED, use Scribbler/Krayon instead.
+
       The Pairs defined here are colour-less, instead colours coming from the KEY-COLOURS
       and VALUE-COLOURS in the theme. The implications of this are firstly, the Pairs are
       simpler to specify. However, the colour representation is more restricted, because

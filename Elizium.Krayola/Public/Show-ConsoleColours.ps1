@@ -9,7 +9,7 @@ function Show-ConsoleColours {
 
     .SYNOPSIS
       Helper function that shows all the available console colours in the colour
-      they represent. This willl assist in the development of colour Themes.
+      they represent. This will assist in the development of colour Themes.
   #>
 
   [Array]$colours = @('Black', 'DarkBlue', 'DarkGreen', 'DarkCyan', 'DarkRed', 'DarkMagenta', `

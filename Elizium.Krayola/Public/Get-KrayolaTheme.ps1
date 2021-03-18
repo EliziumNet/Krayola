@@ -1,26 +1,26 @@
 ﻿
 function Get-KrayolaTheme {
   <#
-    .NAME
-      Get-KrayolaTheme
+  .NAME
+    Get-KrayolaTheme
 
-    .SYNOPSIS
-      Helper function that makes it easier for client applications to get a Krayola theme
-    from the environment, which is compatible with the terminal colours being used.
-    This helps keep output from different applications consistent.
+  .SYNOPSIS
+    Helper function that makes it easier for client applications to get a Krayola theme
+  from the environment, which is compatible with the terminal colours being used.
+  This helps keep output from different applications consistent.
 
-    .DESCRIPTION
-      If $KrayolaThemeName is specified, then it is used to lookup the theme in the global
-    $KrayolaThemes hash-table exposed by the Krayola module. If either the theme specified
-    does not exist or not specified, then a default theme is used. The default theme created
-    should be compatible with the dark/lightness of the background of the terminal currently
-    in use. By default, a dark terminal is assumed and the colours used show up clearly
-    against a dark background. If KRAYOLA-LIGHT-TERMINAL is defined as an environment
-    variable (can be set to any string apart from empty string/white space), then the colours
-    chosen show up best against a light background.
+  .DESCRIPTION
+    If $KrayolaThemeName is specified, then it is used to lookup the theme in the global
+  $KrayolaThemes hash-table exposed by the Krayola module. If either the theme specified
+  does not exist or not specified, then a default theme is used. The default theme created
+  should be compatible with the dark/lightness of the background of the terminal currently
+  in use. By default, a dark terminal is assumed and the colours used show up clearly
+  against a dark background. If KRAYOLA-LIGHT-TERMINAL is defined as an environment
+  variable (can be set to any string apart from empty string/white space), then the colours
+  chosen show up best against a light background.
   #>
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseBOMForUnicodeEncodedFile', '')]
-  [OutputType([System.Collections.Hashtable])]
+  [OutputType([hashtable])]
   param (
     [Parameter(
       Mandatory = $false,
@@ -30,10 +30,10 @@ function Get-KrayolaTheme {
     [string]$KrayolaThemeName,
 
     [Parameter(Mandatory = $false)]
-    [System.Collections.Hashtable]$Themes = $KrayolaThemes,
+    [hashtable]$Themes = $KrayolaThemes,
 
     [Parameter(Mandatory = $false)]
-    [System.Collections.Hashtable]$DefaultTheme = @{
+    [hashtable]$DefaultTheme = @{
       # DefaultTheme is compatible with dark consoles by default
       #
       'FORMAT'             = '"<%KEY%>" => "<%VALUE%>"';
@@ -50,7 +50,7 @@ function Get-KrayolaTheme {
       'MESSAGE-SUFFIX'     = ' // ';
     }
   )
-  [System.Collections.Hashtable]$displayTheme = $DefaultTheme;
+  [hashtable]$displayTheme = $DefaultTheme;
 
   # Switch to use colours compatible with light consoles if KRAYOLA-LIGHT-TERMINAL
   # is set.
