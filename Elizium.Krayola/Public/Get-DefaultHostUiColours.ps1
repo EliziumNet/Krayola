@@ -1,6 +1,23 @@
 
 function Get-DefaultHostUiColours {
 
+  <#
+  .NAME
+    Get-DefaultHostUiColours
+
+  .SYNOPSIS
+    Get the default foreground and background colours of the console host.
+
+  .DESCRIPTION
+    Currently there is an open issue (https://github.com/PowerShell/PowerShell/issues/14727)
+  which means that on a mac, the default colours obtained from the host are both incorrectly
+  set to -1. This function takes this deficiency into account and will ensure that sensible
+  colour values are always returned.
+
+  #>
+  [OutputType([string[]])]
+  param()
+
   [string]$rawFgc, [string]$rawBgc = get-RawHostUiColours;
   [boolean]$isLight = Get-IsKrayolaLightTerminal;
 

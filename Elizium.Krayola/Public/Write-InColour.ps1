@@ -9,6 +9,8 @@ function Write-InColour {
       colours.
 
     .DESCRIPTION
+      !! DEPRECATED, use Scribbler/Krayon instead.
+
       The user passes in an array of 1,2 or 3 element arrays, which contains any number of text fragments
       with an optional colour specification (ConsoleColor enumeration). The function will then write a
       multi coloured text line to the console.
