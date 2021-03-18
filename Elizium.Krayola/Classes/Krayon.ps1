@@ -919,7 +919,7 @@ function New-Scribbler {
   [OutputType([Scribbler])]
   param(
     [Parameter()]
-    [Krayon]$Krayon,
+    [Krayon]$Krayon = $(New-Krayon),
 
     [Parameter()]
     [switch]$Test,
