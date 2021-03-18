@@ -653,9 +653,8 @@ class Krayon {
 
   hidden [array] _parse ([string]$source) {
     [System.Text.RegularExpressions.Match]$previousMatch = $null;
-    [PSCustomObject []]$operations = @()
 
-    if ($this._expression.IsMatch($source)) {
+    [PSCustomObject []]$operations = if ($this._expression.IsMatch($source)) {
       [System.Text.RegularExpressions.MatchCollection]$mc = $this._expression.Matches($source);
       [int]$count = 0;
       foreach ($m in $mc) {
@@ -671,14 +670,14 @@ class Krayon {
           # If we find a text snippet, it must be applied before the current api invoke
           # 
           if (-not([string]::IsNullOrEmpty($snippet))) {
-            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+            [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
           }
 
           if (-not([string]::IsNullOrEmpty($parm))) {
-            $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
+            [PSCustomObject] @{ Api = $api; Arg = $parm; }
           }
           else {
-            $operations += [PSCustomObject] @{ Api = $api; }
+            [PSCustomObject] @{ Api = $api; }
           }
         }
         else {
@@ -693,14 +692,14 @@ class Krayon {
             $source.Substring($snippetStart, $snippetEnd);
           }
           if (-not([string]::IsNullOrEmpty($snippet))) {
-            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+            [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
           }
 
           if (-not([string]::IsNullOrEmpty($parm))) {
-            $operations += [PSCustomObject] @{ Api = $api; Arg = $parm; }
+            [PSCustomObject] @{ Api = $api; Arg = $parm; }
           }
           else {
-            $operations += [PSCustomObject] @{ Api = $api; }
+            [PSCustomObject] @{ Api = $api; }
           }
         }
         $previousMatch = $m;
@@ -711,13 +710,13 @@ class Krayon {
           [string]$snippet = $source.Substring($lastSnippetStart);
 
           if (-not([string]::IsNullOrEmpty($snippet))) {
-            $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+            [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
           }
         }
       } # foreach $m
     }
     else {
-      $operations += [PSCustomObject] @{ Api = 'Text'; Arg = $source; }
+      @([PSCustomObject] @{ Api = 'Text'; Arg = $source; });
     }
 
     return $operations;
