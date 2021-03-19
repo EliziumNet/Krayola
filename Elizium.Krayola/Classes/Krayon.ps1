@@ -938,38 +938,6 @@ class Scribbler {
 
   # Scribblers
   #
-  [void] ScribbleLine([string]$message, [line]$line) {
-    $this._coreScribbleLine($message, $line, 'Line');
-  }
-
-  [void] ScribbleLine([line]$line) {
-    $this.ScribbleLine([string]::Empty, $line);
-  }
-
-  [void] ScribbleNakedLine([string]$message, [line]$nakedLine) {
-    $this._coreScribbleLine($message, $nakedLine, 'NakedLine');
-  }
-
-  [void] ScribbleNakedLine([line]$nakedLine) {
-    $this.ScribbleNakedLine([string]::Empty, $nakedLine);
-  }
-
-  hidden [void] _coreScribbleLine([string]$message, [line]$line, [string]$lineType) {
-
-    [string]$structuredLine = $(($Line.Line | ForEach-Object {
-          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
-        }) -join ';');
-
-    if (-not([string]::IsNullOrEmpty($message))) {
-      $structuredLine = "$message;" + $structuredLine;
-    }
-
-    [string]$lineSnippet = $this.WithArgSnippet(
-      $lineType, $structuredLine
-    )
-    $this.Scribble("$($lineSnippet)");
-  } # _coreScribbleLine
-
   [void] Scribble([string]$structuredContent) {
     $null = $this.Builder.Append($structuredContent);
   }
@@ -1049,28 +1017,44 @@ class Scribbler {
   # Line Accelerators
   #
   [Scribbler] Line([string]$message, [line]$line) {
-    $this.ScribbleLine($message, $line);
+    $this._coreScribbleLine($message, $line, 'Line');
 
     return $this;
   }
 
   [Scribbler] Line([line]$line) {
-    $this.ScribbleLine([string]::Empty, $line);
+    $this.Line([string]::Empty, $line);
 
     return $this;
   }
 
-  [Scribbler] NakedLine([string]$message, [line]$line) {
-    $this.ScribbleNakedLine($message, $line);
+  [Scribbler] NakedLine([string]$message, [line]$nakedLine) {
+    $this._coreScribbleLine($message, $nakedLine, 'NakedLine');
 
     return $this;
   }
 
   [Scribbler] NakedLine([line]$line) {
-    $this.ScribbleNakedLine([string]::Empty, $line);
+    $this.NakedLine([string]::Empty, $line);
 
     return $this;
   }
+
+  hidden [void] _coreScribbleLine([string]$message, [line]$line, [string]$lineType) {
+
+    [string]$structuredLine = $(($Line.Line | ForEach-Object {
+          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
+        }) -join ';');
+
+    if (-not([string]::IsNullOrEmpty($message))) {
+      $structuredLine = "$message;" + $structuredLine;
+    }
+
+    [string]$lineSnippet = $this.WithArgSnippet(
+      $lineType, $structuredLine
+    )
+    $this.Scribble("$($lineSnippet)");
+  } # _coreScribbleLine
 
   # Theme Accelerators
   #
@@ -1359,7 +1343,7 @@ class Scribbler {
   }
 
   [Scribbler] back([string]$colour) {
-    [string]$snippet = $this.WithArgSnippet('back', "bg$($colour)");
+    [string]$snippet = $this.WithArgSnippet('back', $colour);
     $this.Scribble($snippet);
 
     return $this;
@@ -1378,6 +1362,11 @@ class Scribbler {
 
     return $this;
   }
+
+  # NB, Since getDefaultFore and getDefaultBack on the Krayon don't
+  # do anything to change rendering, it makes no sense to have these
+  # methods replicated here; there's no use for them.
+  #
 
   # Other internal
   #

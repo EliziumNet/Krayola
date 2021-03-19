@@ -79,7 +79,7 @@ Describe 'Krayon' {
           [couplet]$couplet = [couplet]::new('Three', 'Phalarn Dawn', $true);
           $_krayon.Pair($couplet).Ln();
 
-          [couplet]$couplet = [couplet]::new('Four', '04 - The Domes of G''Bal', $false);
+          [couplet]$couplet = [couplet]::new('Four', 'The Domes of G''Bal', $false);
           $_krayon.PairLn($couplet);
         }
       }
@@ -91,7 +91,7 @@ Describe 'Krayon' {
           [couplet]$couplet = $(New-Pair @('Five', 'Shaping the Pelm', $true));
           $_krayon.Pair($couplet).Ln();
 
-          [couplet]$couplet = $(New-Pair @('six', '06 - Ayurvedic'));
+          [couplet]$couplet = $(New-Pair @('six', 'Ayurvedic'));
           $_krayon.PairLn($couplet);
         }
       }
@@ -464,44 +464,4 @@ Describe 'Krayon code generator' {
       Write-Host ""
     }
   }
-
-  It 'should: generate custom colour methods' -Skip {
-    # Use this test to make updates to colour methods, without having to code up
-    # every method manually.
-    #
-    [array]$fgColours = @('black', 'darkBlue', 'darkGreen', 'darkCyan',
-      'darkRed', 'darkMagenta', 'darkYellow', 'gray', 'darkGray', 'blue', 'green',
-      'cyan', 'red', 'magenta', 'yellow', 'white');
-
-    [array]$bgColours = @('bgBlack', 'bgDarkBlue', 'bgDarkGreen', 'bgDarkCyan',
-      'bgDarkRed', 'bgDarkMagenta', 'bgDarkYellow', 'bgGray', 'bgDarkGray', 'bgBlue', 'bgGreen',
-      'bgCyan', 'bgRed', 'bgMagenta', 'bgYellow', 'bgWhite');
-      
-    foreach ($col in $($fgColours + $bgColours)) {
-      # [Scribbler] black() {
-      # [string]$snippet = $this.Snippets($colour);
-      # $this.Scribble($snippet);
-
-      # return $this;
-      # }
-      # -----------------------------------------------
-
-      $code = '[Scribbler] {0}()';
-      Write-Host "$($code -f $col) {";
-
-      $code = '   [string]$snippet = $this.Snippets(''{0}'');';
-      Write-Host "$($code -f $col)";
-
-      Write-Host '$this.Scribble($snippet);';
-      Write-Host "";
-
-      $code = '   return $this;';
-      Write-Host "$code";
-      Write-Host "}";
-
-      Write-Host "";
-    }
-  }
-
-  
 } # Krayon code generator
