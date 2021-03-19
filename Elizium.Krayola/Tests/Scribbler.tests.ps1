@@ -724,7 +724,7 @@ Describe 'Scribbler' {
   } # Snippets
 
   Describe '[Accelerators]' {
-    Describe 'ScribbleLine' { # => Line
+    Describe 'Line' {
       Context 'given: line with with pair Key containing a comma' {
         It 'should: escape and scribble line' {
           InModuleScope Elizium.Krayola {
@@ -732,7 +732,7 @@ Describe 'Scribbler' {
                   $(New-Pair('What is the answer to life, love and unity', 'Fourty Two'))
                 )));
 
-            $_scribbler.ScribbleLine($line);
+            $_scribbler.Line($line).End();
             $_scribbler.Builder | Should -Match 'life\\,';
           }
         }
@@ -745,7 +745,7 @@ Describe 'Scribbler' {
                   $(New-Pair('Fourty Two', 'What is the answer to life, love and unity'))
                 )));
 
-            $_scribbler.ScribbleLine($line);
+            $_scribbler.Line($line).End();
             $_scribbler.Builder | Should -Match 'life\\,';
           }
         }
@@ -758,7 +758,7 @@ Describe 'Scribbler' {
                   $(New-Pair('What is the answer to life; love and unity', 'Fourty Two'))
                 )));
 
-            $_scribbler.ScribbleLine($line);
+            $_scribbler.Line($line).End();
             $_scribbler.Builder | Should -Match 'life\\;';
           }
         }
@@ -771,14 +771,14 @@ Describe 'Scribbler' {
                   $(New-Pair('Fourty Two', 'What is the answer to life; love and unity'))
                 )));
 
-            $_scribbler.ScribbleLine($line);
+            $_scribbler.Line($line).End();
             $_scribbler.Builder | Should -Match 'life\\;';
           }
         }
       }
-    } # ScribbleLine
+    } # Line
 
-    Describe 'ScribbleNakedLine' {
+    Describe 'NakedLine' {
       Context 'given: line' {
         It 'should: render line without open and close' {
           InModuleScope Elizium.Krayola {
@@ -786,7 +786,7 @@ Describe 'Scribbler' {
                   $(New-Pair('Naked', 'The Emperor has no clothes'))
                 )));
 
-            $_scribbler.ScribbleNakedLine($line);
+            $_scribbler.NakedLine($line).End();
 
             $_scribbler.Builder | Should -Match 'Naked';
             $_scribbler.Builder | Should -Match 'The Emperor has no clothes';
@@ -795,8 +795,128 @@ Describe 'Scribbler' {
           }
         }
       }
-    } # ScribbleNakedLine
+    } # NakedLine
 
+    Describe 'ThemeColour' {
+      Context 'given: Theme colour' {
+        It 'should: Set colour to <theme>' -TestCases @(
+          @{ Theme = 'affirm' },
+          @{ Theme = 'key' },
+          @{ Theme = 'message' },
+          @{ Theme = 'meta' },
+          @{ Theme = 'value' }
+        ) {
+          $_scribbler.ThemeColour($Theme).End();
+          $_scribbler.TextLn('That''s all folks');
+
+          $_scribbler.Builder | Should -match "ThemeColour,$Theme"
+        }
+      }
+    } # ThemeColour
+
+    Describe 'Message' {
+      Context 'given: Message' {
+        It 'should: set a message' {
+          $_scribbler.Reset().Message('... in a bottle').End();
+          $_scribbler.Ln();
+
+          $_scribbler.Builder | Should -match 'Message,... in a bottle';
+        }
+      } # Message
+
+      Context 'given: MessageLn' {
+        It 'should: set a message' {
+          $_scribbler.Reset().MessageLn('The World Is My Oyster').End();
+
+          $_scribbler.Builder | Should -match 'Message,The World Is My Oyster';
+        }
+      } # MessageLn
+
+      Context 'given: MessageNoSuffix' {
+        It 'should: set a message' {
+          $_scribbler.Reset().MessageNoSuffix('The Only Star In Heaven').End();
+          $_scribbler.Ln();
+
+          $_scribbler.Builder | Should -match 'MessageNoSuffix,The Only Star In Heaven';
+        }
+      } # MessageNoSuffix
+
+      Context 'given: MessageNoSuffixLn' {
+        It 'should: set a message'  {
+          $_scribbler.Reset().MessageNoSuffixLn('Black Night White Light').End();
+
+          $_scribbler.Builder | Should -match 'MessageNoSuffix,Black Night White Light';
+        }
+      } # MessageNoSuffix
+    } # Message
+
+    Describe '[Colours]' {
+      Context 'given: explicit foreground' {
+        It 'should: explicitly set foreground colour' {
+          [System.ConsoleColor[]]$colours = [ConsoleColor]::GetValues([ConsoleColor]);
+
+          $colours | ForEach-Object {
+            [System.ConsoleColor]$foregroundColour = $_;
+            $_scribbler.$foregroundColour().Text('[Where Eagles Dare] ').End();
+          }
+          $_scribbler.Ln();
+        }
+      } # explicit foreground
+
+      Context 'given: explicit background' {
+        It 'should: explicitly set background colour' {
+          [System.ConsoleColor[]]$colours = [ConsoleColor]::GetValues([ConsoleColor]);
+
+          $colours | ForEach-Object {
+            [string]$backgroundColour = "bg$($_)";
+            $_scribbler.$backgroundColour().Text('[Flight Of Icarus] ').End();
+          }
+          $_scribbler.Ln();
+        }
+      } # explicit background
+
+      Context 'given: foreground' {
+        It 'should: set colour foreground' {
+          [System.ConsoleColor[]]$colours = [ConsoleColor]::GetValues([ConsoleColor]);
+
+          $colours | ForEach-Object {
+            [System.ConsoleColor]$colour = $_;
+            $_scribbler.fore($colour).Text('[Rainbow Islands]').End();
+          }
+          $_scribbler.Ln();
+        }
+      } # foreground
+
+      Context 'given: background' {
+        It 'should: set colour foreground' {
+          [System.ConsoleColor[]]$colours = [ConsoleColor]::GetValues([ConsoleColor]);
+
+          $colours | ForEach-Object {
+            [System.ConsoleColor]$colour = $_;
+            $_scribbler.back($colour).Text('[Island Rainbows]').End();
+          }
+          $_scribbler.Ln();
+        }
+      } # background
+
+      Context 'given: default foreground' {
+        It 'should: explicitly set foreground colour' {
+          $_scribbler.defaultFore('red').Reset().TextLn('Hell Fire').End();
+        }
+      }
+
+      Context 'given: default background' {
+        It 'should: explicitly set foreground colour' {
+          $_scribbler.defaultBack('blue').Reset().TextLn('The Walls Of Jericho').End();
+        }
+      }
+
+      Context 'given: Get defaults' {
+        It 'should: return default foreground colour' {
+
+        }
+      }
+    } # [Colours]
   } # [Accelerators]
 
   Describe 'Save' {
