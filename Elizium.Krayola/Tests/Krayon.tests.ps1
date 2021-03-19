@@ -713,13 +713,13 @@ Describe 'Krayon' {
       }
     } # and: valid structured string
 
-    Context 'and: Scribble.Pair' {
+    Context 'and: Scribble.PairSnippet' {
       Context 'and: Key containing a comma' {
         It 'should: escape and scribble ok' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('two, Never Forget', 'Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.Pair($pair);
+            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
             $pairSnippet | Should -Match 'two\\,';
 
             $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
@@ -732,7 +732,7 @@ Describe 'Krayon' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('three', 'Searching, Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.Pair($pair);
+            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
             $pairSnippet | Should -Match 'Searching\\,';
 
             $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
@@ -745,7 +745,7 @@ Describe 'Krayon' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('four; The Runner', 'Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.Pair($pair);
+            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
             $pairSnippet | Should -Match 'four\\;';
 
             $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
@@ -758,23 +758,23 @@ Describe 'Krayon' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('five', 'The Javelin; Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.Pair($pair);
+            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
             $pairSnippet | Should -Match 'The Javelin\\;';
 
             $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
           }
         }
       }
-    } # Scribble.Pair
+    } # Scribble.PairSnippet
 
-    Context 'Scribble.Line' {
+    Context 'Scribble.LineSnippet' {
       Context 'and: Key containing a comma' {
         It 'should: escape and scribble ok' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('one, Doubleplusgood', 'Eurythmics'));
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.Line($line);
+            [string]$lineSnippet = $_scribbler.LineSnippet($line);
             $lineSnippet | Should -Match 'one\\,';
 
             $_scribbler.Scribble("$($lineSnippet)");
@@ -788,7 +788,7 @@ Describe 'Krayon' {
             [couplet]$pair = $(New-Pair @('two', 'For The Love Of Big Brother, Eurythmics')); ;
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.Line($line);
+            [string]$lineSnippet = $_scribbler.LineSnippet($line);
             $lineSnippet | Should -Match 'Brother\\,';
 
             $_scribbler.Scribble("$($lineSnippet)");
@@ -802,7 +802,7 @@ Describe 'Krayon' {
             [couplet]$pair = $(New-Pair @('three; The Runner', 'Eurythmics'));
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.Line($line);
+            [string]$lineSnippet = $_scribbler.LineSnippet($line);
             $lineSnippet | Should -Match 'three\\;';
 
             $_scribbler.Scribble("$($lineSnippet)");
@@ -816,14 +816,14 @@ Describe 'Krayon' {
             [couplet]$pair = $(New-Pair @('four', 'I Did It Just The Same; Eurythmics'));
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.Line($line);
+            [string]$lineSnippet = $_scribbler.LineSnippet($line);
             $lineSnippet | Should -Match 'Same\\;';
 
             $_scribbler.Scribble("$($lineSnippet)");
           }
         }
       }
-    } # Scribble.Line
+    } # Scribble.LineSnippet
 
     Context 'and: invalid structured string' {
       Context 'and: invalid colour' {
@@ -1258,5 +1258,45 @@ Describe 'Krayon code generator' {
 
       Write-Host ""
     }
-  }  
+  }
+
+  It 'should: generate custom colour methods' -Skip {
+    # Use this test to make updates to colour methods, without having to code up
+    # every method manually.
+    #
+    [array]$fgColours = @('black', 'darkBlue', 'darkGreen', 'darkCyan',
+      'darkRed', 'darkMagenta', 'darkYellow', 'gray', 'darkGray', 'blue', 'green',
+      'cyan', 'red', 'magenta', 'yellow', 'white');
+
+    [array]$bgColours = @('bgBlack', 'bgDarkBlue', 'bgDarkGreen', 'bgDarkCyan',
+      'bgDarkRed', 'bgDarkMagenta', 'bgDarkYellow', 'bgGray', 'bgDarkGray', 'bgBlue', 'bgGreen',
+      'bgCyan', 'bgRed', 'bgMagenta', 'bgYellow', 'bgWhite');
+      
+    foreach ($col in $($fgColours + $bgColours)) {
+      # [Scribbler] black() {
+      # [string]$snippet = $this.Snippets($colour);
+      # $this.Scribble($snippet);
+
+      # return $this;
+      # }
+      # -----------------------------------------------
+
+      $code = '[Scribbler] {0}()';
+      Write-Host "$($code -f $col) {";
+
+      $code = '   [string]$snippet = $this.Snippets(''{0}'');';
+      Write-Host "$($code -f $col)";
+
+      Write-Host '$this.Scribble($snippet);';
+      Write-Host "";
+
+      $code = '   return $this;';
+      Write-Host "$code";
+      Write-Host "}";
+
+      Write-Host "";
+    }
+  }
+
+  
 } # Krayon code generator
