@@ -201,6 +201,10 @@ class Krayon {
     return $this;
   }
 
+  [Krayon] PairLn([PSCustomObject]$couplet) {
+    return $this.Pair([couplet]::new($couplet)).Ln();
+  }
+
   [Krayon] Pair([string]$csv) {
     [string[]]$constituents = $csv -split '(?<!\\),';
 
@@ -212,10 +216,6 @@ class Krayon {
 
   [Krayon] PairLn([string]$csv) {
     return $this.Pair($csv).Ln();
-  }
-
-  [Krayon] PairLn([PSCustomObject]$couplet) {
-    return $this.Pair([couplet]::new($couplet)).Ln();
   }
 
   [Krayon] Line([line]$line) {
@@ -914,8 +914,7 @@ class Scribbler {
     return "$($this.Krayon.ApiFormatWithArg -f $api, $arg)";
   }
 
-  [string] Pair([couplet]$pair) {
-
+  [string] PairSnippet([couplet]$pair) {
     [string]$key = $this.krayon.Escape($pair.Key);
     [string]$value = $this.krayon.Escape($pair.Value);
 
@@ -926,7 +925,7 @@ class Scribbler {
     return $pairSnippet;
   }
 
-  [string] Line([line]$line) {
+  [string] LineSnippet([line]$line) {
     [string]$structuredLine = $(($line.Line | ForEach-Object {
           "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
         }) -join ';');
@@ -975,6 +974,8 @@ class Scribbler {
     $null = $this.Builder.Append($structuredContent);
   }
 
+  # Management
+  #
   [void] Flush () {
     $this.Krayon.Scribble($this.Builder.ToString());
 
@@ -1010,6 +1011,376 @@ class Scribbler {
       );
     }
   }
+
+  # Text Accelerators
+  #
+  [Scribbler] Text([string]$value) {
+    $this.Scribble($value);
+    return $this;
+  }
+
+  [Scribbler] TextLn([string]$value) {
+    return $this.Text($value).Ln();
+  }
+
+  # Pair Accelerators
+  #
+  [Scribbler] Pair([couplet]$couplet) {
+    [string]$pairSnippet = $this.Krayon.PairSnippet($couplet);
+    $this.Scribble($pairSnippet);
+
+    return $this;
+  }
+
+  [Scribbler] PairLn([couplet]$couplet) {
+    return $this.Pair($couplet).Ln();
+  }
+
+  [Scribbler] Pair([PSCustomObject]$coupletObj) {
+    [couplet]$couplet = [couplet]::new($coupletObj);
+
+    return $this.Pair($couplet);
+  }
+
+  [Scribbler] PairLn([PSCustomObject]$coupletObj) {
+    return $this.Pair([couplet]::new($coupletObj)).Ln();
+  }
+
+  # Line Accelerators
+  #
+  [Scribbler] Line([string]$message, [line]$line) {
+    $this.ScribbleLine($message, $line);
+
+    return $this;
+  }
+
+  [Scribbler] Line([line]$line) {
+    $this.ScribbleLine([string]::Empty, $line);
+
+    return $this;
+  }
+
+  [Scribbler] NakedLine([string]$message, [line]$line) {
+    $this.ScribbleNakedLine($message, $line);
+
+    return $this;
+  }
+
+  [Scribbler] NakedLine([line]$line) {
+    $this.ScribbleNakedLine([string]::Empty, $line);
+
+    return $this;
+  }
+
+  # Theme Accelerators
+  #
+  [Scribbler] ThemeColour([string]$val) {
+    [string]$snippet = $this.WithArgSnippet('ThemeColour', $val);
+
+    $this.Scribble($snippet);
+    return $this;
+  }
+
+  # Message Accelerators
+  #
+  [Scribbler] Message([string]$message) {
+    [string]$snippet = $this.WithArgSnippet('Message', $message);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] MessageLn([string]$message) {
+    return $this.Message($message).Ln();
+  }
+
+  [Scribbler] MessageNoSuffix([string]$message) {
+    [string]$snippet = $this.WithArgSnippet('MessageNoSuffix', $message);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] MessageNoSuffixLn([string]$message) {
+    return $this.MessageNoSuffix($message).Ln();
+  }
+
+  # Auxiliary Accelerators
+  #
+  [Scribbler] Reset() {
+    [string]$snippet = $this.Snippets('Reset');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] Ln() {
+    [string]$snippet = $this.Snippets('Ln');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [void] End() { }
+
+  # Colour Accelerators
+  #
+  [Scribbler] black() {
+    [string]$snippet = $this.Snippets('black');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] darkBlue() {
+    [string]$snippet = $this.Snippets('darkBlue');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] darkGreen() {
+    [string]$snippet = $this.Snippets('darkGreen');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] darkCyan() {
+    [string]$snippet = $this.Snippets('darkCyan');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] darkRed() {
+    [string]$snippet = $this.Snippets('darkRed');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] darkMagenta() {
+    [string]$snippet = $this.Snippets('darkMagenta');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] darkYellow() {
+    [string]$snippet = $this.Snippets('darkYellow');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] gray() {
+    [string]$snippet = $this.Snippets('gray');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] darkGray() {
+    [string]$snippet = $this.Snippets('darkGray');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] blue() {
+    [string]$snippet = $this.Snippets('blue');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] green() {
+    [string]$snippet = $this.Snippets('green');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] cyan() {
+    [string]$snippet = $this.Snippets('cyan');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] red() {
+    [string]$snippet = $this.Snippets('red');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] magenta() {
+    [string]$snippet = $this.Snippets('magenta');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] yellow() {
+    [string]$snippet = $this.Snippets('yellow');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] white() {
+    [string]$snippet = $this.Snippets('white');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgBlack() {
+    [string]$snippet = $this.Snippets('bgBlack');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgDarkBlue() {
+    [string]$snippet = $this.Snippets('bgDarkBlue');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgDarkGreen() {
+    [string]$snippet = $this.Snippets('bgDarkGreen');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgDarkCyan() {
+    [string]$snippet = $this.Snippets('bgDarkCyan');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgDarkRed() {
+    [string]$snippet = $this.Snippets('bgDarkRed');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgDarkMagenta() {
+    [string]$snippet = $this.Snippets('bgDarkMagenta');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgDarkYellow() {
+    [string]$snippet = $this.Snippets('bgDarkYellow');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgGray() {
+    [string]$snippet = $this.Snippets('bgGray');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgDarkGray() {
+    [string]$snippet = $this.Snippets('bgDarkGray');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgBlue() {
+    [string]$snippet = $this.Snippets('bgBlue');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgGreen() {
+    [string]$snippet = $this.Snippets('bgGreen');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgCyan() {
+    [string]$snippet = $this.Snippets('bgCyan');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgRed() {
+    [string]$snippet = $this.Snippets('bgRed');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgMagenta() {
+    [string]$snippet = $this.Snippets('bgMagenta');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgYellow() {
+    [string]$snippet = $this.Snippets('bgYellow');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] bgWhite() {
+    [string]$snippet = $this.Snippets('bgWhite');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+  
+  # Foreground/Background Accelerators
+  #
+  [Scribbler] fore([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('fore', $colour);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] back([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('back', "bg$($colour)");
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] defaultFore([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('defaultFore', $colour);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] defaultBack([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('defaultBack', $colour);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  # Other internal
+  #
 
   hidden [void] _clear() {
     if ($this._session) {
