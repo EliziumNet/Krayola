@@ -287,7 +287,7 @@ the affirmation value is false, eg @("Sport", "Tennis", $false), then the value
 
 #### Helper function Get-IsKrayolaLightTerminal
 
-Gets the value of the environment variable *KRAYOLA-LIGHT-TERMINAL* as a boolean.
+Gets the value of the environment variable *KRAYOLA_LIGHT_TERMINAL* as a boolean.
 
 For use by applications that need to use a Krayola theme that is dependent on whether a light or dark background colour is in effect in the current terminal.
 
@@ -299,7 +299,7 @@ The parameters:
 
 + KrayolaThemeName (optional)
 
-If $KrayolaThemeName is specified, then it is used to lookup the theme in the global $KrayolaThemes hash table exposed by the Krayola module. If either the theme specified does not exist or not specified, then a default theme is used. The default theme created should be compatible with the dark/lightness of the background of the terminal currently in use. By default, a dark terminal is assumed and the colours used show up clearly against a dark background. If *KRAYOLA-LIGHT-TERMINAL* is defined as an environment variable (can be set to any string apart from empty string/white space), then the colours chosen show up best against a light background.
+If $KrayolaThemeName is specified, then it is used to lookup the theme in the global $KrayolaThemes hash table exposed by the Krayola module. If either the theme specified does not exist or not specified, then a default theme is used. The default theme created should be compatible with the dark/lightness of the background of the terminal currently in use. By default, a dark terminal is assumed and the colours used show up clearly against a dark background. If *KRAYOLA_LIGHT_TERMINAL* is defined as an environment variable (can be set to any string apart from empty string/white space), then the colours chosen show up best against a light background.
 
 #### Helper function Show-ConsoleColours
 

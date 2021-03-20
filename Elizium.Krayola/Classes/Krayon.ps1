@@ -741,15 +741,20 @@ function New-Krayon {
   formatters specified MUST correspond to the pattern and if they don't, then
   an exception is thrown.
     The default tokens used are as follows:
+
   * lead: 'µ'
   * open: '«'
   * close: '»'
+
   So this means that to invoke the 'red' function on the Krayon, the client
   should invoke the Scribble function with the following 'structured' string:
   'µ«red»'.
   To invoke a command which requires a parameter eg 'Message', the client needs
   to specify a string like: 'µ«Message,Greetings Earthlings»'. (NB: instructions
-  are case insensitive).
+  are case insensitive). (Please note, that custom regular expressions do not have
+  to have 'lead', 'open' and 'close' tokens as illustrated here; these are just
+  what are used by default. The client can define any expression with formatters
+  as long as it able to capture api calls with a single optional parameter.)
 
   However, please do not specify a literal string like this. If scribble functionality
   is required, then the Scribbler object should be used. The scribbler
@@ -759,10 +764,11 @@ function New-Krayon {
   background colour to black: $scribbler.Snippets(@('Reset', 'red', 'black'))
   which would return 'µ«Reset»µ«red»µ«black»'.
 
-  And 'WithArgSnippet' for the above Message example, the client should do
+  And 'WithArgSnippet' for the above Message example, the client should use
   the following:
 
   [string]$snippet = $scribbler.WithArgSnippet('Message', 'Greetings Earthlings');
+
   $scribbler.Scribble($snippet);
 
   This is so that if for any reason, the expression and corresponding formatters
@@ -770,34 +776,55 @@ function New-Krayon {
 
   And for completeness, an invoke requiring compound param representation eg to invoke
   the 'Line' method would be defined as:
+
   'one,Eve of Destruction;two,Bango' => this is a line with 2 couplets
   which would be invoked like so:
+
   [string]$snippet = $scribbler.WithArgSnippet('one,Eve of Destruction;two,Bango');
 
   and to Invoke 'Line' with a message:
+
   'Greetings Earthlings;one,Eve of Destruction;two,Bango'
+
   if you look at the first segment, you will see that it contains no comma. The scribbler
   will interpret the first segment as a message with subsequent segments containing
-  valid comma separated values, split by semi-colons.
+  valid comma separated values, split by semi-colons. (Be careful to construct this string properly; if a segment
+  does not contain a comma (except for the first segment), then will likely be an error).
+
   And if the message required, includes a comma, then it should be escaped with a
   back slash '\':
+
   'Greetings\, Earthlings;one,Eve of Destruction;two,Bango'.
 
-
-  .PARAMETER Theme
-    A hashtable instance containing the Krayola theme.
-
   .PARAMETER Expression
-    A pattern to recognise krayon instructions inside a scribble string. Instructions
-  can either have 0 or 1 argument. When an argument is specified that must represent
+  A custom regular expression pattern than capture a Krayon method api call and an optional
+  parameter. The expression MUST contain the following 2 named capture groups:
+
+  * 'api': string to represent a method call on the Krayon instance.
+  * 'p': optional string to represent a parameter passed into the function denoted by 'api'.
+
+  Instructions can either have 0 or 1 argument. When an argument is specified that must represent
   a compound value (multiple items), then a compound representation must be used,
   eg a couplet is represented by a comma separated string and a line is represented
   by a semi-colon separated value, where the value inside each semi-colon segment is
   a pair represented by a comma separated value.
 
+  .PARAMETER NativeExpression
+    A custom regular expression pattern that recognises the content interpreted by the Krayon Scribble
+  method. The pattern 'inverse' parses a structured string and returns the core text stripped
+  of any api tokens.
+
+  .PARAMETER Theme
+  A hashtable instance containing the Krayola theme.
+
+
+  .PARAMETER WriterFormat
+    Format string that represents a Krayon api method call without an argument. This format needs to conform
+  to the regular expression pattern specified by Expression.
+
   .PARAMETER WriterFormatWithArg
-    A format string that helps clients define the correct instruction that can be
-  understood by this Krayon instance. This format can optionally take a parameter.
+    Format string that represents a Krayon api method call with an argument. This format needs to conform
+  to the regular expression pattern specified by Expression. This format must accommodate a single parameter.
 
   #>
   [OutputType([Krayon])]
@@ -873,7 +900,7 @@ its 'affirmed' status. An couplet that is affirmed is one that can be highlighte
 according to the Krayola theme (AFFIRM-COLOURS).
 
 .PARAMETER couplet
-  A 2 or 3 item array representing a key/value pair.
+  A 2 or 3 item array representing a key/value pair and optional affirm boolean.
 #>
 function New-Pair {
   [OutputType([couplet])]
@@ -1395,10 +1422,15 @@ function New-Scribbler {
     New-Scribbler
 
   .SYNOPSIS
-    Helper factory function that creates Scribbler instance.
+    Helper factory function that creates a Scribbler instance.
 
   .DESCRIPTION
-    Creates a new Scribbler instance with the optional krayon provided.
+    Creates a new Scribbler instance with the optional krayon provided. The scribbler acts
+  like a wrapper around the Krayon so that control can be exerted over where the output is
+  directed to. In an interactive environment, clearly, the user needs to see the output so
+  the Scribbler will direct the Krayon to render output to the console. However, within the
+  context of a unit test the output needs to be suppressed. This is achieved by creating
+  a Quiet Scribbler achieved by setting the Test switch or forcing it via the Silent switch.
 
   .PARAMETER Krayon
     The underlying krayon instance that performs real writes to the host.
@@ -1411,7 +1443,8 @@ function New-Scribbler {
   environment will enable verbose tests. When invoked by an interactive user in
   production environment, the Test flag should not be set. Doing so will suppress
   the output depending on the presence 'EliziumTest'. ALL test cases should
-  specify this Test flag.
+  specify this Test flag. This also applies to third party users building tests for commands
+  that use the Scribbler.
 
   .PARAMETER Save
     switch to indicate if the Scribbler should record all output which will be
