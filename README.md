@@ -14,7 +14,6 @@ Colourful console writing with PowerShell
 
 [Introduction](#Introduction)
 
-+ [Provide a sequence of text snippets each with their own colour descriptions](#Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions)
 + [Provide sequence of colour described key/value pairs](#Provide-sequence-of-colour-described-key/value-pairs)
 + [Provide a theme describing how key/value pairs should be rendered](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered)
 
@@ -22,9 +21,6 @@ Colourful console writing with PowerShell
 
 + [The Theme parameter](#The-Theme-parameter)
   + [The Public API](#The-Public-API)
-    + [Write-InColour](#Write-InColour)
-    + [Write-RawPairsInColour](#Write-RawPairsInColour)
-    + [Write-ThemedPairsInColour](#Write-ThemedPairsInColour)
     + [Helper function Get-IsKrayolaLightTerminal](#Helper-function-Get-IsKrayolaLightTerminal)
     + [Helper function Get-KrayolaTheme](#Helper-function-Get-KrayolaTheme)
     + [Helper function Show-ConsoleColours](#Helper-function-Show-ConsoleColours)
@@ -34,109 +30,87 @@ Colourful console writing with PowerShell
 
 [Trouble shooting](#Trouble-shooting)
 
-+ [Use the correct array dimensions when invoking the writer functions](#Use-the-correct-array-dimensions-when-invoking-the-writer-functions)
-+ [A reminder about single item arrays in PowerShell](#A-reminder-about-single-item-arrays-in-PowerShell)
-+ [Creating Pairs iteratively using Array.Add()](#Creating-Pairs-iteratively-using-Array.Add())
-
 ## Introduction
 
 The module can be installed using the standard **install-module** command:
 
 > PS> install-module -Name Elizium.Krayola
 
-Krayola provides the capability to write consistent and colourful PowerShell console applications. The key here is that it produces structured output according to user defined formats. There are 3 main ways of writing output:
+Krayola provides the capability to write consistent and colourful PowerShell console applications. The key here is that it produces structured output according to user defined formats. A point of note that should be noted by powershell developers is that generally commands should not write to the console. This is for various reasons including (but not limited to)
 
-1. [**Provide a sequence of text snippets each with their own colour descriptions**](##Provide-a-sequence-of-text-snippets-each-with-their-own-colour-descriptions) - [*(Write-InColour)*](#Write-InColour)
-2. [**Provide sequence of colour described key/value pairs**](#Provide-sequence-of-colour-described-key/value-pairs) - [*(Write-RawPairsInColour)*](#Write-RawPairsInColour)
-3. [**Provide a theme describing how key/value pairs should be rendered**](#Provide-a-theme-describing-how-key/value-pairs-should-be-rendered) - [*(Write-ThemedColoursInPairs)*](#Write-ThemedPairsInColour)
++ PowerShell can be run a wide variety of scenarios and not all are interactive and makes no assumption about the host. That host may or may not be a console and commands should not assume the presence of one.
++ commands should be designed to be flexible to enable easy re-use, so if a command is writing to the host, it maybe not be easy to use it from other commands where output could interfere with their own operation.
 
-First, follows a description of the data that needs to be provided to the api, next a full description of the api itself.
-
-### Provide a sequence of text snippets each with their own colour descriptions
-
-(**api:** *Write-InColour*)
-
-The sequence provided is just a collection of snippets, where each snippet is a sub collection of 2 or 3 items:
-
- a) The text to be written (mandatory)
- b) The foreground colour of the text (mandatory)
- c) The background colour (optional)
-
-So for example, consider the collection of text snippets that need to be displayed in different colours:
-
-```powershell
-@(
-  @("Artist"), @("Plastikman"), @("Song"), @("Marbles"), @("Genre"), @("Minimal")
-);
-```
-
-Lets say we want to render those values in foreground colours "Red", "Green", "Blue", "Yellow", "Black" and "Cyan" respectively (note, no mention yet of any background colours). We would apply those colours to the collection by altering the collection as follows:
-
-```powershell
-@(
-  @("Artist", "Red"), @("Plastikman", "Green"), @("Song", "Blue"),
-  @("Marbles", "Yellow"), @("Genre", "Black"), @("Minimal", "Cyan")
-);
-```
-
-:warning: Note, that this collection is a 2 dimensional array.
-
-We can optionally add background colours to any item, by providing a 3rd entry, eg. if we wanted **Artist** to have a "Black" background colour we would specify:
-
-```powershell
-@(
-  @("Artist", "Red", "Black"), @("Plastikman", "Green"), @("Song", "Blue"),
-  @("Marbles", "Yellow"), @("Genre", "Black"), @("Minimal", "Cyan")
-);
-```
-
-### Provide sequence of colour described key/value pairs
-
-(**api:** *Write-RawPairsInColour*)
-
-We describe the key/value pair data that needs to be rendered. This is done as a collection of key/value pairs where each part of the pair must contain the same 2 or 3 items previously described:
-
-1. The text to be written (mandatory)
-2. The foreground colour of the text (mandatory)
-3. The background colour (optional)
-
-The difference here is that items need to be organised into key/value pairs, as opposed to being a sequence of snippets. So organising the previous example as a list of key value pairs we get this:
-
-```powershell
-@(
-  @(@("Artist", "Red", "Black"), @("Plastikman", "Green")),
-  @(@("Song", "Blue"), @("Marbles", "Yellow")),
-  @(@("Genre", "Black"), @("Minimal", "Cyan"))
-);
-```
-
-where the keys are **Artist**, **Song** and **Genre** and the values are **Plastikman**, **Marbles** and **Minimal**
-
-:warning: Note, that this collection is now a 3 dimensional array, because each top level entry is a key/value pair.
-
-### Provide a theme describing how key/value pairs should be rendered
-
-(**api:** *Write-ThemedColoursInPairs*)
-
-If we didn't want the overhead of specify colours for each individual key and value, we can use a theme instead, which helps us keep the output consistent with less overhead.
-
-So for the same collection of key/value pairs mentioned above, we can just say, we want all our keys in "Red" and the values in "Blue". To do so, we use a collection of key/value pairs without colours:
-
-```powershell
-@(
-  @(@("Artist"), @("Plastikman")),
-  @(@("Song"), @("Marbles")),
-  @(@("Genre"), @("Minimal"))
-);
-```
-
-:warning: Note, that this collection is a 2 dimensional array, because we don't include colour information.
-
-and then we pass in a theme parameter to the api (described later), but essentially, we populate the key foreground colour to be "Red" and the value foreground colour to be "Blue". This will be made clearer in the following sections.
+However, bearing the above points in mind, some commands are designed specifically for a console (because they are ui commands) and in this circumstance, writing to the console is fine. There are other other writer functions (eg Write-Information/Write-Debug etc) can be used, but none of these are able to write in colours controlled by the client. Krayola can be used to assist in writing colourful output in a structured manner in accordance with a user definable theme: the 'Krayola Theme'.
 
 ## Using the API
 
-### The Theme parameter
+### The Main Commands
+
+| COMMAND-NAME                                                                     | DESCRIPTION
+|----------------------------------------------------------------------------------|------------
+| [Get-KrayolaTheme](Elizium.Loopz/docs/Get-KrayolaTheme.md)                       | Gets Krayola theme
+| [New-Krayon](Elizium.Loopz/docs/New-Krayon.md)                                   | Krayon factory
+| [New-Line](Elizium.Loopz/docs/New-Line.md)                                       | Line factory
+| [New-Pair](Elizium.Loopz/docs/New-Pair.md)                                       | Pair factory
+| [New-Scribbler](Elizium.Loopz/docs/New-Scribbler.md)                             | Scribbler factory
+
+### Classes
+
+| COMMAND-NAME
+|-----------------------------------------------------
+| [Couplet](Elizium.Loopz/docs/classes.md)
+| [Krayon](Elizium.Loopz/docs/classes.md)
+| [Line](Elizium.Loopz/docs/classes.md)
+| [Scribbler](Elizium.Loopz/docs/classes.md)
+| [QuietScribbler](Elizium.Loopz/docs/classes.md)
+
+#### A tale of the :tulip: Scribbler/Krayon vs the :wilted_flower: Legacy functions
+
+Once upon a time, The Krayola PowerShell module came into being. Upon creation, 3 colour writing functions were built. They were known as *Write-In-Colour*, *Write-RawPairsInColour* and *Write-ThemedPairsInColour*. Now for a time, the creator was able to write brand new commands using these functions and all was well.
+
+The commands produced such colourful :rainbow: displays, that word began to spread among the local towns :cityscape: folk :family:. More and more of the locals caught the scripting bug :bug: and were :smiley: happy to create scripts that both delighted and marvelled their friends :elf: and neighbours :genie:.
+
+One day, a busy little unicorn :unicorn: by the name of Twilight started to find it difficult writing colourful scripts :scroll: quickly. 'Why oh why do I constantly get array indexing errors' lamented Twilight. 'Well, ...' replied her friend Willow :duck:, 'you must always remember to use the comma operator when dealing with single item arrays'. 'But I do', cried Twilight. Willow tried to ease her despair :unamused:, 'There, there. Fear not, we all make mistakes from time to time, nobody is perfect. Actually, I know what you mean. Sometimes, I trip over and see those pesky error messages, particularly when creating multi-dimensional arrays, but those functions we use are all we have'.' :frowning:.
+
+Twilight, thought for a while and asked 'Well how about, we go back to the creator and asked if there were another way we could write in colour'. Willow replied, 'you know what, that may just do the job. We could go and visit the creator bearing gifts of *Musik* :notes: and poetry' :mortar_board:. Twilight heartily :revolving_hearts: agreed, 'Ok let's make haste so we can get back some in time before the setting sun'. Willow enquired, 'Oh, what a way with words you have. Setting sun? What on :globe_with_meridians: *Earth Inferno* :fire: do you mean?'. Twilight apologised, 'Oh sorry about that, my passion for 1990's techno music sometimes gets the better of me and I just can't resist an obscure reference. *The Setting Sun* is a song by a pair of Brothers of the Chemical variety that once exited the planet dust.'. Willow, retorted 'Come on now, let's not waste any more time. You pick up that 'Recycled Plastik' over there, and I'll bring 'From My Mind To Yours', I'm sure that fan of Plastik will appreciate both of those delights.
+
+So off they trotted. After a treading a long and winding road, they eventually found the creator. "Rat-a-tat-a-tat", sounded the door as they knocked to alert him of their plea :pray:. The door opened and they were warmly welcomed into his abode. After a round a milk and cookies, Willow and Twilight stated their case. 
+
+With sympathy, the creator explained, 'I wrote those functions in haste and I too encountered the issues you tell of. Do you know what? You are in luck. Let me introduce you to my 2 new friends :blush: :upside_down_face:'. As though pulling rabbits :rabbit: out of a hat, the creator waved his hand in a gesture of good will and out popped 2 shiny new classes named *Scribbler* :snail: and *Krayon* :smiley_cat:.
+
+'Wow', gasped Twilight and Willow. Twilight piped up 'I very much like your 2 new friends'. Willow agreed and added, 'Krayon, seems a little shy and appears to be hiding behind Scribbler. Is he ok?'. The creator, detected the slight concern expressed by his visitors and assuaged them, 'Yeah, he's fine, in fact he's more than fine. He's very happy to help you with your colouring tasks, but all he asks is for you to speak with his younger sister Scribbler'.
+
+Twilight and Willow glanced at each other simultaneously and high-fived :thumbsup:. Scribbler chimed in, 'Whenever you need some colour, come to me and I will help. Krayon and myself make a great team. Just tell me the colours you want your text in and I'll collect them them all up in a little bag called *StringBuilder*. You can *Flush* me at any time, and I'll chat with Krayon and he'll make play with the Host. And if you like, I can be quiet too. I know you like to write unit tests for your scripts, but the software engineering gods advise that tests should be quick and noise-less. Just let me know by either waving the 'Test' flag :triangular_flag_on_post: or the 'Silent' flag :checkered_flag:. And you also need to know, if you wave the Test flag, I will be quiet unless I find 'EliziumTest' :test_tube: in the environment. So your wish is my command'.
+
+'Wowzer, Willow, today has been great', cried Twilight. 'Too right, now we don't ever have to get bogged down with those pesky little array indexing errors and can avoid those trouble-some multi-dimensional arrays. I generally don't have a problem with multi-dimensional arrays, but in PowerShell, they really do make my head itch! :thinking:'.
+
+And finally, the creator thanked them for their gifts :sunglasses: and replied in kind, 'I'm so pleased you brought me that 'Recycled Plastik', may all my good vibes and well wishes go 'From My Mind To Yours'. Do yourself a favour and branch out a little. This is a bit off beat and some say an acquired taste, but you ought to check out :four: :woman_with_veil: :sparkles: '*For Her Light*' as he handed them a copy of *Earth Inferno*. 'Enjoy! Oh and don't forget, those old functions are deprecated so use them no more, they are destined for the realms of the Underworld :skull:, long live Scribbler and Krayon'
+
+The happy scripters left the creator with a skip in their step and joy in their hearts :gift_heart:.
+
+... and they all lived happily ever after :joy:.
+
+### Supporting Utilities
+
+| COMMAND-NAME                                                                     | DESCRIPTION
+|----------------------------------------------------------------------------------|------------
+| [Get-DefaultHostUiColours](Elizium.Loopz/docs/Get-DefaultHostUiColours.md)       | Get default host colours
+| [Get-EnvironmentVariable](Elizium.Loopz/docs/Get-EnvironmentVariable.md)         | Get variable from Env
+| [Get-IsKrayolaLightTerminal](Elizium.Loopz/docs/Get-IsKrayolaLightTerminal.md)   | Has user declare light theme
+| [Show-ConsoleColours](Elizium.Loopz/docs/Show-ConsoleColours.md)                 | Show console colours
+
+### Deprecated
+
+:warning: No longer supported and will be removed; use the Scribbler instead.
+
+| COMMAND-NAME                                                                     | DESCRIPTION
+|----------------------------------------------------------------------------------|------------
+| [Write-InColour](Elizium.Loopz/docs/Write-InColour.md)                           | DEPRECATED
+| [Write-RawPairsInColour](Elizium.Loopz/docs/Write-RawPairsInColour.md)           | DEPRECATED
+| [Write-ThemedPairsInColour](Elizium.Loopz/docs/Write-ThemedPairsInColour.md)     | DEPRECATED
+
+### The Krayola Theme
 
 This is just a hash table, which must contain the following items:
 
@@ -162,64 +136,25 @@ $ExampleTheme = @{
   "FORMAT"             = "'<%KEY%>'='<%VALUE%>'";
   "KEY-PLACE-HOLDER"   = "<%KEY%>";
   "VALUE-PLACE-HOLDER" = "<%VALUE%>";
-  "KEY-COLOURS"        = @("Red");
-  "VALUE-COLOURS"      = @("Blue");
-  "OPEN"               = "{";
-  "CLOSE"              = "}";
-  "SEPARATOR"          = " | ";
-  "META-COLOURS"       = @("Cyan");
-  "MESSAGE-COLOURS"    = @("DarkRed", "White");
+  "KEY-COLOURS"        = @("DarkCyan");
+  "VALUE-COLOURS"      = @("White");
+  "OPEN"               = "[";
+  "CLOSE"              = "]";
+  "SEPARATOR"          = ", ";
+  "AFFIRM-COLOURS"     = @("Red");
+  "META-COLOURS"       = @("Yellow");
+  "MESSAGE-COLOURS"    = @("Cyan");
   "MESSAGE-SUFFIX"     = " // "
 }
 ```
 
 :warning: Note that the tokens <%KEY%> and <%VALUE%> are also defined inside the FORMAT. You will see an error if the FORMAT does not contain these place holders.
 
+The Krayola theme in the above example is illustrated in the following image:
+
+![picture](resources/images/example-krayola-theme-illustration.jpg)
+
 ### The Public API
-
-#### Write-InColour
-
-This is the function to call to invoke the functionality described in section *"A sequence of text snippets each with their own colour descriptions"* previously. Each Key/Value pair can have it's own colour description.
-
-The parameters:
-
-+ TextSnippets: (a 2 dimensional array) the collection of text fields with their colour descriptions
-+ NoNewLine: switch indicating not to render a new line
-
-Example:
-
-```powershell
-$line = @(
-  @("Artist", "Red"), @("Plastikman", "Green"),
-  @("Song", "Blue"), @("Marbles", "Yellow")
-)
-Write-InColour -TextSnippets $line;
-```
-
-which displays this (colour not shown):
-
-> ArtistPlastikmanSongMarbles
-
-#### Write-RawPairsInColour
-
-This is the raw function to call (described in *"A sequence of colour described key/value pairs"*) That requires a colour description to be included with each key *value* and value *value*. This function would not usually be called by the client but can be if so required, since there are sensible defaults for most of the parameters.
-
-The parameters (Most of these are in Theme parameters table above, please see for their descriptions):
-
-+ Pairs: (a 3 dimensional array) representing Key/Value pairs, where each Key and Value are themselves an array of 2 or 3 items (*Text, Foreground Colour, Background Colour*), eg:
-
-```powershell
-$line = @(
-  @(@("Sport", "Red"), @("Tennis", "Blue", "Yellow")),
-  @(@("Star", "Green"), @("Agnieszka Radwanska", "Cyan"))
-);
-
-Write-RawPairsInColour $line
-```
-
-using other defaulted parameters would display this:
-
-> === [('Sport'='Tennis'), ('Star'='Agnieszka Radwanska')] ===
 
 + Format
 + KeyPlaceHolder (This MUST be present in Format)
@@ -231,18 +166,6 @@ using other defaulted parameters would display this:
 + Message: (Optional) The textual message to be displayed preceding the Key/Value pair collection
 + MessageColours
 + MessageSuffix
-
-#### Write-ThemedPairsInColour
-
-This is the function to call to invoke the functionality described in section *"Provide a theme describing how key/value pairs should be rendered"*.
-
-The parameters
-
-+ Pairs
-+ Theme
-+ Message
-
-Eg:
 
 ```powershell
 $ExampleTheme = @{
@@ -259,10 +182,6 @@ $ExampleTheme = @{
   "MESSAGE-COLOURS"    = @("DarkRed", "White");
   "MESSAGE-SUFFIX"     = " // "
 }
-
-$PairsToWrite = @(@("Artist", "Plastikman"), @("Song", "Marbles"))
-
-Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $ExampleTheme
 ```
 
 The above would display as follows:
@@ -270,20 +189,6 @@ The above would display as follows:
 > {'Artist'='Plastikman' | 'Song'='Marbles'}
 
 and with a custom message:
-
-```powershell
-Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $ExampleTheme -Message "Catalogue entry: "
-```
-
-A value can be highlighted by specifying a boolean affirmation value after the
-key/value pair. So the 'value' of a pair, eg 'Tennis' of @("Sport", "Tennis") can
-be highlighted by the addition of a boolean value: @("Sport", "Tennis", $true),
-will result in 'Tennis' being highlighted; written with a different colour
-value. This colour value is taken from the 'AFFIRM-COLOURS' entry in the theme. If
-the affirmation value is false, eg @("Sport", "Tennis", $false), then the value
-'Tennis' will be written as per-normal using the 'VALUE-COLOURS' entry.
-
-> Catalogue entry:  // {'Artist'='Plastikman' | 'Song'='Marbles'}
 
 #### Helper function Get-IsKrayolaLightTerminal
 
@@ -334,100 +239,3 @@ Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $KrayolaThemes["SQUARE-THE
 ## Trouble shooting
 
 The following a description of some of the pitfalls that I encountered writing this module mainly due to the esoteric implementation of arrays in PowerShell, that I hope can be avoided by others.
-
-### Use the correct array dimensions when invoking the writer functions
-
-Owing to the nature of how arrays have been implemented in PowerShell, it very easy to tie yourself up in knots when defining multi dimensional arrays as the $Pairs parameter (to Write-ThemedPairsInColour and Write-RawPairsInColour) or $TextSnippets parameter (to Write-InColour). It's incumbent on you to make appropriate use of @() and comma operators to get the result you intended. In fact, in writing this documentation I actually made this silly mistake that highlights this very issue.
-
-An example I was attempting to illustrate is as follows:
-
-```powershell
-
-$line = @(
-  @(@("Artist", "Red"), @("Plastikman", "Green")),
-  @(@("Song", "Blue"), @("Marbles", "Yellow"))
-)
-Write-InColour -TextSnippets $line
-```
-
-You run this and you'll see it blow up :bomb: in your face :rage: :
-
-```powershell
-Write-Host: /Users/Plastikfan/.local/share/powershell/Modules/Krayola/Public/write-in-colour.ps1:74
-Line |
-  74 |        Write-Host $snippet[0] -NoNewline -ForegroundColor $snippet[1];
-     |                                                           ~~~~~~~~~~~
-     | Cannot bind parameter 'ForegroundColor'. Cannot convert value "Plastikman Green" to type "System.ConsoleColor". Error: "Unable to match the identifier name Plastikman Green to a valid enumerator name. Specify one of the following enumerator names
-     | and try again: Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow, Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White"
-
-```
-
-This happened because array elements were incorrectly merged: "Plastikman" and "Green"; there is clearly no such colour as "Plastikman Green"!.
-
-What I actually meant to write was:
-
-```powershell
-$line = @(
-  @("Artist", "Red"), @("Plastikman", "Green"),
-  @("Song", "Blue"), @("Marbles", "Yellow")
-)
-Write-InColour -TextSnippets $line
-```
-
-which actually displays this:
-
-> ArtistPlastikmanSongMarbles
-
-+ The important thing you need to remember when using Write-InColour, is that it is not working with Key/Value pairs ($TextSnippets is simply a 2 dimensional array). Its working with a collection of *snippets*, where each snippet is a sub sequence of 2 or 3 items (text, foreground colour & background colour).
-+ The Pairs parameter passed into Write-RawPairsInColours is a series of key/value pairs, and since the key and the value are multiple entry *snippets*, Pairs is a 3 dimensional array.
-+ However, the Pairs passed into Write-ThemedPairsInColour is a series of Key/Value pairs, where the key and the value are individual strings; but because no colours are passed in, the array is simply 2 dimensional.
-
-If you keep these points in mind, then hopefully you'll avoid getting errors like the one just illustrated.
-
-### A reminder about single item arrays in PowerShell
-
-Taking the following example,
-
-```powershell
-$PairsToWrite = @(@("Gotchya", "wot no comma op for a single item array?"));
-Write-ThemedPairsInColour -Pairs $PairsToWrite -Theme $SunshineTheme;
-```
-
-Assuming that $SunshineTheme is valid theme (which it is), this will blow up at run-time as follows:
-
-> Write-ThemedPairsInColour: Found pair that does not contain 2 items (pair: Gotchya) [!!! Reminder: you need to use the comma op for a single item array]
-
-> Write-ThemedPairsInColour: Found pair that does not contain 2 items (pair: wot no comma op for a single item array?) [!!! Reminder: you need to use the comma op for a single item array]
-{'Gotchya' +++ '' | 'wot no comma op for a single item array?' +++ ''}
-
-We can see that an attempt is being made to pass in a single item array into *Write-ThemedPairsInColour*, and PowerShell being the way it is as previously described, flattens out the array, breaking the structure expected by the function.
-
-To preserve the array structure, ie a single item array, we need to use the comma operator as follows:
-
-```powershell
-$PairsToWrite = @(, @("Gotchya", "ah, that's much better"));
-```
-
-and now this behaves as expected and displays:
-
-> {'Gotchya' +++ 'ah, that's much better'}
-
-### Creating Pairs iteratively using Array.Add()
-
-Remember, this (even though it is the most intuitive way of doing this) won't work on a fixed item array:
-
-```powershell
-$PairsToWrite.Add(@("Another", "Item"))
-```
-
-will blow up with this error message:
-
-> MethodInvocationException: Exception calling "Add" with "1" argument(s): "Collection was of a fixed size."
-
-To resolve this, one should use the += operator which returns a new array
-
-```powershell
-$PairToWrite += , @("Gotchya", "ah, that's much better");
-```
-
-*Note the use of the comma op here! If you omit the preceding comma, the array will be appended to with no issue, but the call to Write-ThemedPairsInColour will fail with the same error as previously described.*

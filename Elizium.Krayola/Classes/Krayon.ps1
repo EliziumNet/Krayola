@@ -1,4 +1,8 @@
 
+<#
+.NAME
+  couplet
+#>
 class couplet {
   [string]$Key;
   [string]$Value;
@@ -48,6 +52,10 @@ class couplet {
   }
 } # couplet
 
+<#
+.NAME
+  line
+#>
 class line {
   [couplet[]]$Line;
   [string]$Message;
@@ -116,6 +124,10 @@ class line {
   }
 } # line
 
+<#
+.NAME
+  Krayon
+#>
 class Krayon {
   static [array]$ThemeColours = @('affirm', 'key', 'message', 'meta', 'value');
 
@@ -178,6 +190,33 @@ class Krayon {
     $this.ApiFormat = $Format;
   }
 
+  # +Scribblers+ --------------------------------------------------------------
+  #
+  [Krayon] Scribble([string]$source) {
+    if (-not([string]::IsNullOrEmpty($source))) {
+      [PSCustomObject []]$operations = $this._parse($source);
+
+      if ($operations.Count -gt 0) {
+        foreach ($op in $operations) {
+          if ($op.psobject.properties.match('Arg') -and $op.Arg) {
+            $null = $this.($op.Api)($op.Arg);
+          }
+          else {
+            $null = $this.($op.Api)();
+          }
+        }
+      }
+    }
+
+    return $this;
+  }
+
+  [Krayon] ScribbleLn([string]$source) {
+    return $this.Scribble($source).Ln();
+  }
+
+  # +Text+ --------------------------------------------------------------------
+  #
   [Krayon] Text([string]$value) {
     $this._print($value);
     return $this;
@@ -187,6 +226,8 @@ class Krayon {
     return $this.Text($value).Ln();
   }
 
+  # +Pair+ (Couplet) ----------------------------------------------------------
+  #
   [Krayon] Pair([couplet]$couplet) {
     $this._couplet($couplet);
     return $this;
@@ -205,19 +246,8 @@ class Krayon {
     return $this.Pair([couplet]::new($couplet)).Ln();
   }
 
-  [Krayon] Pair([string]$csv) {
-    [string[]]$constituents = $csv -split '(?<!\\),';
-
-    [couplet]$pair = New-Pair $constituents;
-    $this._couplet($pair);
-
-    return $this;
-  }
-
-  [Krayon] PairLn([string]$csv) {
-    return $this.Pair($csv).Ln();
-  }
-
+  # +Line+ --------------------------------------------------------------------
+  #
   [Krayon] Line([line]$line) {
     $null = $this.fore($this._metaColours[0]).back($this._metaColours[1]).Text($this._open);
 
@@ -252,35 +282,6 @@ class Krayon {
     }
   }
 
-  [string] Escape([string]$value) {
-    return $value.Replace(';', '\;').Replace(',', '\,');
-  }
-
-  [Krayon] Line([string]$semiColonSV) {
-    return $this._lineFromSemiColonSV($semiColonSV, 'Line');
-  }
-
-  [Krayon] NakedLine([string]$semiColonSV) {
-    return $this._lineFromSemiColonSV($semiColonSV, 'NakedLine');
-  }
-
-  [Krayon] _lineFromSemiColonSV([string]$semiColonSV, [string]$op) {
-    [string[]]$constituents = $semiColonSV -split '(?<!\\);', 0, 'RegexMatch';
-    [string]$message, [string[]]$remainder = $constituents;
-
-    [string]$unescapedComma = '(?<!\\),';
-    if ($message -match $unescapedComma) {
-      [line]$line = $this._convertToLine($constituents);
-      $null = $this.$op($line);
-    }
-    else {
-      [line]$line = $this._convertToLine($remainder);
-      $null = $this.$op($message, $line);
-    }
-
-    return $this;
-  }
-
   [Krayon] Line([string]$message, [line]$line) {
     $this._lineWithMessage($message, $line);
 
@@ -300,28 +301,8 @@ class Krayon {
     );
   }
 
-  [line] _convertToLine([string[]]$constituents) {
-    [couplet[]]$couplets = ($constituents | ForEach-Object {
-        New-Pair $($_ -split '(?<!\\),', 0, 'RegexMatch');
-      });
-    [line]$line = New-Line $couplets;
-
-    return $line;
-  }
-
-  [Krayon] ThemeColour([string]$val) {
-    [string]$trimmedValue = $val.Trim();
-    if ([Krayon]::ThemeColours -contains $trimmedValue) {
-      [array]$cols = $this.Theme[$($trimmedValue.ToUpper() + '-COLOURS')];
-      $this._fgc = $cols[0];
-      $this._bgc = $cols.Length -eq 2 ? $cols[1] : $this._defaultBgc;
-    }
-    else {
-      Write-Debug "Krayon.ThemeColour: ignoring invalid theme colour: '$trimmedValue'"
-    }
-    return $this;
-  }
-
+  # +Message+ -----------------------------------------------------------------
+  #
   [Krayon] Message([string]$message) {
     $null = $this.ThemeColour('message');
     return $this.Text($message).Text($this._messageSuffix);
@@ -340,50 +321,72 @@ class Krayon {
     return $this.MessageNoSuffix($message).Ln();
   }
 
+  # +Foreground/Background+ ---------------------------------------------------
+  #
+  [Krayon] fore([string]$colour) {
+    $this._fgc = $colour;
+    return $this;
+  }
+
+  [Krayon] back([string]$colour) {
+    $this._bgc = $colour;
+    return $this;
+  }
+
+  [Krayon] defaultFore([string]$colour) {
+    $this._defaultFgc = $colour;
+    return $this;
+  }
+
+  [Krayon] defaultBack([string]$colour) {
+    $this._defaultBgc = $colour;
+    return $this;
+  }
+
+  [string] getDefaultFore() {
+    return $this._defaultFgc;
+  }
+
+  [string] getDefaultBack() {
+    return $this._defaultBgc;
+  }
+
+  # +Control+ -----------------------------------------------------------------
+  #
+  [void] End() {}
+
+  [Krayon] Ln() {
+    # Write a non-breaking space (0xA0)
+    # https://en.wikipedia.org/wiki/Non-breaking_space
+    # (This is required because of a con-host bug in windows =>
+    # https://github.com/microsoft/terminal/issues/1040)
+    #
+    Write-Host ([char]0xA0);
+    return $this;
+  }
+
   [Krayon] Reset() {
     $this._fgc = $this._defaultFgc;
     $this._bgc = $this._defaultBgc;
     return $this;
   }
 
-  [Krayon] Ln() {
-    # Write a non-breaking space (0xA0)
-    # https://en.wikipedia.org/wiki/Non-breaking_space
-    #
-    Write-Host ([char]0xA0);
-    return $this;
-  }
-
-  [void] End() {}
-
-  [Krayon] Scribble([string]$source) {
-    if (-not([string]::IsNullOrEmpty($source))) {
-      [PSCustomObject []]$operations = $this._parse($source);
-
-      if ($operations.Count -gt 0) {
-        foreach ($op in $operations) {
-          if ($op.psobject.properties.match('Arg') -and $op.Arg) {
-            $null = $this.($op.Api)($op.Arg);
-          }
-          else {
-            $null = $this.($op.Api)();
-          }
-        }
-      }
+  # +Theme+ -------------------------------------------------------------------
+  #
+  [Krayon] ThemeColour([string]$val) {
+    [string]$trimmedValue = $val.Trim();
+    if ([Krayon]::ThemeColours -contains $trimmedValue) {
+      [array]$cols = $this.Theme[$($trimmedValue.ToUpper() + '-COLOURS')];
+      $this._fgc = $cols[0];
+      $this._bgc = $cols.Length -eq 2 ? $cols[1] : $this._defaultBgc;
     }
-
+    else {
+      Write-Debug "Krayon.ThemeColour: ignoring invalid theme colour: '$trimmedValue'"
+    }
     return $this;
   }
 
-  [Krayon] ScribbleLn([string]$source) {
-    return $this.Scribble($source).Ln();
-  }
-
-  [string] Native([string]$structured) {
-    return $this._nativeExpression.Replace($structured, '');
-  }
-
-  # Foreground Colours
+  # +Static Foreground Colours+ -----------------------------------------------
   #
   [Krayon] black() {
     $this._fgc = 'black';
@@ -465,7 +468,7 @@ class Krayon {
     return $this;
   }
 
-  # Background Colours
+  # +Background Colours+ ------------------------------------------------------
   #
   [Krayon] bgBlack() {
     $this._bgc = 'Black';
@@ -547,34 +550,63 @@ class Krayon {
     return $this;
   }
 
-  # Dynamic
+  # +Compounders+ -------------------------------------------------------------
   #
-  [Krayon] fore([string]$colour) {
-    $this._fgc = $colour;
+  [Krayon] Line([string]$semiColonSV) {
+    return $this._lineFromSemiColonSV($semiColonSV, 'Line');
+  }
+
+  [Krayon] NakedLine([string]$semiColonSV) {
+    return $this._lineFromSemiColonSV($semiColonSV, 'NakedLine');
+  }
+
+  hidden [line] _convertToLine([string[]]$constituents) {
+    [couplet[]]$couplets = ($constituents | ForEach-Object {
+        New-Pair $($_ -split '(?<!\\),', 0, 'RegexMatch');
+      });
+    [line]$line = New-Line $couplets;
+
+    return $line;
+  }
+
+  hidden [Krayon] _lineFromSemiColonSV([string]$semiColonSV, [string]$op) {
+    [string[]]$constituents = $semiColonSV -split '(?<!\\);', 0, 'RegexMatch';
+    [string]$message, [string[]]$remainder = $constituents;
+
+    [string]$unescapedComma = '(?<!\\),';
+    if ($message -match $unescapedComma) {
+      [line]$line = $this._convertToLine($constituents);
+      $null = $this.$op($line);
+    }
+    else {
+      [line]$line = $this._convertToLine($remainder);
+      $null = $this.$op($message, $line);
+    }
+
     return $this;
   }
 
-  [Krayon] back([string]$colour) {
-    $this._bgc = $colour;
+  [Krayon] Pair([string]$csv) {
+    [string[]]$constituents = $csv -split '(?<!\\),';
+
+    [couplet]$pair = New-Pair $constituents;
+    $this._couplet($pair);
+
     return $this;
   }
 
-  [Krayon] defaultFore([string]$colour) {
-    $this._defaultFgc = $colour;
-    return $this;
+  [Krayon] PairLn([string]$csv) {
+    return $this.Pair($csv).Ln();
   }
 
-  [Krayon] defaultBack([string]$colour) {
-    $this._defaultBgc = $colour;
-    return $this;
+  # +Utility+ -----------------------------------------------------------------
+  #
+  [string] Escape([string]$value) {
+    return $value.Replace(';', '\;').Replace(',', '\,');
   }
 
-  [string] getDefaultFore() {
-    return $this._defaultFgc;
-  }
-
-  [string] getDefaultBack() {
-    return $this._defaultBgc;
+  [string] Native([string]$structured) {
+    return $this._nativeExpression.Replace($structured, '');
   }
 
   # styles (don't exist yet; virtual terminal sequences?)
@@ -723,197 +755,10 @@ class Krayon {
   } # _parse
 } # Krayon
 
-function New-Krayon {
-  <#
-  .NAME
-    New-Krayon
-
-  .SYNOPSIS
-    Helper factory function that creates Krayon instance.
-
-  .DESCRIPTION
-    The client can specify a custom regular expression and corresponding
-  formatters which together support the scribble functionality (the ability
-  to invoke krayon functions via a 'structured' string as opposed to calling
-  the methods explicitly). Normally, the client can accept the default
-  expression and formatter arguments. However, depending on circumstance,
-  a custom pattern can be supplied along with corresponding formatters. The
-  formatters specified MUST correspond to the pattern and if they don't, then
-  an exception is thrown.
-    The default tokens used are as follows:
-
-  * lead: 'µ'
-  * open: '«'
-  * close: '»'
-
-  So this means that to invoke the 'red' function on the Krayon, the client
-  should invoke the Scribble function with the following 'structured' string:
-  'µ«red»'.
-  To invoke a command which requires a parameter eg 'Message', the client needs
-  to specify a string like: 'µ«Message,Greetings Earthlings»'. (NB: instructions
-  are case insensitive). (Please note, that custom regular expressions do not have
-  to have 'lead', 'open' and 'close' tokens as illustrated here; these are just
-  what are used by default. The client can define any expression with formatters
-  as long as it able to capture api calls with a single optional parameter.)
-
-  However, please do not specify a literal string like this. If scribble functionality
-  is required, then the Scribbler object should be used. The scribbler
-  contains helper functions 'Snippets' and 'WithArgSnippet'.
-  'Snippets', which when given an array of instructions will return the correct
-  structured string. So to 'Reset', set the foreground colour to red and the
-  background colour to black: $scribbler.Snippets(@('Reset', 'red', 'black'))
-  which would return 'µ«Reset»µ«red»µ«black»'.
-
-  And 'WithArgSnippet' for the above Message example, the client should use
-  the following:
-
-  [string]$snippet = $scribbler.WithArgSnippet('Message', 'Greetings Earthlings');
-
-  $scribbler.Scribble($snippet);
-
-  This is so that if for any reason, the expression and corresponding formatters
-  need to be changed, then no other client code would be affected.
-
-  And for completeness, an invoke requiring compound param representation eg to invoke
-  the 'Line' method would be defined as:
-
-  'one,Eve of Destruction;two,Bango' => this is a line with 2 couplets
-  which would be invoked like so:
-
-  [string]$snippet = $scribbler.WithArgSnippet('one,Eve of Destruction;two,Bango');
-
-  and to Invoke 'Line' with a message:
-
-  'Greetings Earthlings;one,Eve of Destruction;two,Bango'
-
-  if you look at the first segment, you will see that it contains no comma. The scribbler
-  will interpret the first segment as a message with subsequent segments containing
-  valid comma separated values, split by semi-colons. (Be careful to construct this string properly; if a segment
-  does not contain a comma (except for the first segment), then will likely be an error).
-
-  And if the message required, includes a comma, then it should be escaped with a
-  back slash '\':
-
-  'Greetings\, Earthlings;one,Eve of Destruction;two,Bango'.
-
-  .PARAMETER Expression
-  A custom regular expression pattern than capture a Krayon method api call and an optional
-  parameter. The expression MUST contain the following 2 named capture groups:
-
-  * 'api': string to represent a method call on the Krayon instance.
-  * 'p': optional string to represent a parameter passed into the function denoted by 'api'.
-
-  Instructions can either have 0 or 1 argument. When an argument is specified that must represent
-  a compound value (multiple items), then a compound representation must be used,
-  eg a couplet is represented by a comma separated string and a line is represented
-  by a semi-colon separated value, where the value inside each semi-colon segment is
-  a pair represented by a comma separated value.
-
-  .PARAMETER NativeExpression
-    A custom regular expression pattern that recognises the content interpreted by the Krayon Scribble
-  method. The pattern 'inverse' parses a structured string and returns the core text stripped
-  of any api tokens.
-
-  .PARAMETER Theme
-  A hashtable instance containing the Krayola theme.
-
-
-  .PARAMETER WriterFormat
-    Format string that represents a Krayon api method call without an argument. This format needs to conform
-  to the regular expression pattern specified by Expression.
-
-  .PARAMETER WriterFormatWithArg
-    Format string that represents a Krayon api method call with an argument. This format needs to conform
-  to the regular expression pattern specified by Expression. This format must accommodate a single parameter.
-
-  #>
-  [OutputType([Krayon])]
-  param(
-    [Parameter()]
-    [hashtable]$Theme = $(Get-KrayolaTheme),
-
-    [Parameter()]
-    # OLD: '&\[(?<api>[\w]+)(,(?<p>[^\]]+))?\]'
-    [regex]$Expression = [regex]::new("µ«(?<api>[\w]+)(,(?<p>[^»]+))?»"),
-
-    [Parameter()]
-    # OLD: '&[{0},{1}]'
-    [string]$WriterFormatWithArg = "µ«{0},{1}»",
-
-    [Parameter()]
-    # OLD: '&[{0}]'
-    [string]$WriterFormat = "µ«{0}»",
-
-    [Parameter()]
-    # OLD: '&\[[\w\s\-_]+(?:,\s*[\w\s\-_]+)?\]'
-    [string]$NativeExpression = [regex]::new("µ«[\w\s\-_]+(?:,\s*[\w\s\-_]+)?»")
-  )
-
-  [string]$dummyWithArg = $WriterFormatWithArg -replace "\{\d{1,2}\}", 'dummy';
-  if (-not($Expression.IsMatch($dummyWithArg))) {
-    throw "New-Krayon: invalid WriterFormatWithArg ('$WriterFormatWithArg'), does not match the provided Expression: '$($Expression.ToString())'";
-  }
-
-  [string]$dummy = $WriterFormat -replace "\{\d{1,2}\}", 'dummy';
-  if (-not($Expression.IsMatch($dummy))) {
-    throw "New-Krayon: invalid WriterFormat ('$WriterFormat'), does not match the provided Expression: '$($Expression.ToString())'";
-  }
-  return [Krayon]::new($Theme, $Expression, $WriterFormatWithArg, $WriterFormat, $NativeExpression);
-} # New-Krayon
-
 <#
 .NAME
-  New-Line
-
-.SYNOPSIS
-  Helper factory function that creates Line instance.
-
-.DESCRIPTION
-  A Line is a wrapper around a collection of couplets.
-
-.PARAMETER Krayon
-  The underlying krayon instance that performs real writes to the host.
-
-.PARAMETER couplets
-  Collection of couplets to create Line with.
+  Scribbler
 #>
-function New-Line {
-  [OutputType([line])]
-  [Alias('kl')]
-  param(
-    [Parameter()]
-    [couplet[]]$couplets = @()
-  )
-  return [line]::new($couplets);
-} # New-Line
-
-<#
-.NAME
-  New-Pair
-
-.SYNOPSIS
-  Helper factory function that creates a couplet instance.
-
-.DESCRIPTION
-  A couplet is logically 2 items, but can contain a 3rd element representing
-its 'affirmed' status. An couplet that is affirmed is one that can be highlighted
-according to the Krayola theme (AFFIRM-COLOURS).
-
-.PARAMETER couplet
-  A 2 or 3 item array representing a key/value pair and optional affirm boolean.
-#>
-function New-Pair {
-  [OutputType([couplet])]
-  [Alias('kp')]
-  param(
-    [Parameter()]
-    [string[]]$couplet
-  )
-  return ($couplet.Count -ge 3) `
-    ? [couplet]::new($couplet[0], $couplet[1], [System.Convert]::ToBoolean($couplet[2])) `
-    : [couplet]::new($couplet[0], $couplet[1]);
-} # New-Pair
-
 class Scribbler {
   [System.Text.StringBuilder]$Builder;
   [Krayon]$Krayon;
@@ -927,54 +772,163 @@ class Scribbler {
     $this._session = $Session;
   }
 
-  # None scribble Snippet methods
-  #
-  [string] Snippets ([string[]]$Items) {
-    [string]$result = [string]::Empty;
-    foreach ($i in $Items) {
-      $result += $($this.Krayon.ApiFormat -f $i);
-    }
-    return $result;
-  }
-
-  [string] WithArgSnippet([string]$api, [string]$arg) {
-    return "$($this.Krayon.ApiFormatWithArg -f $api, $arg)";
-  }
-
-  [string] PairSnippet([couplet]$pair) {
-    [string]$key = $this.krayon.Escape($pair.Key);
-    [string]$value = $this.krayon.Escape($pair.Value);
-
-    [string]$csv = "$($key),$($value),$($pair.Affirm)";
-    [string]$pairSnippet = $this.WithArgSnippet(
-      'Pair', $csv
-    )
-    return $pairSnippet;
-  }
-
-  [string] LineSnippet([line]$line) {
-    [string]$structuredLine = $(($line.Line | ForEach-Object {
-          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
-        }) -join ';');
-
-    [string]$lineSnippet = $this.WithArgSnippet(
-      'Line', $structuredLine
-    )
-    return $lineSnippet;
-  }
-
-  # Scribblers
+  # +Scribblers+ --------------------------------------------------------------
   #
   [void] Scribble([string]$structuredContent) {
     $null = $this.Builder.Append($structuredContent);
   }
 
-  # Management
+  # +Text+ Accelerators -------------------------------------------------------
   #
+  [Scribbler] Text([string]$value) {
+    $this.Scribble($value);
+    return $this;
+  }
+
+  [Scribbler] TextLn([string]$value) {
+    return $this.Text($value).Ln();
+  }
+
+  # +Pair+ (Couplet) Accelerators ---------------------------------------------
+  #
+  [Scribbler] Pair([couplet]$couplet) {
+    [string]$pairSnippet = $this.Krayon.PairSnippet($couplet);
+    $this.Scribble($pairSnippet);
+
+    return $this;
+  }
+
+  [Scribbler] PairLn([couplet]$couplet) {
+    return $this.Pair($couplet).Ln();
+  }
+
+  [Scribbler] Pair([PSCustomObject]$coupletObj) {
+    [couplet]$couplet = [couplet]::new($coupletObj);
+
+    return $this.Pair($couplet);
+  }
+
+  [Scribbler] PairLn([PSCustomObject]$coupletObj) {
+    return $this.Pair([couplet]::new($coupletObj)).Ln();
+  }
+
+  # +Line+ Accelerators -------------------------------------------------------
+  #
+  [Scribbler] Line([string]$message, [line]$line) {
+    $this._coreScribbleLine($message, $line, 'Line');
+
+    return $this;
+  }
+
+  [Scribbler] Line([line]$line) {
+    $this.Line([string]::Empty, $line);
+
+    return $this;
+  }
+
+  [Scribbler] NakedLine([string]$message, [line]$nakedLine) {
+    $this._coreScribbleLine($message, $nakedLine, 'NakedLine');
+
+    return $this;
+  }
+
+  [Scribbler] NakedLine([line]$line) {
+    $this.NakedLine([string]::Empty, $line);
+
+    return $this;
+  }
+
+  hidden [void] _coreScribbleLine([string]$message, [line]$line, [string]$lineType) {
+    [string]$structuredLine = $(($Line.Line | ForEach-Object {
+          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
+        }) -join ';');
+
+    if (-not([string]::IsNullOrEmpty($message))) {
+      $structuredLine = "$message;" + $structuredLine;
+    }
+
+    [string]$lineSnippet = $this.WithArgSnippet(
+      $lineType, $structuredLine
+    )
+    $this.Scribble("$($lineSnippet)");
+  } # _coreScribbleLine
+
+  # +Message+ Accelerators ----------------------------------------------------
+  #
+  [Scribbler] Message([string]$message) {
+    [string]$snippet = $this.WithArgSnippet('Message', $message);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] MessageLn([string]$message) {
+    return $this.Message($message).Ln();
+  }
+
+  [Scribbler] MessageNoSuffix([string]$message) {
+    [string]$snippet = $this.WithArgSnippet('MessageNoSuffix', $message);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] MessageNoSuffixLn([string]$message) {
+    return $this.MessageNoSuffix($message).Ln();
+  }
+
+  # +Foreground/Background+ Accelerators --------------------------------------
+  #
+  [Scribbler] fore([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('fore', $colour);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] back([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('back', $colour);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] defaultFore([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('defaultFore', $colour);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] defaultBack([string]$colour) {
+    [string]$snippet = $this.WithArgSnippet('defaultBack', $colour);
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  # +Control+ Accelerators ----------------------------------------------------
+  #
+  [void] End() { }
+
   [void] Flush () {
     $this.Krayon.Scribble($this.Builder.ToString());
 
     $this._clear();
+  }
+
+  [Scribbler] Ln() {
+    [string]$snippet = $this.Snippets('Ln');
+    $this.Scribble($snippet);
+
+    return $this;
+  }
+
+  [Scribbler] Reset() {
+    [string]$snippet = $this.Snippets('Reset');
+    $this.Scribble($snippet);
+
+    return $this;
   }
 
   [void] Restart() {
@@ -1007,83 +961,7 @@ class Scribbler {
     }
   }
 
-  # Text Accelerators
-  #
-  [Scribbler] Text([string]$value) {
-    $this.Scribble($value);
-    return $this;
-  }
-
-  [Scribbler] TextLn([string]$value) {
-    return $this.Text($value).Ln();
-  }
-
-  # Pair Accelerators
-  #
-  [Scribbler] Pair([couplet]$couplet) {
-    [string]$pairSnippet = $this.Krayon.PairSnippet($couplet);
-    $this.Scribble($pairSnippet);
-
-    return $this;
-  }
-
-  [Scribbler] PairLn([couplet]$couplet) {
-    return $this.Pair($couplet).Ln();
-  }
-
-  [Scribbler] Pair([PSCustomObject]$coupletObj) {
-    [couplet]$couplet = [couplet]::new($coupletObj);
-
-    return $this.Pair($couplet);
-  }
-
-  [Scribbler] PairLn([PSCustomObject]$coupletObj) {
-    return $this.Pair([couplet]::new($coupletObj)).Ln();
-  }
-
-  # Line Accelerators
-  #
-  [Scribbler] Line([string]$message, [line]$line) {
-    $this._coreScribbleLine($message, $line, 'Line');
-
-    return $this;
-  }
-
-  [Scribbler] Line([line]$line) {
-    $this.Line([string]::Empty, $line);
-
-    return $this;
-  }
-
-  [Scribbler] NakedLine([string]$message, [line]$nakedLine) {
-    $this._coreScribbleLine($message, $nakedLine, 'NakedLine');
-
-    return $this;
-  }
-
-  [Scribbler] NakedLine([line]$line) {
-    $this.NakedLine([string]::Empty, $line);
-
-    return $this;
-  }
-
-  hidden [void] _coreScribbleLine([string]$message, [line]$line, [string]$lineType) {
-
-    [string]$structuredLine = $(($Line.Line | ForEach-Object {
-          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
-        }) -join ';');
-
-    if (-not([string]::IsNullOrEmpty($message))) {
-      $structuredLine = "$message;" + $structuredLine;
-    }
-
-    [string]$lineSnippet = $this.WithArgSnippet(
-      $lineType, $structuredLine
-    )
-    $this.Scribble("$($lineSnippet)");
-  } # _coreScribbleLine
-
-  # Theme Accelerators
+  # +Theme+ Accelerators ------------------------------------------------------
   #
   [Scribbler] ThemeColour([string]$val) {
     [string]$snippet = $this.WithArgSnippet('ThemeColour', $val);
@@ -1092,49 +970,7 @@ class Scribbler {
     return $this;
   }
 
-  # Message Accelerators
-  #
-  [Scribbler] Message([string]$message) {
-    [string]$snippet = $this.WithArgSnippet('Message', $message);
-    $this.Scribble($snippet);
-
-    return $this;
-  }
-
-  [Scribbler] MessageLn([string]$message) {
-    return $this.Message($message).Ln();
-  }
-
-  [Scribbler] MessageNoSuffix([string]$message) {
-    [string]$snippet = $this.WithArgSnippet('MessageNoSuffix', $message);
-    $this.Scribble($snippet);
-
-    return $this;
-  }
-
-  [Scribbler] MessageNoSuffixLn([string]$message) {
-    return $this.MessageNoSuffix($message).Ln();
-  }
-
-  # Auxiliary Accelerators
-  #
-  [Scribbler] Reset() {
-    [string]$snippet = $this.Snippets('Reset');
-    $this.Scribble($snippet);
-
-    return $this;
-  }
-
-  [Scribbler] Ln() {
-    [string]$snippet = $this.Snippets('Ln');
-    $this.Scribble($snippet);
-
-    return $this;
-  }
-
-  [void] End() { }
-
-  # Colour Accelerators
+  # +Static Foreground Colours+ Accelerators ----------------------------------
   #
   [Scribbler] black() {
     [string]$snippet = $this.Snippets('black');
@@ -1248,6 +1084,8 @@ class Scribbler {
     return $this;
   }
 
+  # +Background Colours+ Accelerators -----------------------------------------
+  #
   [Scribbler] bgBlack() {
     [string]$snippet = $this.Snippets('bgBlack');
     $this.Scribble($snippet);
@@ -1359,45 +1197,45 @@ class Scribbler {
 
     return $this;
   }
-  
-  # Foreground/Background Accelerators
+
+  # +Utility+ -----------------------------------------------------------------
   #
-  [Scribbler] fore([string]$colour) {
-    [string]$snippet = $this.WithArgSnippet('fore', $colour);
-    $this.Scribble($snippet);
-
-    return $this;
+  [string] Snippets ([string[]]$Items) {
+    [string]$result = [string]::Empty;
+    foreach ($i in $Items) {
+      $result += $($this.Krayon.ApiFormat -f $i);
+    }
+    return $result;
   }
 
-  [Scribbler] back([string]$colour) {
-    [string]$snippet = $this.WithArgSnippet('back', $colour);
-    $this.Scribble($snippet);
-
-    return $this;
+  [string] WithArgSnippet([string]$api, [string]$arg) {
+    return "$($this.Krayon.ApiFormatWithArg -f $api, $arg)";
   }
 
-  [Scribbler] defaultFore([string]$colour) {
-    [string]$snippet = $this.WithArgSnippet('defaultFore', $colour);
-    $this.Scribble($snippet);
+  [string] PairSnippet([couplet]$pair) {
+    [string]$key = $this.krayon.Escape($pair.Key);
+    [string]$value = $this.krayon.Escape($pair.Value);
 
-    return $this;
+    [string]$csv = "$($key),$($value),$($pair.Affirm)";
+    [string]$pairSnippet = $this.WithArgSnippet(
+      'Pair', $csv
+    )
+    return $pairSnippet;
   }
 
-  [Scribbler] defaultBack([string]$colour) {
-    [string]$snippet = $this.WithArgSnippet('defaultBack', $colour);
-    $this.Scribble($snippet);
+  [string] LineSnippet([line]$line) {
+    [string]$structuredLine = $(($line.Line | ForEach-Object {
+          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
+        }) -join ';');
 
-    return $this;
+    [string]$lineSnippet = $this.WithArgSnippet(
+      'Line', $structuredLine
+    )
+    return $lineSnippet;
   }
-
-  # NB, Since getDefaultFore and getDefaultBack on the Krayon don't
-  # do anything to change rendering, it makes no sense to have these
-  # methods replicated here; there's no use for them.
-  #
 
   # Other internal
   #
-
   hidden [void] _clear() {
     if ($this._session) {
       $this._session.Append($this.Builder);
@@ -1415,6 +1253,197 @@ class QuietScribbler: Scribbler {
     $this._clear();
   }
 } # QuietScribbler
+
+function New-Krayon {
+  <#
+  .NAME
+    New-Krayon
+
+  .SYNOPSIS
+    Helper factory function that creates Krayon instance.
+
+  .DESCRIPTION
+    The client can specify a custom regular expression and corresponding
+  formatters which together support the scribble functionality (the ability
+  to invoke krayon functions via a 'structured' string as opposed to calling
+  the methods explicitly). Normally, the client can accept the default
+  expression and formatter arguments. However, depending on circumstance,
+  a custom pattern can be supplied along with corresponding formatters. The
+  formatters specified MUST correspond to the pattern and if they don't, then
+  an exception is thrown.
+    The default tokens used are as follows:
+
+  * lead: 'µ'
+  * open: '«'
+  * close: '»'
+
+  So this means that to invoke the 'red' function on the Krayon, the client
+  should invoke the Scribble function with the following 'structured' string:
+  'µ«red»'.
+  To invoke a command which requires a parameter eg 'Message', the client needs
+  to specify a string like: 'µ«Message,Greetings Earthlings»'. (NB: instructions
+  are case insensitive). (Please note, that custom regular expressions do not have
+  to have 'lead', 'open' and 'close' tokens as illustrated here; these are just
+  what are used by default. The client can define any expression with formatters
+  as long as it able to capture api calls with a single optional parameter.)
+
+  However, please do not specify a literal string like this. If scribble functionality
+  is required, then the Scribbler object should be used. The scribbler
+  contains helper functions 'Snippets' and 'WithArgSnippet'.
+  'Snippets', which when given an array of instructions will return the correct
+  structured string. So to 'Reset', set the foreground colour to red and the
+  background colour to black: $scribbler.Snippets(@('Reset', 'red', 'black'))
+  which would return 'µ«Reset»µ«red»µ«black»'.
+
+  And 'WithArgSnippet' for the above Message example, the client should use
+  the following:
+
+  [string]$snippet = $scribbler.WithArgSnippet('Message', 'Greetings Earthlings');
+
+  $scribbler.Scribble($snippet);
+
+  This is so that if for any reason, the expression and corresponding formatters
+  need to be changed, then no other client code would be affected.
+
+  And for completeness, an invoke requiring compound param representation eg to invoke
+  the 'Line' method would be defined as:
+
+  'one,Eve of Destruction;two,Bango' => this is a line with 2 couplets
+  which would be invoked like so:
+
+  [string]$snippet = $scribbler.WithArgSnippet('one,Eve of Destruction;two,Bango');
+
+  and to Invoke 'Line' with a message:
+
+  'Greetings Earthlings;one,Eve of Destruction;two,Bango'
+
+  if you look at the first segment, you will see that it contains no comma. The scribbler
+  will interpret the first segment as a message with subsequent segments containing
+  valid comma separated values, split by semi-colons. (Be careful to construct this string
+  properly; if a segment does not contain a comma (except for the first segment), then
+  will likely be an error).
+
+  And if the message required, includes a comma, then it should be escaped with a
+  back slash '\':
+
+  'Greetings\, Earthlings;one,Eve of Destruction;two,Bango'.
+
+  .PARAMETER Expression
+  A custom regular expression pattern than capture a Krayon method api call and an optional
+  parameter. The expression MUST contain the following 2 named capture groups:
+
+  * 'api': string to represent a method call on the Krayon instance.
+  * 'p': optional string to represent a parameter passed into the function denoted by 'api'.
+
+  Instructions can either have 0 or 1 argument. When an argument is specified that must represent
+  a compound value (multiple items), then a compound representation must be used,
+  eg a couplet is represented by a comma separated string and a line is represented
+  by a semi-colon separated value, where the value inside each semi-colon segment is
+  a pair represented by a comma separated value.
+
+  .PARAMETER NativeExpression
+    A custom regular expression pattern that recognises the content interpreted by the Krayon Scribble
+  method. The 'inverse' native expression parses a structured string and returns the core text stripped
+  of any api tokens.
+
+  .PARAMETER Theme
+  A hashtable instance containing the Krayola theme.
+
+  .PARAMETER WriterFormat
+    Format string that represents a Krayon api method call without an argument. This format
+  needs to conform to the regular expression pattern specified by Expression.
+
+  .PARAMETER WriterFormatWithArg
+    Format string that represents a Krayon api method call with an argument. This format needs
+  to conform to the regular expression pattern specified by Expression. This format must
+  accommodate a single parameter.
+  #>
+  [OutputType([Krayon])]
+  param(
+    [Parameter()]
+    [hashtable]$Theme = $(Get-KrayolaTheme),
+
+    [Parameter()]
+    # OLD: '&\[(?<api>[\w]+)(,(?<p>[^\]]+))?\]'
+    [regex]$Expression = [regex]::new("µ«(?<api>[\w]+)(,(?<p>[^»]+))?»"),
+
+    [Parameter()]
+    # OLD: '&[{0},{1}]'
+    [string]$WriterFormatWithArg = "µ«{0},{1}»",
+
+    [Parameter()]
+    # OLD: '&[{0}]'
+    [string]$WriterFormat = "µ«{0}»",
+
+    [Parameter()]
+    # OLD: '&\[[\w\s\-_]+(?:,\s*[\w\s\-_]+)?\]'
+    [string]$NativeExpression = [regex]::new("µ«[\w\s\-_]+(?:,\s*[\w\s\-_]+)?»")
+  )
+
+  [string]$dummyWithArg = $WriterFormatWithArg -replace "\{\d{1,2}\}", 'dummy';
+  if (-not($Expression.IsMatch($dummyWithArg))) {
+    throw "New-Krayon: invalid WriterFormatWithArg ('$WriterFormatWithArg'), does not match the provided Expression: '$($Expression.ToString())'";
+  }
+
+  [string]$dummy = $WriterFormat -replace "\{\d{1,2}\}", 'dummy';
+  if (-not($Expression.IsMatch($dummy))) {
+    throw "New-Krayon: invalid WriterFormat ('$WriterFormat'), does not match the provided Expression: '$($Expression.ToString())'";
+  }
+  return [Krayon]::new($Theme, $Expression, $WriterFormatWithArg, $WriterFormat, $NativeExpression);
+} # New-Krayon
+
+function New-Line {
+  <#
+  .NAME
+    New-Line
+
+  .SYNOPSIS
+    Helper factory function that creates Line instance.
+
+  .DESCRIPTION
+    A Line is a wrapper around a collection of couplets.
+
+  .PARAMETER Krayon
+    The underlying krayon instance that performs real writes to the host.
+
+  .PARAMETER couplets
+    Collection of couplets to create Line with.
+  #>
+  [OutputType([line])]
+  [Alias('kl')]
+  param(
+    [Parameter()]
+    [couplet[]]$couplets = @()
+  )
+  return [line]::new($couplets);
+} # New-Line
+
+<#
+.NAME
+  New-Pair
+
+.SYNOPSIS
+  Helper factory function that creates a couplet instance.
+
+.DESCRIPTION
+  A couplet is logically 2 items, but can contain a 3rd element representing
+its 'affirmed' status. An couplet that is affirmed is one that can be highlighted
+according to the Krayola theme (AFFIRM-COLOURS).
+
+.PARAMETER couplet
+  A 2 or 3 item array representing a key/value pair and optional affirm boolean.
+#>
+function New-Pair {
+  [OutputType([couplet])]
+  [Alias('kp')]
+  param(
+    [Parameter()]
+    [string[]]$couplet
+  )
+  return ($couplet.Count -ge 3) `
+    ? [couplet]::new($couplet[0], $couplet[1], [System.Convert]::ToBoolean($couplet[2])) `
+    : [couplet]::new($couplet[0], $couplet[1]);
+} # New-Pair
 
 function New-Scribbler {
   <#
