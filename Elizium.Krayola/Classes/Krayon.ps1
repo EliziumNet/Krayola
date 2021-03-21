@@ -321,7 +321,7 @@ class Krayon {
     return $this.MessageNoSuffix($message).Ln();
   }
 
-  # +Foreground/Background+ ---------------------------------------------------
+  # +Dynamic+ -----------------------------------------------------------------
   #
   [Krayon] fore([string]$colour) {
     $this._fgc = $colour;
@@ -874,7 +874,7 @@ class Scribbler {
     return $this.MessageNoSuffix($message).Ln();
   }
 
-  # +Foreground/Background+ Accelerators --------------------------------------
+  # +Dynamic+ Accelerators ----------------------------------------------------
   #
   [Scribbler] fore([string]$colour) {
     [string]$snippet = $this.WithArgSnippet('fore', $colour);
