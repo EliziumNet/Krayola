@@ -601,9 +601,6 @@ class Krayon {
 
   # +Utility+ -----------------------------------------------------------------
   #
-  [string] Escape([string]$value) {
-    return $value.Replace(';', '\;').Replace(',', '\,');
-  }
 
   [string] Native([string]$structured) {
     return $this._nativeExpression.Replace($structured, '');
@@ -840,7 +837,7 @@ class Scribbler {
 
   hidden [void] _coreScribbleLine([string]$message, [line]$line, [string]$lineType) {
     [string]$structuredLine = $(($Line.Line | ForEach-Object {
-          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
+          "$($this.Escape($_.Key)),$($this.Escape($_.Value)),$($_.Affirm)"
         }) -join ';');
 
     if (-not([string]::IsNullOrEmpty($message))) {
@@ -1200,6 +1197,11 @@ class Scribbler {
 
   # +Utility+ -----------------------------------------------------------------
   #
+
+  [string] Escape([string]$value) {
+    return $value.Replace(';', '\;').Replace(',', '\,');
+  }
+
   [string] Snippets ([string[]]$Items) {
     [string]$result = [string]::Empty;
     foreach ($i in $Items) {
@@ -1213,8 +1215,8 @@ class Scribbler {
   }
 
   [string] PairSnippet([couplet]$pair) {
-    [string]$key = $this.krayon.Escape($pair.Key);
-    [string]$value = $this.krayon.Escape($pair.Value);
+    [string]$key = $this.Escape($pair.Key);
+    [string]$value = $this.Escape($pair.Value);
 
     [string]$csv = "$($key),$($value),$($pair.Affirm)";
     [string]$pairSnippet = $this.WithArgSnippet(
@@ -1225,7 +1227,7 @@ class Scribbler {
 
   [string] LineSnippet([line]$line) {
     [string]$structuredLine = $(($line.Line | ForEach-Object {
-          "$($this.krayon.Escape($_.Key)),$($this.krayon.Escape($_.Value)),$($_.Affirm)"
+          "$($this.Escape($_.Key)),$($this.Escape($_.Value)),$($_.Affirm)"
         }) -join ';');
 
     [string]$lineSnippet = $this.WithArgSnippet(

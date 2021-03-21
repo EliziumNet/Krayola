@@ -89,7 +89,7 @@ The following tables shows the methods that are defined on both of these classes
 
 | Method Name     | Scribbler           | Krayon             | Link
 |-----------------|---------------------|--------------------|---------------------------
-| Escape          | :x:                 | :heavy_check_mark: |
+| Escape          | :heavy_check_mark:  | :x:                |
 | Snippets        | :heavy_check_mark:  | :x:                |
 | WithArgSnippet  | :heavy_check_mark:  | :x:                |
 | PairSnippet     | :heavy_check_mark:  | :x:                |
