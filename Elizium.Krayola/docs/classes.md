@@ -3,7 +3,7 @@
 
 ## Scribbler :snail: vs Krayon :smiley_cat:
 
-The [Scribbler](#Scribbler-Class) and the [Krayon](#Krayon-Class) work together in rendering coloured output via the host. The Krayon is the instance that invokes *Write-Host*. It is furnished with a variety of methods (as illustrated below) that enable it to do so and with accordance to a provided Krayola theme, that helps the client produce output in a consistent manner across different commands.
+The [Scribbler](#scribbler-Class) and the [Krayon](#krayon-Class) work together in rendering coloured output via the host. The Krayon is the instance that invokes *Write-Host*. It is furnished with a variety of methods (as illustrated below) that enable it to do so and with accordance to a provided Krayola theme, that helps the client produce output in a consistent manner across different commands.
 
 However, it soon became apparent that allowing the client to have a direct dependency on the Krayon prevented any means of controlling the output, ie in unit testcases, it would be desirable not to generate any, so as to keep test case output as quiet as possible. The Scribbler was subsequently built to provide this level of control which it does via an internal buffer implemented with a *StringBuilder*. The method that would be called on Krayon is now implemented on the Scribbler which it handles by appending to the buffer. The client can build up output with successive calls and at any time of the client's choosing, the Scribbler can be *Flush*ed, at which point those buffered instructions are replayed on the Krayon via its own *Scribble* method.
 
@@ -47,7 +47,7 @@ In both of the these examples, the Scribbler will just buffer these instructions
 
 + the '&', '[' and ']' are not the default delimiter tokens used (they are in fact 'µ', '«' and '»' respectively). It was soon found that it would be much better if the tokens used were not tokens easily accessed via the keyboard and regularly used because of regular expression parsing and how this could be interfered with if the client actually wanted to see these tokens in the output in a different context (eg trying to display '\[something\]' when '[' and a ']' are used to parse colour instructions broke regular expression matching).
 
-+ If the client for some reason needed to see in the output, what are now the default tokens 'µ', '«' and '»' in a different context and therefore prefer to change these defaults, they can do so by using a custom regular expression and formatters (see [New-Krayon](Elizium.Krayola/docs/New-Krayon.md)); ie the *Literal* style. If we stick to not directly using these tokens in our structured strings (non literal *Structured* style) and use the [utility](#Scribbler-utility-methods) methods on the Scribbler, we can avoid huge refactors if these patterns/formatters have to change at a later date (that is not to say there are any plans to change the defaults in Krayola).
++ If the client for some reason needed to see in the output, what are now the default tokens 'µ', '«' and '»' in a different context and therefore prefer to change these defaults, they can do so by using a custom regular expression and formatters (see [New-Krayon](Elizium.Krayola/docs/New-Krayon.md)); ie the *Literal* style. If we stick to not directly using these tokens in our structured strings (non literal *Structured* style) and use the [utility](#scribbler-utility-methods) methods on the Scribbler, we can avoid huge refactors if these patterns/formatters have to change at a later date (that is not to say there are any plans to change the defaults in Krayola).
 
 But even though it is recommended to not directly use delimiter tokens inside structured strings it is understandable for readability reasons why a client may wish to do so.
 
@@ -118,66 +118,66 @@ The following tables shows the methods that are defined on both of these classes
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| Scribble      | [:heavy_check_mark:](#scribbler.scribble) | [:heavy_check_mark:](#Krayon.Scribble([string]$source)) :heavy_plus_sign:
-| ScribbleLn    | :x:                 | [:heavy_check_mark:](#Krayon.ScribbleLn([string]$source)) :heavy_plus_sign:
+| Scribble      | [:heavy_check_mark:](#scribbler.scribble) | [:heavy_check_mark:](#krayon.ccribble) :heavy_plus_sign:
+| ScribbleLn    | :x:                 | [:heavy_check_mark:](#krayon.ScribbleLn([string]$source)) :heavy_plus_sign:
 
 ### Text
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| Text          | [:heavy_check_mark:](#Scribbler.Text([string]$value)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.Text([string]$value)) :heavy_plus_sign:
-| TextLn        | [:heavy_check_mark:](#Scribbler.TextLn([string]$value)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.TextLn([string]$value)) :heavy_plus_sign:
+| Text          | [:heavy_check_mark:](#scribbler.text) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.text) :heavy_plus_sign:
+| TextLn        | [:heavy_check_mark:](#scribbler.textn) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.textln) :heavy_plus_sign:
 
 ### Pair
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| Pair          | [:heavy_check_mark:](#Scribbler.Pair([couplet]$couplet)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.Pair([couplet]$couplet)) :heavy_plus_sign:
-| PairLn        | [:heavy_check_mark:](#Scribbler.PairLn([couplet]$couplet)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.PairLn([couplet]$couplet)) :heavy_plus_sign:
+| Pair          | [:heavy_check_mark:](#scribbler.pair) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.pair) :heavy_plus_sign:
+| PairLn        | [:heavy_check_mark:](#scribbler.pairln) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.pairln) :heavy_plus_sign:
 
 ### Line
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| Line          | [:heavy_check_mark:](#Scribbler.Line([line]$line)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.Line([line]$line)) :heavy_plus_sign:
-| NakedLine     | [:heavy_check_mark:](#Scribbler.NakedLine([line]$nakedLine)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.NakedLine([line]$nakedLine)) :heavy_plus_sign:
+| Line          | [:heavy_check_mark:](#scribbler.line) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.line) :heavy_plus_sign:
+| NakedLine     | [:heavy_check_mark:](#scribbler.nakedline) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.nakedline) :heavy_plus_sign:
 
 ### Message
 
 | Method Name          | Scribbler           | Krayon
 |----------------------|---------------------|-----------------------------------------
-| Message              | [:heavy_check_mark:](#Scribbler.Message([string]$message)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.Message([string]$message)) :heavy_plus_sign:
-| MessageLn            | [:heavy_check_mark:](#Scribbler.MessageLn([string]$message)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.MessageLn([string]$message)) :heavy_plus_sign:
-| MessageNoSuffix      | [:heavy_check_mark:](#Scribbler.MessageNoSuffix([string]$message)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.MessageNoSuffix([string]$message)) :heavy_plus_sign:
-| MessageNoSuffixLn    | [:heavy_check_mark:](#Scribbler.MessageNoSuffixLn([string]$message)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.MessageNoSuffixLn([string]$message)) :heavy_plus_sign:
+| Message              | [:heavy_check_mark:](#scribbler.message) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.message) :heavy_plus_sign:
+| MessageLn            | [:heavy_check_mark:](#scribbler.messageln) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.messageln) :heavy_plus_sign:
+| MessageNoSuffix      | [:heavy_check_mark:](#scribbler.messagenosuffix) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.messagenosuffix) :heavy_plus_sign:
+| MessageNoSuffixLn    | [:heavy_check_mark:](#scribbler.messagenosuffixln) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.messagenosuffixln) :heavy_plus_sign:
 
 ### Foreground/Background
 
 | Method Name    | Scribbler           | Krayon
 |----------------|---------------------|-----------------------------------------------
-| fore           | [:heavy_check_mark:](#Scribbler.fore([string]$colour)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.fore([string]$colour)) :heavy_plus_sign:
-| back           | [:heavy_check_mark:](#Scribbler.back([string]$colour)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.back([string]$colour)) :heavy_plus_sign:
-| defaultFore    | [:heavy_check_mark:](#Scribbler.defaultFore([string]$colour)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.defaultFore([string]$colour)) :heavy_plus_sign:
-| defaultBack    | [:heavy_check_mark:](#Scribbler.defaultBack([string]$colour)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.defaultBack([string]$colour)) :heavy_plus_sign:
-| getDefaultFore | :x:                 | [:heavy_check_mark:](#Krayon.getDefaultFore())
-| getDefaultBack | :x:                 | [:heavy_check_mark:](#Krayon.getDefaultBack())
+| fore           | [:heavy_check_mark:](#scribbler.fore) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.fore) :heavy_plus_sign:
+| back           | [:heavy_check_mark:](#scribbler.back) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.back) :heavy_plus_sign:
+| defaultFore    | [:heavy_check_mark:](#scribbler.defaultfore) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.defaultfore) :heavy_plus_sign:
+| defaultBack    | [:heavy_check_mark:](#scribbler.defaultback) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.defaultback) :heavy_plus_sign:
+| getDefaultFore | :x:                 | [:heavy_check_mark:](#krayon.getDefaultFore)
+| getDefaultBack | :x:                 | [:heavy_check_mark:](#krayon.getDefaultBack)
 
 ### Control
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| End           | [:heavy_check_mark:](#Scribbler.End()) | [:heavy_check_mark:](#Krayon.End())
-| Flush         | [:heavy_check_mark:](#Scribbler.Flush()) | :x:
-| Ln            | [:heavy_check_mark:](#Scribbler.Ln()) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.Ln()) :heavy_plus_sign:
-| Reset         | [:heavy_check_mark:](#Scribbler.Reset()) :heavy_plus_sign: | [:heavy_check_mark:](#Scribbler.Reset()) :heavy_plus_sign:
-| Restart       | [:heavy_check_mark:](#Scribbler.Restart()) | :x:
-| Save          | [:heavy_check_mark:](#Scribbler.Save([string]$fullPath)) | :x:
+| End           | [:heavy_check_mark:](#scribbler.end) | [:heavy_check_mark:](#krayon.end)
+| Flush         | [:heavy_check_mark:](#scribbler.flush) | :x:
+| Ln            | [:heavy_check_mark:](#scribbler.ln) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.ln) :heavy_plus_sign:
+| Reset         | [:heavy_check_mark:](#scribbler.reset) :heavy_plus_sign: | [:heavy_check_mark:](#scribbler.reset) :heavy_plus_sign:
+| Restart       | [:heavy_check_mark:](#scribbler.restart) | :x:
+| Save          | [:heavy_check_mark:](#scribbler.save) | :x:
 
 ### Theme
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| ThemeColour   | [:heavy_check_mark:](#Scribbler.ThemeColour([string]$val)) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.ThemeColour([string]$val)) :heavy_plus_sign:
+| ThemeColour   | [:heavy_check_mark:](#scribbler.themecolour) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.themecolour) :heavy_plus_sign:
 
 ### Static Colours
 
@@ -186,26 +186,26 @@ only shows the methods for 'blue' and its background counterpart.
 
 | Method Name    | Scribbler           | Krayon
 |----------------|---------------------|-----------------------------------------------
-| blue           | [:heavy_check_mark:](#Scribbler.\<Colour\>()) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.\<Colour\>()) :heavy_plus_sign:
-| bgBlue         | [:heavy_check_mark:](#Scribbler.\<Colour\>()) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.\<Colour\>()) :heavy_plus_sign:
+| blue           | [:heavy_check_mark:](#scribbler.\<Colour\>) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.\<Colour\>) :heavy_plus_sign:
+| bgBlue         | [:heavy_check_mark:](#scribbler.\<Colour\>()) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.\<Colour\>) :heavy_plus_sign:
 
 ### Compounders (CSV/semi-colonSV)
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| Line          | :x:                 | [:heavy_check_mark:](#Krayon.Line([line]$line)) :heavy_plus_sign:
-| NakedLine     | :x:                 | [:heavy_check_mark:](#Krayon.NakedLine([line]$nakedLine)) :heavy_plus_sign:
-| Pair          | :x:                 | [:heavy_check_mark:](#Krayon.Pair([couplet]$couplet)) :heavy_plus_sign:
-| PairLn        | :x:                 | [:heavy_check_mark:](#Krayon.PairLn([couplet]$couplet)) :heavy_plus_sign:
+| Line          | :x:                 | [:heavy_check_mark:](#krayon.line) :heavy_plus_sign:
+| NakedLine     | :x:                 | [:heavy_check_mark:](#krayon.nakedline) :heavy_plus_sign:
+| Pair          | :x:                 | [:heavy_check_mark:](#krayon.pair) :heavy_plus_sign:
+| PairLn        | :x:                 | [:heavy_check_mark:](#krayon.pairln) :heavy_plus_sign:
 
 ### Utility
 
 | Method Name     | Scribbler           | Krayon
 |-----------------|---------------------|------------------------------------------------
-| Snippets        | [:heavy_check_mark:](#Scribbler.Snippets([string[]]$items))  | :x:
-| WithArgSnippet  | [:heavy_check_mark:](#Scribbler.WithArgSnippet([string]$api,[string]$arg))  | :x:
-| PairSnippet     | [:heavy_check_mark:](#Scribbler.PairSnippet([couplet]$pair))  | :x:
-| LineSnippet     | [:heavy_check_mark:](#Scribbler.LineSnippet([line]$line))  | :x:
+| Snippets        | [:heavy_check_mark:](#scribbler.snippets)  | :x:
+| WithArgSnippet  | [:heavy_check_mark:](#scribbler.withargsnippet)  | :x:
+| PairSnippet     | [:heavy_check_mark:](#scribbler.pairsnippet)  | :x:
+| LineSnippet     | [:heavy_check_mark:](#scribbler.linesnippet)  | :x:
 
 ## Scribbler Class
 
@@ -220,7 +220,6 @@ The code examples in this section include a *Flush* invoke. It is at this point 
 #### Scribbler.Scribble
 
 <div id="scribbler.scribble"></div>
-
 :gem: Scribbler.Scribble([string]$source)
 
 *source* is a structured string, which means it contains colouring instructions and core text. The structured string is buffered **without** a new line.
@@ -244,7 +243,10 @@ The code examples in this section include a *Flush* invoke. It is at this point 
 
 :dart: Text/TextLn
 
-#### Scribbler.Text([string]$value)
+#### Scribbler.Text
+
+<div id="scribbler.text"></div>
+:gem: Scribbler.Text([string]$value)
 
 *value* is a plain string fragment, which means it contains no colouring instructions, just core text.
 
@@ -262,7 +264,10 @@ The text string value is buffered **without** a new line.
   $scribbler.Flush();
 ```
 
-#### Scribbler.TextLn([string]$value)
+#### Scribbler.TextLn
+
+<div id="scribbler.textln"></div>
+:gem: Scribbler.TextLn([string]$value)
 
 *value* is a plain string fragment, which means it contains no colouring instructions, just core text.
 
@@ -282,9 +287,12 @@ The text string value is buffered **with** a new line.
 
 ### Scribbler Pair methods
 
-:dart: Pair/PairLn (see the [Couplet](#Couplet-Class) Class)
+:dart: Pair/PairLn (see the [Couplet](#couplet-class) Class)
 
-#### Scribbler.Pair([couplet]$couplet)
+#### Scribbler.Pair
+
+<div id="scribbler.pair"></div>
+:gem: Scribbler.Pair([couplet]$couplet)
 
 *couplet* is a 'couplet' instance representing an optionally 'affirmed' key/value pair. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
@@ -296,7 +304,10 @@ Buffers the pair couplet **without** a new line.
   $scribbler.Flush();
 ```
 
-#### Scribbler.PairLn([couplet]$couplet)
+#### Scribbler.PairLn
+
+<div id="scribbler.pairln"></div>
+:gem: Scribbler.PairLn([couplet]$couplet)
 
 *couplet* is a 'couplet' instance representing an optionally 'affirmed' key/value pair. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
@@ -308,7 +319,9 @@ Buffers the pair couplet **with** a new line.
   $scribbler.Flush();
 ```
 
-#### Scribbler.Pair([PSCustomObject]$couplet)
+#### Scribbler.Pair
+
+:gem: Scribbler.Pair([PSCustomObject]$couplet)
 
 *couplet* is a 'PSCustomObject' instance which must have *Key* and *Value* properties representing an optionally *affirmed* boolean member. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
@@ -324,7 +337,9 @@ Buffers the pair object **with** a new line.
   $scribbler.Flush();
 ```
 
-#### Scribbler.PairLn([PSCustomObject]$couplet)
+#### Scribbler.PairLn
+
+:gem: Scribbler.PairLn([PSCustomObject]$couplet)
 
 *couplet* is a 'PSCustomObject' instance which must have *Key* and *Value* properties representing an optionally *affirmed* boolean member. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
@@ -343,7 +358,10 @@ Buffers the pair object **without** a new line.
 
 :dart: Line/NakedLine (see the [Line](#Line-Class) Class)
 
-#### Scribbler.Line([line]$line)
+#### Scribbler.Line
+
+<div id="scribbler.line"></div>
+:gem: Scribbler.Line([line]$line)
 
 *line* is a 'Line' instance which is a collection of 'couplet's.
 
@@ -360,6 +378,9 @@ The Line method has a new line built into it.
 
 #### Scribbler.NakedLine([line]$nakedLine)
 
+<div id="scribbler.nakedline"></div>
+:gem: Scribbler.Line([line]$nakedLine)
+
 *nakedLine* is a 'Line' instance which is a collection of 'couplet's. The Line method has a new line built into it. The Line method is defined in terms of the Krayola Theme. The collection of pairs that comprises the line are 'book-ended' by the tokens defined in the Krayola theme under the 'OPEN' and 'CLOSE' keys. A naked line is one that is rendered without the 'OPEN' and 'CLOSE' tokens.
 
 The NakedLine method has a new line built into it.
@@ -373,7 +394,10 @@ The NakedLine method has a new line built into it.
   $scribbler.Flush();
 ```
 
-#### Scribbler.Line([string]$message, [line]$line)
+#### Scribbler.Line / With message
+
+<div id="scribbler.line.message"></div>
+:gem: Scribbler.Line([string]$message, [line]$line)
 
 *message* is some text that is displayed just prior to the line.
 
@@ -394,7 +418,10 @@ The Line method has a new line built into it.
   $scribbler.Flush();
 ```
 
-#### Scribbler.NakedLine([string]$message, [line]$line)
+#### Scribbler.NakedLine / With message
+
+<div id="scribbler.nakedline.message"></div>
+:gem: Scribbler.NakedLine([string]$message, [line]$nakedline)
 
 *message* is some text that is displayed just prior to the line.
 
@@ -421,7 +448,10 @@ The NakedLine method has a new line built into it.
 
 All these methods are displayed using the colour defined in the Krayola theme under key 'MESSAGE-COLOURS'.
 
-#### Scribbler.Message([string]$message)
+#### Scribbler.Message
+
+<div id="scribbler.message"></div>
+:gem: Scribbler.Message([string]$message)
 
 *message* is some text that precedes static text defined in the Krayola theme under key 'MESSAGE-SUFFIX'. 
 
@@ -432,7 +462,10 @@ Buffers the message **without** a new line.
   $scribbler.Flush();
 ```
 
-#### Scribbler.MessageLn([string]$message)
+#### Scribbler.MessageLn
+
+<div id="scribbler.messageln"></div>
+:gem: Scribbler.MessageLn([string]$message)
 
 *message* is some text that precedes static text defined in the Krayola theme under key 'MESSAGE-SUFFIX'. 
 
@@ -443,7 +476,10 @@ Buffers the message **with** a new line.
   $scribbler.Flush();
 ```
 
-#### Scribbler.MessageNoSuffix([string]$message)
+#### Scribbler.MessageNoSuffix
+
+<div id="scribbler.messagenosuffix"></div>
+:gem: Scribbler.MessageNoSuffix([string]$message)
 
 *message* is some text.
 
@@ -457,6 +493,9 @@ Buffers the message **without** a new line.
 ```
 
 #### Scribbler.MessageNoSuffixLn([string]$message)
+
+<div id="scribbler.messagenosuffixln"></div>
+:gem: Scribbler.MessageNoSuffixLn([string]$message)
 
 *message* is some text.
 
@@ -473,7 +512,10 @@ Buffers the message **with** a new line.
 
 :dart: fore/back/defaultFore/defaultBack
 
-#### Scribbler.fore([string]$colour)
+#### Scribbler.fore
+
+<div id="scribbler.fore"></div>
+:gem: Scribbler.fore([string]$colour)
 
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the foreground colour with a variable. Any text written after the colour has been invoked appears in this foreground colour. The colour remains in place until changed by another foreground colour or a *Reset* has been invoked returning the colour state back to the default.
 
@@ -487,6 +529,9 @@ Buffers the foreground colour.
 
 #### Scribbler.back([string]$colour)
 
+<div id="scribbler.back"></div>
+:gem: Scribbler.back([string]$colour)
+
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the background colour with a variable. Any text written after the colour has been invoked appears in this background colour. The colour remains in place until changed by another background colour or a *Reset* has been invoked returning the colour state back to the default.
 
 Buffers the background colour.
@@ -499,7 +544,10 @@ Buffers the background colour.
   $scribbler.Flush();
 ```
 
-#### Scribbler.defaultFore([string]$colour)
+#### Scribbler.defaultFore
+
+<div id="scribbler.defaultfore"></div>
+:gem: Scribbler.defaultFore([string]$colour)
 
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the default foreground colour with a variable. The default colour is the colour that the Krayon returns to as a result of *Reset* having been invoked.
 
@@ -510,7 +558,10 @@ Buffers the default foreground colour.
   $scribbler.Flush();
 ```
 
-#### Scribbler.defaultBack([string]$colour)
+#### Scribbler.defaultBack
+
+<div id="scribbler.defaultback"></div>
+:gem: Scribbler.defaultBack([string]$colour)
 
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the default background colour with a variable. The default colour is the colour that the Krayon returns to as a result of *Reset* having been invoked.
 
@@ -529,25 +580,43 @@ Buffers the default background colour.
 
 #### Scribbler.End()
 
+<div id="scribbler.end"></div>
+:gem: Scribbler.End()
+
 When invoking the *fluent* methods, within a function context, it is necessary to consume the return value. If the result in not consumed, then its value can be leaked out into the console. Most if not always, this is not what the client would expect. Therefore, when the end of an invoke chain has been reached, then the client should either call the *End()* method or can they use any other standard powershell technique for consuming/re-directing un-consumed values, like assigning to *$null* or re-directing to *out-null*. The *End* method was provided as a convenience. You will notice that in all the examples shown, the *End* method is being invoked.
 
 #### Scribbler.Flush()
+
+<div id="scribbler.flush"></div>
+:gem: Scribbler.Flush()
 
 Causes the buffered content inside the Scribbler to be replayed on the Krayon. The exception to this is when a Quiet scribbler is in play as a result of being run in a Testing context without *EliziumTest* being present in the environment. This ensures that by default, test cases using the Scribbler either directly or indirectly are noise-less. Of course the client can define test cases with the Scribbler mocked out which is also another recommended technique (actually mocking out classes in Powershell testcases is difficult, if not impossible). However, sometimes its good to see test cases running showing real output (in *integration tests*), that is why this design choice was taken.
 
 #### Scribbler.Ln()
 
+<div id="scribbler.ln"></div>
+:gem: Scribbler.Ln()
+
 Buffers a new line operation.
 
 #### Scribbler.Reset()
+
+<div id="scribbler.reset"></div>
+:gem: Scribbler.Reset()
 
 Buffers a request to return the Krayon to default foreground and background colours.
 
 #### Scribbler.Restart()
 
+<div id="scribbler.restart"></div>
+:gem: Scribbler.Restart()
+
 Similar to Reset, but also clears internal buffers. Akin to a *HardReset*.
 
-#### Scribbler.Save([string]$fullPath)
+#### Scribbler.Save
+
+<div id="scribbler.save"></div>
+:gem: Scribbler.Save([string]$fullPath)
 
 *fullPath* is the full path to a non-existent file to which the session content is written out to.
 
@@ -558,6 +627,9 @@ When the Scribbler has been created with the *Save* option, any *Flush* invokes 
 :dart: ThemeColour
 
 #### Scribbler.ThemeColour([string]$val)
+
+<div id="scribbler.themecolour"></div>
+:gem: Scribbler.ThemeColour([string]$val)
 
 *val* is a string that specifies a Krayola theme colour. The krayola theme contains the following colour entries:
 
@@ -580,13 +652,19 @@ The value inside the brackets denotes the valid string for the $val parameter th
 
 #### Scribbler.\<Colour\>()
 
+<div id="scribbler.colour"></div>
+:gem: Scribbler.\<Colour\>()
+
 Sets either the foreground or background colour. The background colours are specified by preceding the standard colour name with 'bg', eg 'bgCyan'. Sends the colour request into the buffer.
 
 ### Scribbler utility methods
 
 :dart: Snippets/WithArgSnippet/PairSnippet/LineSnippet
 
-#### Scribbler.Snippets([string[]]$items)
+#### Scribbler.Snippets
+
+<div id="scribbler.snippets"></div>
+:gem: Scribbler.Snippets([string[]]$items)
 
 *$items* a collection of strings representing Krayon method invokes.
 
@@ -600,7 +678,10 @@ Returns the structured string:
 
 > µ«Reset»µ«Ln»µ«Ln»
 
-#### Scribbler.WithArgSnippet([string]$api,[string]$arg)
+#### Scribbler.WithArgSnippet
+
+<div id="scribbler.withargsnippet"></div>
+:gem: Scribbler.WithArgSnippet([string]$api,[string]$arg)
 
 *api* the single parameter Krayon method to invoke.
 
@@ -620,7 +701,10 @@ A single invoke of *WithArgSnippet* represents a single invoke only. The api mus
   $scribbler.Flush();
 ```
 
-#### Scribbler.PairSnippet([couplet]$pair)
+#### Scribbler.PairSnippet
+
+<div id="scribbler.pairsnippet"></div>
+:gem: Scribbler.PairSnippet([couplet]$pair)
 
 *couplet* is a 'couplet' instance representing an optionally 'affirmed' key/value pair. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
@@ -639,6 +723,9 @@ This method is automatically invoked when the client uses the *Pair* accelerator
 :pushpin: If the key or value either contains a comma or semi-colon, then these are automatically escaped. This allows the pair to be represented as a compounded string value so that it can be scribbled on the Krayon.
 
 #### Scribbler.LineSnippet([line]$line)
+
+<div id="scribbler.linesnippet"></div>
+:gem: Scribbler.LineSnippet([line]$line)
 
 *line* is a 'Line' instance which is a collection of 'couplet's. The Line method has a new line built into it.
 
@@ -674,13 +761,19 @@ The workhorse that performs the actual writes to the console.
 
 :dart: Scribble/ScribbleLn
 
-#### Krayon.Scribble([string]$source)
+#### Krayon.Scribble
+
+<div id="krayon.scribble"></div>
+:gem: Krayon.Scribble([string]$source)
 
 *source* is a structured string, which means it contains colouring instructions and core text. The *source* is replayed on the Krayon, ultimately writing payload text to the host console.
 
 Structured content is written to the host WITHOUT a new line.
 
-#### Krayon.ScribbleLn([string]$source)
+#### Krayon.ScribbleLn
+
+<div id="krayon.scribbleln"></div>
+:gem: Krayon.ScribbleLn([string]$source)
 
 *source* is a structured string, which means it contains colouring instructions and core text. The *source* is replayed on the Krayon, ultimately writing payload text to the host console with an additional new line.
 
@@ -690,11 +783,17 @@ Structured content is written to the host WITHOUT a new line.
 
 #### Krayon.Text([string]$value)
 
+<div id="krayon.text"></div>
+:gem: Krayon.Text([string]$source)
+
 *value* is a plain string fragment, which means it contains no colouring instructions but just core text.
 
 The text value is written using the current foreground and background colours. The text is written to the console **without** a new line. This allows colours to be changed at will on the current line.
 
 #### Krayon.TextLn([string]$value)
+
+<div id="krayon.textln"></div>
+:gem: Krayon.TextLn([string]$source)
 
 *value* is a plain string fragment, which means it contains no colouring instructions but just core text.
 
@@ -706,23 +805,33 @@ The text value is written using the current foreground and background colours **
 
 #### Krayon.Pair([couplet]$couplet)
 
+<div id="krayon.pair"></div>
+:gem: Krayon.Pair([couplet]$couplet)
+
 *couplet* is a 'couplet' instance representing an optionally 'affirmed' key/value pair. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
 Writes the couplet instance to the console using the colours and formatting defined in the Krayola theme **without** a new line.
 
 #### Krayon.PairLn([couplet]$couplet)
 
+<div id="krayon.pairln"></div>
+:gem: Krayon.PairLn([couplet]$couplet)
+
 *couplet* is a 'couplet' instance representing an optionally 'affirmed' key/value pair. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
 Writes the couplet instance to the console using the colours and formatting defined in the Krayola theme **with** a new line.
 
-#### Krayon.Pair([PSCustomObject]$couplet)
+#### Krayon.Pair
+
+:gem: Krayon.PairLn([PSCustomObject]$couplet)
 
 *couplet* is a 'PSCustomObject' instance which must have *Key* and *Value* properties representing an optionally *affirmed* boolean member. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
 Writes the couplet instance to the console using the colours and formatting defined in the Krayola theme **without** a new line.
 
 #### Krayon.PairLn([PSCustomObject]$couplet)
+
+:gem: Krayon.PairLn([PSCustomObject]$couplet)
 
 *couplet* is a 'PSCustomObject' instance which must have *Key* and *Value* properties representing an optionally *affirmed* boolean member. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
@@ -732,19 +841,28 @@ Writes the couplet instance to the console using the colours and formatting defi
 
 :dart: Line/NakedLine
 
-#### Krayon.Line([line]$line)
+#### Krayon.Line
+
+<div id="krayon.line"></div>
+:gem: Krayon.Line([line]$line)
 
 *line* is a 'Line' instance which is a collection of 'couplet's. The Line method has a new line built into it.
 
 Writes the line instance to the console using the colours and formatting defined in the Krayola theme **with** a new line.
 
-#### Krayon.NakedLine([line]$nakedLine)
+#### Krayon.NakedLine
+
+<div id="krayon.nakedline"></div>
+:gem: Krayon.NakedLine([line]$nakedLine)
 
 *nakedLine* is a 'Line' instance which is a collection of 'couplet's. The Line method has a new line built into it. The Line method is defined in terms of the Krayola Theme. The collection of pairs that comprises the line are 'book-ended' by the tokens defined in the Krayola theme under the 'OPEN' and 'CLOSE' keys. A naked line is one that is rendered without the 'OPEN' and 'CLOSE' tokens.
 
 Writes the naked line to the console using the colours and formatting defined in the Krayola theme **with** a new line.
 
-#### Krayon.Line([string]$message, [line]$line)
+#### Krayon.Line / With Message
+
+<div id="krayon.line.message"></div>
+:gem: Krayon.Line([string]$message, [line]$line)
 
 *message* is some text that is displayed just prior to the line.
 
@@ -752,7 +870,10 @@ Writes the naked line to the console using the colours and formatting defined in
 
 Writes the message line instance to the console using the colours and formatting defined in the Krayola theme **with** a new line.
 
-#### Krayon.NakedLine([string]$message, [line]$line)
+#### Krayon.NakedLine / With Message
+
+<div id="krayon.nakedline.message"></div>
+:gem: Krayon.NakedLine([string]$message, [line]$line)
 
 *message* is some text that is displayed just prior to the line.
 
@@ -764,25 +885,37 @@ Writes the message and the naked line to the console using the colours and forma
 
 :dart: Message/MessageLn/MessageNoSuffix/MessageNoSuffixLn
 
-#### Krayon.Message([string]$message)
+#### Krayon.Message
+
+<div id="krayon.message"></div>
+:gem: Krayon.Message([string]$message)
 
 *message* is some text that precedes static text defined in the Krayola theme under key 'MESSAGE-SUFFIX'.
 
 Writes the message to the console using the colours and formatting defined in the Krayola theme **with** a new line.
 
-#### Krayon.MessageLn([string]$message)
+#### Krayon.MessageLn
+
+<div id="krayon.messageln"></div>
+:gem: Krayon.MessageLn([string]$message)
 
 *message* is some text that precedes static text defined in the Krayola theme under key 'MESSAGE-SUFFIX'.
 
 Writes the message to the console using the colours and formatting defined in the Krayola theme **with** a new line.
 
-#### Krayon.MessageNoSuffix([string]$message)
+#### Krayon.MessageNoSuffix
+
+<div id="krayon.message"></div>
+:gem: Krayon.Message([string]$message)
 
 *message* is some text. The *NoSuffix* version displays the line without static text defined in the Krayola theme under key 'MESSAGE-SUFFIX'.
 
 Writes the message to the console using the colours and formatting defined in the Krayola theme **without** a new line.
 
-#### Krayon.MessageNoSuffixLn([string]$message)
+#### Krayon.MessageNoSuffixLn
+
+<div id="krayon.messagenosuffixln"></div>
+:gem: Krayon.MessageNoSuffixLn([string]$message)
 
 *message* is some text. The *NoSuffix* version displays the line without static text defined in the Krayola theme under key 'MESSAGE-SUFFIX'.
 
@@ -792,7 +925,10 @@ Writes the message to the console using the colours and formatting defined in th
 
 :dart: fore/back/defaultFore/defaultBack/getDefaultFore/getDefaultBack
 
-#### Krayon.fore([string]$colour)
+#### Krayon.fore
+
+<div id="krayon.fore"></div>
+:gem: Krayon.Fore([string]$colour)
 
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the foreground colour with a variable. Any text written after the colour has been invoked appears in this foreground colour. The colour remains in place until changed by another foreground colour or a *Reset* has been invoked returning the colour state back to the default.
 
@@ -800,27 +936,42 @@ Set the current foreground colour.
 
 #### Krayon.back([string]$colour)
 
+<div id="krayon.back"></div>
+:gem: Krayon.Back([string]$colour)
+
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the background colour with a variable. Any text written after the colour has been invoked appears in this background colour. The colour remains in place until changed by another background colour or a *Reset* has been invoked returning the colour state back to the default.
 
 Set the current background colour.
 
-#### Krayon.defaultFore([string]$colour)
+#### Krayon.defaultFore
+
+<div id="krayon.defaultfore"></div>
+:gem: Krayon.defaultFore([string]$colour)
 
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the default foreground colour with a variable. The default colour is the colour that the Krayon returns to as a result of *Reset* having been invoked.
 
 Set the default foreground colour.
 
-#### Krayon.defaultBack([string]$colour)
+#### Krayon.defaultBack
+
+<div id="krayon.defaultback"></div>
+:gem: Krayon.defaultBack([string]$colour)
 
 *colour* is a standard console colour as defined in PowerShell. It enables the client to set the default background colour with a variable. The default colour is the colour that the Krayon returns to as a result of *Reset* having been invoked.
 
 Set the default background colour.
 
-#### Krayon.getDefaultFore()
+#### Krayon.getDefaultFore
+
+<div id="krayon.getdefaultfore"></div>
+:gem: Krayon.getDefaultFore()
 
 Gets the default foreground colour. Does not affect current state of the Krayon.
 
-#### Krayon.getDefaultBack()
+#### Krayon.getDefaultBack
+
+<div id="krayon.getdefaultback"></div>
+:gem: Krayon.getDefaultBack()
 
 Gets the default background colour. Does not affect current state of the Krayon.
 
@@ -828,15 +979,24 @@ Gets the default background colour. Does not affect current state of the Krayon.
 
 :dart: End/Ln/Reset
 
-#### Krayon.End()
+#### Krayon.End
 
-See [Scribbler.End()](#Scribbler.End())
+<div id="krayon.end"></div>
+:gem: Krayon.End()
+
+See [Scribbler.End()](#scribbler.End())
 
 #### Krayon.Ln()
+
+<div id="krayon.ln"></div>
+:gem: Krayon.Ln()
 
 Writes a new line to the console.
 
 #### Krayon.Reset()
+
+<div id="krayon.reset"></div>
+:gem: Krayon.Reset()
 
 Resets the current foreground and background colours back to their defaults.
 
@@ -846,7 +1006,10 @@ Resets the current foreground and background colours back to their defaults.
 
 #### Krayon.ThemeColour([string]$val)
 
-See [Scribbler.ThemeColour()](#Scribbler.ThemeColour())
+<div id="krayon.themecolour"></div>
+:gem: Krayon.ThemeColour()
+
+See [Scribbler.ThemeColour()](#scribbler.ThemeColour)
 
 ### Krayon Static Colour methods
 
@@ -862,6 +1025,9 @@ __background colours:__ 'bgBlack', 'bgDarkBlue', 'bgDarkGreen', 'bgDarkCyan',
 
 #### Krayon.\<Colour\>()
 
+<div id="krayon.colour"></div>
+:gem: Krayon.\<Colour\>()
+
 Sets either the foreground or background colour.
 
 ### Krayon Compounders methods
@@ -872,7 +1038,10 @@ Krayon supports the invocation of its methods via Scribble for its parameter les
 
 These compounder functions do not need to be called by the client. They form part of the interface between Krayon and Scribbler. As the client invokes methods on the Scribbler, the Scribbler needs to buffer these requests prior to a *Flush* request that will occur at some point in the future. The buffering requires that the request is stored as a string, therefore the original value needs to be converted into string form. The Krayon needs to be able to interpret these string representations, which is the function that these compounders perform.
 
-#### Krayon.Line([string]$semiColonSV)
+#### Krayon.Line / Compounder
+
+<div id="krayon.line.compounder"></div>
+:gem: Krayon.Line([string]$semiColonSV)
 
 *semiColonSV* is a semi-colon separated string value, where each leg represents a single couplet. The sub-string representing a couplet, is itself a comma separated value and can contain either 2 or 3 elements. Because the user might need to use a comma or semi-colon inside key or value values, they need to be escaped. This is already done automatically inside the Scribbler.Line method.
 
@@ -885,7 +1054,10 @@ Because the user might need to use a comma or semi-colon inside key or value val
 
 *NakedLine* is a 'Line' instance which is a collection (compound value) of 'couplet's. The Line method has a new line built into it. The Line method is defined in terms of the Krayola Theme. The collection of pairs that comprises the line are 'book-ended' by the tokens defined in the Krayola theme under the 'OPEN' and 'CLOSE' keys. A naked line is one that is rendered without the 'OPEN' and 'CLOSE' tokens. The NakedLine method has a new line built into it.
 
-#### Krayon.Pair([string]$csv)
+#### Krayon.Pair / Compounder
+
+<div id="krayon.pair.compounder"></div>
+:gem: Krayon.Pair([string]$csv)
 
 *csv* is a comma separated string value and can contain either 2 or 3 elements, the Key, Value and an optional Affirm.
 
@@ -893,7 +1065,10 @@ Pair is a compound value that is represented as a CSV and is represented on Kray
 
 #### Krayon.PairLn([string]$csv)
 
-Same as its [Pair](#Krayon.Pair([string]$csv)) equivalent except a new line is appended.
+<div id="krayon.pairln.compounder"></div>
+:gem: Krayon.PairLn([string]$csv)
+
+Same as its [Pair](#krayon.Pair-/-Compounder) equivalent except a new line is appended.
 
 ### Krayon Utility methods
 
@@ -901,17 +1076,24 @@ Same as its [Pair](#Krayon.Pair([string]$csv)) equivalent except a new line is a
 
 #### Krayon.Native([string]$structured)
 
+<div id="krayon.native"></div>
+:gem: Krayon.Native([string]$structured)
+
 *structured* represents a blob of structured content.
 
 This method uses the regular expression that it was created with in order to extract the core content returning the full core text without the api calls and associated parameters. This is generally not needed but can be useful for assisting with unit-testing.
 
 ## Couplet Class
 
+<div id="couplet.class"></div>
+
 This represents a key/value pair with an optional Affirm boolean value. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
 See [New-Pair](Elizium.Krayola/docs/New-Pair.md).
 
 ## Line Class
+
+<div id="line.class"></div>
 
 This represents a collection of 'couplet's. The line methods on the Scribbler and Krayon have a new line built into their semantics.
 
