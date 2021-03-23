@@ -789,7 +789,7 @@ class Scribbler {
   # +Pair+ (Couplet) Accelerators ---------------------------------------------
   #
   [Scribbler] Pair([couplet]$couplet) {
-    [string]$pairSnippet = $this.Krayon.PairSnippet($couplet);
+    [string]$pairSnippet = $this.PairSnippet($couplet);
     $this.Scribble($pairSnippet);
 
     return $this;
@@ -837,7 +837,7 @@ class Scribbler {
 
   hidden [void] _coreScribbleLine([string]$message, [line]$line, [string]$lineType) {
     [string]$structuredLine = $(($Line.Line | ForEach-Object {
-          "$($this.Escape($_.Key)),$($this.Escape($_.Value)),$($_.Affirm)"
+          "$($this._escape($_.Key)),$($this._escape($_.Value)),$($_.Affirm)"
         }) -join ';');
 
     if (-not([string]::IsNullOrEmpty($message))) {
@@ -1198,13 +1198,9 @@ class Scribbler {
   # +Utility+ -----------------------------------------------------------------
   #
 
-  [string] Escape([string]$value) {
-    return $value.Replace(';', '\;').Replace(',', '\,');
-  }
-
-  [string] Snippets ([string[]]$Items) {
+  [string] Snippets ([string[]]$items) {
     [string]$result = [string]::Empty;
-    foreach ($i in $Items) {
+    foreach ($i in $items) {
       $result += $($this.Krayon.ApiFormat -f $i);
     }
     return $result;
@@ -1215,8 +1211,8 @@ class Scribbler {
   }
 
   [string] PairSnippet([couplet]$pair) {
-    [string]$key = $this.Escape($pair.Key);
-    [string]$value = $this.Escape($pair.Value);
+    [string]$key = $this._escape($pair.Key);
+    [string]$value = $this._escape($pair.Value);
 
     [string]$csv = "$($key),$($value),$($pair.Affirm)";
     [string]$pairSnippet = $this.WithArgSnippet(
@@ -1227,7 +1223,7 @@ class Scribbler {
 
   [string] LineSnippet([line]$line) {
     [string]$structuredLine = $(($line.Line | ForEach-Object {
-          "$($this.Escape($_.Key)),$($this.Escape($_.Value)),$($_.Affirm)"
+          "$($this._escape($_.Key)),$($this._escape($_.Value)),$($_.Affirm)"
         }) -join ';');
 
     [string]$lineSnippet = $this.WithArgSnippet(
@@ -1244,6 +1240,10 @@ class Scribbler {
     }
 
     $this.Builder.Clear();
+  }
+
+  hidden [string] _escape([string]$value) {
+    return $value.Replace(';', '\;').Replace(',', '\,');
   }
 } # Scribbler
 
