@@ -10,10 +10,8 @@ Colourful console writing with PowerShell
 
 # Table of contents
 
-[Introduction](#Introduction)
-
-[Using The API](#Using-the-API)
-
++ [Introduction](#Introduction)
++ [Using The API](#Using-the-API)
 + [The Main Commands](#The-Main-Commands)
   + [Krayola Theme](#Krayola-Theme)
     + [Using The Krayola Theme](#Using-The-Krayola-Theme)
@@ -28,6 +26,9 @@ Colourful console writing with PowerShell
       + [function Get-IsKrayolaLightTerminal](#function-Get-IsKrayolaLightTerminal)
       + [function Show-ConsoleColours](#function-Show-ConsoleColours)
     + [Global pre-defined Themes](#Global-pre-defined-Themes)
++ [Developer Notes](#Developer-Notes)
+  + [Running build tasks](#Running-build-tasks)
+  + [Problem rebuilding modified classes in the same PowerShell session](#Problem-rebuilding-modified-classes-in-the-same-PowerShell-session)
 
 # Introduction
 
@@ -213,3 +214,117 @@ or
 ```powershell
   New-Krayon -Theme $(Get-KrayolaTheme -KrayolaThemeName 'SQUARE-THEME')
 ```
+
+# Developer Notes
+
+This module has the following developer dependencies:
+
++ [Assert](https://www.powershellgallery.com/packages/Assert)
++ [InvokeBuild](https://www.powershellgallery.com/packages/InvokeBuild)
++ [Pester](https://www.powershellgallery.com/packages/Pester)
++ [platyPS](https://www.powershellgallery.com/packages/platyPS)
++ [PSScriptAnalyzer](https://www.powershellgallery.com/packages/PSScriptAnalyzer/)
+
+After cloning the repo, change to the *Elizium.Krayola* directory from the root. You can look at the build script *Elizium.Krayola.build.ps1*, it will contain various tasks, the most important of which are explained below
+
+## Running build tasks
+
+To build the module and run the unit tests:
+
+> invoke-build
+
+To build the module only:
+
+> invoke-build build
+
+To Run the unit tests only (assuming already built)
+
+> invoke-build tests
+
+To build the documents:
+
+> invoke-build buildhelp
+
+## Problem rebuilding modified classes in the same PowerShell session
+
+:warning: Krayola make use of PowerShell classes. Because of the nature of classes in PowerShell, re-building edited code can cause errors. This is not a fault of the Krayola code, it's just the way PowerShell classes have
+been designed.
+
+What you will find is, if a class has been modified then rebuilt in the same session, you may find multiple class errors like so:
+
+```powershell
+[-] Krayon.given: pair.and: pair created via default constructor.should: write pair 31ms (30ms|1ms)
+ PSInvalidCastException: Cannot convert the "Krayon" value of type "Krayon" to type "Krayon".
+ ArgumentTransformationMetadataException: Cannot convert the "Krayon" value of type "Krayon" to type "Krayon".
+ at <ScriptBlock>, C:\Users\Plastikfan\dev\github\PoSh\Krayola\Elizium.Krayola\Tests\Krayon.tests.ps1:21
+```
+
+Fear not, this is just reporting that the class definition has changed and because of this difference, one can't be substituted for another in the same PowerShell session (this is in contrast to the way functions work, where you can simply re-define a function in the same session and it will replace the previous definition. This luxury has not been afforded to classes unfortunately). All that's required is to restart a new session. The rebuild in the new session should progress without these errors.
+
+It is a bit onerous having to restart a session for every build, but below is a function that can be defined in the users powershell profile that when invoked, begins a restart loop. Now, when an exit is issued, the session is automatically restarted:
+
+### Helper function restart-session
+
+Insert this function into your PowerShell session file.
+
+```powershell
+function restart-session {
+  [Alias('ress')]
+  param()
+ 
+  [string]$tagPath = Get-TagPath;
+  if (-not([string]::IsNullOrEmpty($env:tag))) {
+    Set-Content -Path $tagPath -Value $env:tag;
+  }
+  elseif (Test-Path -Path $tagPath) {
+    Remove-Item -Path $tagPath;
+  }
+
+  [System.Management.Automation.PathInfo]$pathInfo = Get-Location;
+  while ($true) {
+    pwsh -Command {
+      [string]$tagPath = Get-TagPath;
+      [string]$greeting = "🍺 Restarted!";
+      if (Test-Path -Path $tagPath) {
+        $tag = Get-Content -Path $tagPath;
+
+        if (($tag -is [string]) -or ($tag -is [string[]])) {
+          $env:tag = $tag;
+          $greeting = "🍺 Restarted! (Pester Tag: '$env:tag' ✔️)";
+        }
+      }
+
+      Write-Host -ForegroundColor 'Cyan' $greeting;
+    } -NoExit -WorkingDirectory $($pathInfo.Path)
+    if ($LASTEXITCODE) {
+      break
+    }
+  }
+}
+```
+
+Another feature this function possesses is the restoration of the *Tag* environment variable. The Tag is used to control which testcases Pester runs. Pester contains a Tag in its configuration and when set, it will only run those test cases decorated with this tag value.
+
+So, when a restart occurs, the Tag if set is restored and you will see which tag is in play as part of the restart. If no tag is found then no tag is restored. This function just helps the tedium of having to keep redefining the Tag in-between restarts, as now this is automatically restored.
+
+The sequence goes:
+
++ Set the tag (if you want one): "$env:tag = 'Current'"
++ restart session: "restart-session" (this saves the current tag; written to a temp file)
+
+After restart, tag is restored and the restart message will indicate as such
+
++ Modify class definition
++ first build should be ok
++ Re-edit the class definition, then rebuild => this will fail
++ run "exit", this will automatically restart the session, restoring the Tag value
+
+... and repeat.
+
+# EliziumTest flag
+
+As has been documented elsewhere, the user can set this flag in the environment (just set it to any non $null value).
+
+By default, $env:EliziumTest, will not be present, this means, that the unit tests in Krayola will run in silent mode. However, there are some tests which are less valuable in silent mode, doing so would invalidate them to some degree. There are only a few of the tests in this category and it's because they require Write-Host to be invoked. Theoretically, one could mock out the Write-Host call, but some errors can be much easier to spot visually. This generally is not the best technique in unit-testing, but these test cases have been backed up by non noisy equivalents to make sure all bases are covered.
+
+During development, it is very useful to get a visual on how ui commands are behaving. This was the rationale behind the introduction of this flag. So when *EliziumTest* is defined, the user will see more output that reflects the execution of the Scribbler and Krayon.
