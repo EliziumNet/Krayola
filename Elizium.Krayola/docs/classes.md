@@ -26,7 +26,7 @@ Alternatively, the client could create what is called a *structured* string cont
 
 Note in both of these examples, method calls on the Krayon are chained together, this is known as *Fluent* and is a common object oriented programming paradigm.
 
-The controlling aspect comes at construction time. The client creates and Scribbler/Krayon via factory functions *[New-Scribbler](Elizium.Loopz/docs/New-Scribbler.md)/[New-Krayon](Elizium.Loopz/docs/New-Krayon.md)*. (Actually, the use of New-Krayon is optional as the Krayon is defaulted away in New-Scribbler). Depending on the Flags specified on New-Scribbler and the presence of the environment variable *EliziumTest* a *QuietScribbler* could be created instead of a regular Scribbler. The QuietScribbler behaves like its regular counterpart except that it overrides the Flush method so that the Krayon is not invoked, hence no output.
+The controlling aspect comes at construction time. The client creates and Scribbler/Krayon via factory functions *[New-Scribbler](Elizium.Krayola/docs/New-Scribbler.md)/[New-Krayon](Elizium.Krayola/docs/New-Krayon.md)*. (Actually, the use of New-Krayon is optional as the Krayon is defaulted away in New-Scribbler). Depending on the Flags specified on New-Scribbler and the presence of the environment variable *EliziumTest* a *QuietScribbler* could be created instead of a regular Scribbler. The QuietScribbler behaves like its regular counterpart except that it overrides the Flush method so that the Krayon is not invoked, hence no output.
 
 Now with the Scribbler in play, the client can do either of the follow:
 
@@ -47,7 +47,7 @@ In both of the these examples, the Scribbler will just buffer these instructions
 
 + the '&', '[' and ']' are not the default delimiter tokens used (they are in fact 'µ', '«' and '»' respectively). It was soon found that it would be much better if the tokens used were not tokens easily accessed via the keyboard and regularly used because of regular expression parsing and how this could be interfered with if the client actually wanted to see these tokens in the output in a different context (eg trying to display '\[something\]' when '[' and a ']' are used to parse colour instructions broke regular expression matching).
 
-+ If the client for some reason needed to see in the output, what are now the default tokens 'µ', '«' and '»' in a different context and therefore prefer to change these defaults, they can do so by using a custom regular expression and formatters (see [New-Krayon](Elizium.Loopz/docs/New-Krayon.md)); ie the *Literal* style. If we stick to not directly using these tokens in our structured strings (non literal *Structured* style) and use the [utility](#Scribbler-utility-methods) methods on the Scribbler, we can avoid huge refactors if these patterns/formatters have to change at a later date (that is not to say there are any plans to change the defaults in Krayola).
++ If the client for some reason needed to see in the output, what are now the default tokens 'µ', '«' and '»' in a different context and therefore prefer to change these defaults, they can do so by using a custom regular expression and formatters (see [New-Krayon](Elizium.Krayola/docs/New-Krayon.md)); ie the *Literal* style. If we stick to not directly using these tokens in our structured strings (non literal *Structured* style) and use the [utility](#Scribbler-utility-methods) methods on the Scribbler, we can avoid huge refactors if these patterns/formatters have to change at a later date (that is not to say there are any plans to change the defaults in Krayola).
 
 But even though it is recommended to not directly use delimiter tokens inside structured strings it is understandable for readability reasons why a client may wish to do so.
 
@@ -905,10 +905,10 @@ This method uses the regular expression that it was created with in order to ext
 
 This represents a key/value pair with an optional Affirm boolean value. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
-See [New-Pair](Elizium.Loopz/docs/New-Pair.md).
+See [New-Pair](Elizium.Krayola/docs/New-Pair.md).
 
 ## Line Class
 
 This represents a collection of 'couplet's. The line methods on the Scribbler and Krayon have a new line built into their semantics.
 
-See [New-Line](Elizium.Loopz/docs/New-Line.md).
+See [New-Line](Elizium.Krayola/docs/New-Line.md).

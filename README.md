@@ -17,7 +17,7 @@ Colourful console writing with PowerShell
     + [Using The Krayola Theme](#Using-The-Krayola-Theme)
     + [function Get-KrayolaTheme](#function-Get-KrayolaTheme)
     + [Classes](#Classes)
-      + [A tale of the Scribbler/Krayon vs the Legacy functions](#A-tale-of-the-Scribbler/Krayon-vs-the-Legacy-functions)
+      + [A tale of the Scribbler/Krayon vs the Legacy functions](#A-tale-of-the-Scribbler\/Krayon-vs-the-Legacy-functions)
   + [Supporting Utilities](#Supporting-Utilities)
     + [Deprecated](#Deprecated)
     + [Helper functions](#Helper-functions)
@@ -49,11 +49,11 @@ However, bearing the above points in mind, some commands are designed specifical
 
 | COMMAND-NAME                                                                     | DESCRIPTION
 |----------------------------------------------------------------------------------|------------
-| [Get-KrayolaTheme](Elizium.Loopz/docs/Get-KrayolaTheme.md)                       | Gets Krayola theme
-| [New-Krayon](Elizium.Loopz/docs/New-Krayon.md)                                   | Krayon factory
-| [New-Line](Elizium.Loopz/docs/New-Line.md)                                       | Line factory
-| [New-Pair](Elizium.Loopz/docs/New-Pair.md)                                       | Pair factory
-| [New-Scribbler](Elizium.Loopz/docs/New-Scribbler.md)                             | Scribbler factory
+| [Get-KrayolaTheme](Elizium.Krayola/docs/Get-KrayolaTheme.md)                       | Gets Krayola theme
+| [New-Krayon](Elizium.Krayola/docs/New-Krayon.md)                                   | Krayon factory
+| [New-Line](Elizium.Krayola/docs/New-Line.md)                                       | Line factory
+| [New-Pair](Elizium.Krayola/docs/New-Pair.md)                                       | Pair factory
+| [New-Scribbler](Elizium.Krayola/docs/New-Scribbler.md)                             | Scribbler factory
 
 ## Krayola Theme
 
@@ -103,7 +103,7 @@ The Krayola theme in the above example is illustrated in the following image:
 
 ### function Get-KrayolaTheme
 
-:sparkles: [Helper function Get-KrayolaTheme](Elizium.Loopz/docs/Get-KrayolaTheme.md)
+:sparkles: [Helper function Get-KrayolaTheme](Elizium.Krayola/docs/Get-KrayolaTheme.md)
 
 Helper function that makes it easier for client applications to get a Krayola theme from the environment, which is compatible with the terminal colours being used. This helps keep output from different applications consistent.
 
@@ -115,14 +115,14 @@ If $KrayolaThemeName is specified, then it is used to lookup the theme in the gl
 
 ### Classes
 
-:sparkles: See [Classes](Elizium.Loopz/docs/classes.md)
+:sparkles: See [Classes](Elizium.Krayola/docs/classes.md)
 
 | COMMAND-NAME
 |-----------------------------------------------------
-| [Couplet](Elizium.Loopz/docs/classes.md#Couplet-Class)
-| [Krayon](Elizium.Loopz/docs/classes.md#Krayon-Class)
-| [Line](Elizium.Loopz/docs/classes.md#Line-Class)
-| [Scribbler](Elizium.Loopz/docs/classes.md#Scribbler-Class)
+| [Couplet](Elizium.Krayola/docs/classes.md#Couplet-Class)
+| [Krayon](Elizium.Krayola/docs/classes.md#Krayon-Class)
+| [Line](Elizium.Krayola/docs/classes.md#Line-Class)
+| [Scribbler](Elizium.Krayola/docs/classes.md#Scribbler-Class)
 
 #### A tale of the Scribbler/Krayon vs the Legacy functions
 
@@ -142,11 +142,11 @@ With sympathy, the creator explained, 'I wrote those functions in haste and I to
 
 'Wow', gasped Twilight and Willow. Twilight piped up 'I very much like your 2 new friends'. Willow agreed and added, 'Krayon, seems a little shy and appears to be hiding behind Scribbler. Is he ok?'. The creator, detected the slight concern expressed by his visitors and assuaged them, 'Yeah, he's fine, in fact he's more than fine. He's very happy to help you with your colouring tasks, but all he asks is for you to speak with his younger sister Scribbler'.
 
-Twilight and Willow glanced at each other simultaneously and high-fived :thumbsup:. Scribbler chimed in, 'Whenever you need some colour, come to me and I will help. Krayon and myself make a great team. Just tell me the colours you want your text in and I'll collect them them all up in a little bag called *StringBuilder*. You can *Flush* me at any time, and I'll chat with Krayon and he'll make play with the Host. And if you like, I can be quiet too. I know you like to write unit tests for your scripts, but the software engineering gods advise that tests should be quick and noise-less. Just let me know by either waving the 'Test' flag :triangular_flag_on_post: or the 'Silent' flag :checkered_flag:. And you also need to know, if you wave the Test flag, I will be quiet unless I find 'EliziumTest' :test_tube: in the environment. So your wish is my command'.
+Twilight and Willow glanced at each other simultaneously and high-fived :thumbsup:. Scribbler chimed in, 'Whenever you need some colour, come to me and I will help. Krayon and myself make a great team. Just tell me the colours you want your text in and I'll collect them all up in a little bag called *StringBuilder*. You can *Flush* me at any time, and I'll chat with Krayon and he'll make play with the Host. And if you like, I can be quiet too. I know you like to write unit tests for your scripts, but the software engineering gods advise that tests should be quick and noise-less. Just let me know by either waving the 'Test' flag :triangular_flag_on_post: or the 'Silent' flag :checkered_flag:. And you also need to know, if you wave the Test flag, I will be quiet unless I find 'EliziumTest' :test_tube: in the environment. So your wish is my command'.
 
 'Wowzer, Willow, today has been great', cried Twilight. 'Too right, now we don't ever have to get bogged down with those pesky little array indexing errors and can avoid those trouble-some multi-dimensional arrays. I generally don't have a problem with multi-dimensional arrays, but in PowerShell, they really do make my head itch! :thinking:'.
 
-And finally, the creator thanked them for their gifts :sunglasses: and replied in kind, 'I'm so pleased you brought me that 'Recycled Plastik', may all my good vibes and well wishes go 'From My Mind To Yours'. Do yourself a favour and branch out a little. This is a bit off beat and some say an acquired taste, but you ought to check out :four: :woman_with_veil: :sparkles: '*For Her Light*' as he handed them a copy of *Earth Inferno*. 'Enjoy! Oh and don't forget, those old functions are deprecated so use them no more, they are destined for the realms of the Underworld :skull:, long live Scribbler and Krayon'
+And finally, the creator thanked them for their gifts :sunglasses: and replied in kind, 'I'm so pleased you brought me that 'Recycled Plastik', may all my good vibes and well wishes go 'From My Mind To Yours'. Do yourself a favour and branch out a little. This is a bit off beat and some say an acquired taste, but you ought to check out :four: :princess: :sparkles: '*For Her Light*' as he handed them a copy of *Earth Inferno*. 'Enjoy! Oh and don't forget, those old functions are deprecated so use them no more, they are destined for the realms of the Underworld :skull:, long live Scribbler and Krayon'
 
 The happy scripters left the creator with a skip in their step and joy in their hearts :gift_heart:.
 
@@ -156,10 +156,10 @@ The happy scripters left the creator with a skip in their step and joy in their 
 
 | COMMAND-NAME                                                                     | DESCRIPTION
 |----------------------------------------------------------------------------------|------------
-| [Get-DefaultHostUiColours](Elizium.Loopz/docs/Get-DefaultHostUiColours.md)       | Get default host colours
-| [Get-EnvironmentVariable](Elizium.Loopz/docs/Get-EnvironmentVariable.md)         | Get variable from Env
-| [Get-IsKrayolaLightTerminal](Elizium.Loopz/docs/Get-IsKrayolaLightTerminal.md)   | Has user declare light theme
-| [Show-ConsoleColours](Elizium.Loopz/docs/Show-ConsoleColours.md)                 | Show console colours
+| [Get-DefaultHostUiColours](Elizium.Krayola/docs/Get-DefaultHostUiColours.md)       | Get default host colours
+| [Get-EnvironmentVariable](Elizium.Krayola/docs/Get-EnvironmentVariable.md)         | Get variable from Env
+| [Get-IsKrayolaLightTerminal](Elizium.Krayola/docs/Get-IsKrayolaLightTerminal.md)   | Has user declare light theme
+| [Show-ConsoleColours](Elizium.Krayola/docs/Show-ConsoleColours.md)                 | Show console colours
 
 ### Deprecated
 
@@ -167,27 +167,27 @@ The happy scripters left the creator with a skip in their step and joy in their 
 
 | COMMAND-NAME                                                                     | DESCRIPTION
 |----------------------------------------------------------------------------------|------------
-| [Write-InColour](Elizium.Loopz/docs/Write-InColour.md)                           | DEPRECATED
-| [Write-RawPairsInColour](Elizium.Loopz/docs/Write-RawPairsInColour.md)           | DEPRECATED
-| [Write-ThemedPairsInColour](Elizium.Loopz/docs/Write-ThemedPairsInColour.md)     | DEPRECATED
+| [Write-InColour](Elizium.Krayola/docs/Write-InColour.md)                           | DEPRECATED
+| [Write-RawPairsInColour](Elizium.Krayola/docs/Write-RawPairsInColour.md)           | DEPRECATED
+| [Write-ThemedPairsInColour](Elizium.Krayola/docs/Write-ThemedPairsInColour.md)     | DEPRECATED
 
 ### Helper functions
 
 #### function Get-DefaultHostUiColours
 
-:sparkles: [Helper function Get-DefaultHostUiColours](Elizium.Loopz/docs/Get-DefaultHostUiColours.md)
+:sparkles: [Helper function Get-DefaultHostUiColours](Elizium.Krayola/docs/Get-DefaultHostUiColours.md)
 
 Get the default colours from the Host (*$Host*).
 
 #### function Get-EnvironmentVariable
 
-:sparkles: [Helper function Get-EnvironmentVariable](Elizium.Loopz/docs/Get-EnvironmentVariable.md)
+:sparkles: [Helper function Get-EnvironmentVariable](Elizium.Krayola/docs/Get-EnvironmentVariable.md)
 
 Just a utility function that retrieves the value of a variable from the environment with the option to specify a default, if it does exist. Typically, this is used to aid unit-testing.
 
 #### function Get-IsKrayolaLightTerminal
 
-:sparkles: [Helper function Get-IsKrayolaLightTerminal](Elizium.Loopz/docs/Get-IsKrayolaLightTerminal.md)
+:sparkles: [Helper function Get-IsKrayolaLightTerminal](Elizium.Krayola/docs/Get-IsKrayolaLightTerminal.md)
 
 Gets the value of the environment variable *KRAYOLA_LIGHT_TERMINAL* as a boolean.
 
@@ -195,7 +195,7 @@ For use by applications that need to use a Krayola theme that is dependent on wh
 
 #### function Show-ConsoleColours
 
-:sparkles: [Helper function Show-ConsoleColours](Elizium.Loopz/docs/Show-ConsoleColours.md)
+:sparkles: [Helper function Show-ConsoleColours](Elizium.Krayola/docs/Show-ConsoleColours.md)
 
 Function that simply displays all the available console colours as they are represented in text in the colour they represent. This will aid in defining custom themes. Just invoke the function with no arguments in your PowerShell session.
 
