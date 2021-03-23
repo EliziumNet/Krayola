@@ -4,12 +4,12 @@ function Show-ConsoleColours {
   [Alias('Show-ConsoleColors')]
   param ()
   <#
-    .NAME
-      Show-ConsoleColours
+  .NAME
+    Show-ConsoleColours
 
-    .SYNOPSIS
-      Helper function that shows all the available console colours in the colour
-      they represent. This will assist in the development of colour Themes.
+  .SYNOPSIS
+    Helper function that shows all the available console colours in the colour
+    they represent. This will assist in the development of colour Themes.
   #>
 
   [Array]$colours = @('Black', 'DarkBlue', 'DarkGreen', 'DarkCyan', 'DarkRed', 'DarkMagenta', `

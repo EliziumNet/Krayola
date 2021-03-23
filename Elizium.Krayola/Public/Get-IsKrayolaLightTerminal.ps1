@@ -5,7 +5,7 @@ function Get-IsKrayolaLightTerminal {
     Get-IsKrayolaLightTerminal
 
   .SYNOPSIS
-    Gets the value of KRAYOLA-LIGHT-TERMINAL as a boolean
+    Gets the value of KRAYOLA_LIGHT_TERMINAL as a boolean.
 
   .DESCRIPTION
     For use by applications that need to use a Krayola theme that is dependent
@@ -16,5 +16,5 @@ function Get-IsKrayolaLightTerminal {
   param()
 
   return -not([string]::IsNullOrWhiteSpace(
-    (Get-EnvironmentVariable 'KRAYOLA-LIGHT-TERMINAL')));
+    (Get-EnvironmentVariable 'KRAYOLA_LIGHT_TERMINAL')));
 }

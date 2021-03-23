@@ -15,9 +15,11 @@ function Get-KrayolaTheme {
   does not exist or not specified, then a default theme is used. The default theme created
   should be compatible with the dark/lightness of the background of the terminal currently
   in use. By default, a dark terminal is assumed and the colours used show up clearly
-  against a dark background. If KRAYOLA-LIGHT-TERMINAL is defined as an environment
+  against a dark background. If KRAYOLA_LIGHT_TERMINAL is defined as an environment
   variable (can be set to any string apart from empty string/white space), then the colours
-  chosen show up best against a light background.
+  chosen show up best against a light background. Typically, a user would create their
+  own custom theme and then populate this into the $KrayolaThemes collection. This should
+  be done in the user profile so as to become available in all powershell sessions.
   #>
   [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseBOMForUnicodeEncodedFile', '')]
   [OutputType([hashtable])]
@@ -52,7 +54,7 @@ function Get-KrayolaTheme {
   )
   [hashtable]$displayTheme = $DefaultTheme;
 
-  # Switch to use colours compatible with light consoles if KRAYOLA-LIGHT-TERMINAL
+  # Switch to use colours compatible with light consoles if KRAYOLA_LIGHT_TERMINAL
   # is set.
   #
   if (Get-IsKrayolaLightTerminal) {
@@ -68,7 +70,7 @@ function Get-KrayolaTheme {
   # Get the theme name
   #
   if ([string]::IsNullOrWhiteSpace($themeName)) {
-    $themeName = Get-EnvironmentVariable 'KRAYOLA-THEME-NAME';
+    $themeName = Get-EnvironmentVariable 'KRAYOLA_THEME_NAME';
   }
 
   if ($Themes -and $Themes.ContainsKey($themeName)) {
