@@ -118,7 +118,7 @@ The following tables shows the methods that are defined on both of these classes
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| Scribble | [:heavy_check_mark:](#Scribbler.Scribble([string]$source)) | [:heavy_check_mark:](#Krayon.Scribble([string]$source)) :heavy_plus_sign:
+| Scribble | [:heavy_check_mark:](#Scribbler.Scribble) | [:heavy_check_mark:](#Krayon.Scribble([string]$source)) :heavy_plus_sign:
 | ScribbleLn    | :x:                 | [:heavy_check_mark:](#Krayon.ScribbleLn([string]$source)) :heavy_plus_sign:
 
 ### Text
@@ -217,7 +217,9 @@ The code examples in this section include a *Flush* invoke. It is at this point 
 
 + Scribble
 
-#### Scribbler.Scribble([string]$source)
+#### Scribbler.Scribble
+
+:gem: Scribbler.Scribble([string]$source)
 
 *source* is a structured string, which means it contains colouring instructions and core text. The structured string is buffered **without** a new line.
 
