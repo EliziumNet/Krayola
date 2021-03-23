@@ -62,69 +62,6 @@ Describe 'Scribbler' {
   }
 
   Describe 'Scribble' {
-    Context 'should' {
-      It 'duff' {
-        [string]$structured = 'µ«Reset»µ«Ln»µ«Ln»µ«Ln»Tale of the µ«red» Twilight µ«reset» and µ«blue»Willowµ«Ln»µ«Reset»µ«Ln»µ«Ln»'
-        $_scribbler.Scribble($structured);
-      }
-
-      It 'docn: Structured' -Tag '!DOC' {
-        InModuleScope Elizium.Krayola {
-          [Scribbler]$scribbler = New-Scribbler
-
-          [string]$redSnippet = $scribbler.Snippets(@('red'));
-          [string]$blueSnippet = $scribbler.Snippets(@('blue'));
-          [string]$lnSnippet = $scribbler.Snippets(@('Ln'));
-          [string]$resetSnippet = $scribbler.Snippets(@('Reset'));
-
-          [couplet]$pair = New-Pair @('Gift', 'For Her Light');
-          $scribbler.Pair($pair);
-
-          # $scribbler.Scribble(
-          #   "$($lnSnippet)$($lnSnippet)" +
-          #   "$($resetSnippet)Tale of$($redSnippet) Twilight " +
-          #   "$($resetSnippet)and $($blueSnippet)Willow$($lnSnippet)$($lnSnippet)$($lnSnippet)$($lnSnippet)"
-          # );
-
-          $scribbler.Flush();
-        }
-      }
-
-      It 'docn: Structured' {
-        InModuleScope Elizium.Krayola {
-          [Scribbler]$scribbler = New-Scribbler
-
-          [string]$redSnippet = $scribbler.Snippets(@('red'));
-          [string]$blueSnippet = $scribbler.Snippets(@('blue'));
-          [string]$lnSnippet = $scribbler.Snippets(@('Ln'));
-          [string]$resetSnippet = $scribbler.Snippets(@('Reset'));
-
-          $scribbler.Scribble(
-            "$($lnSnippet)$($lnSnippet)" +
-            "$($resetSnippet)Tale of$($redSnippet) Twilight " +
-            "$($resetSnippet)and $($blueSnippet)Willow$($lnSnippet)$($lnSnippet)$($lnSnippet)$($lnSnippet)"
-          );
-
-          $scribbler.Flush();
-        }
-      }
-
-      It 'docn: Accelerated' {
-        InModuleScope Elizium.Krayola {
-          [Scribbler]$scribbler = New-Scribbler
-
-          $scribbler.Reset().
-          Text('Tale of').
-          Red().Text(' Twilight ').
-          Reset().
-          Text('and ').
-          Blue().Text('Willow').
-          Ln().End();
-
-          $scribbler.Flush();
-        }
-      }
-    }
     Context 'given: ad-hoc' {
       It 'should: write in colour' {
         InModuleScope Elizium.Krayola {
@@ -677,7 +614,7 @@ Describe 'Scribbler' {
   } # Snippets
 
   Describe '[Accelerators]' {
-    Describe 'Pair' -Tag 'DOC' {
+    Describe 'Pair' {
       Context 'and: Pair' {
         It 'should: buffer pair' {
           InModuleScope Elizium.Krayola {
