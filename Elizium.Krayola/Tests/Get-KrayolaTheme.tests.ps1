@@ -50,7 +50,7 @@ Describe 'Get-KrayolaTheme' {
     }
   }
 
-  Context 'Dark Theme, "KRAYOLA-THEME-NAME" not defined in Environment' {
+  Context 'Dark Theme, "KRAYOLA_THEME_NAME" not defined in Environment' {
     Context 'Given: Theme not specified' {
       it 'Should: return default valid theme' {
         Mock -ModuleName Elizium.Krayola Get-IsKrayolaLightTerminal { return $false }
@@ -83,9 +83,9 @@ Describe 'Get-KrayolaTheme' {
         $result | Should -BeOfType System.Collections.Hashtable
       }
     }
-  } # Dark Theme, "KRAYOLA-THEME-NAME" not defined in Environment
+  } # Dark Theme, "KRAYOLA_THEME_NAME" not defined in Environment
 
-  Context 'Light Theme, "KRAYOLA-THEME-NAME" not defined in Environment' {
+  Context 'Light Theme, "KRAYOLA_THEME_NAME" not defined in Environment' {
     Context 'Given: Theme not specified' {
       it 'Should: return default valid theme' {
         Mock -ModuleName Elizium.Krayola Get-IsKrayolaLightTerminal { return $true }
@@ -128,7 +128,7 @@ Describe 'Get-KrayolaTheme' {
         $result['META-COLOURS'] | Should -Match 'Dark'
       }
     }
-  } # Light Theme, "KRAYOLA-THEME-NAME" not defined in Environment
+  } # Light Theme, "KRAYOLA_THEME_NAME" not defined in Environment
 
   Context 'Themed defined in environment' {
     Context 'Given: KrayolaThemeName not specified' {

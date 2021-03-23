@@ -12,7 +12,7 @@ function Get-EnvironmentVariable {
   $null if variable is not found.
 
   .EXAMPLE
-    Get-EnvironmentVariable 'KRAYOLA-THEME-NAME'
+    Get-EnvironmentVariable 'KRAYOLA_THEME_NAME'
   #>
   [CmdletBinding()]
   [OutputType([string])]

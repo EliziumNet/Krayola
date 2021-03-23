@@ -166,10 +166,10 @@ The following tables shows the methods that are defined on both of these classes
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| End           | [:heavy_check_mark:](#Scribbler.End()) | [:heavy_check_mark:](#)
+| End           | [:heavy_check_mark:](#Scribbler.End()) | [:heavy_check_mark:](#Krayon.End())
 | Flush         | [:heavy_check_mark:](#Scribbler.Flush()) | :x:
-| Ln            | [:heavy_check_mark:](#Scribbler.Ln()) :heavy_plus_sign: | [:heavy_check_mark:](#) :heavy_plus_sign:
-| Reset         | [:heavy_check_mark:](#Scribbler.Reset()) :heavy_plus_sign: | [:heavy_check_mark:](#) :heavy_plus_sign:
+| Ln            | [:heavy_check_mark:](#Scribbler.Ln()) :heavy_plus_sign: | [:heavy_check_mark:](#Krayon.Ln()) :heavy_plus_sign:
+| Reset         | [:heavy_check_mark:](#Scribbler.Reset()) :heavy_plus_sign: | [:heavy_check_mark:](#Scribbler.Reset()) :heavy_plus_sign:
 | Restart       | [:heavy_check_mark:](#Scribbler.Restart()) | :x:
 | Save          | [:heavy_check_mark:](#Scribbler.Save([string]$fullPath)) | :x:
 

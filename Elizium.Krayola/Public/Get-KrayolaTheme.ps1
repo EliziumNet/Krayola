@@ -70,7 +70,7 @@ function Get-KrayolaTheme {
   # Get the theme name
   #
   if ([string]::IsNullOrWhiteSpace($themeName)) {
-    $themeName = Get-EnvironmentVariable 'KRAYOLA-THEME-NAME';
+    $themeName = Get-EnvironmentVariable 'KRAYOLA_THEME_NAME';
   }
 
   if ($Themes -and $Themes.ContainsKey($themeName)) {
