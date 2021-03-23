@@ -159,8 +159,8 @@ The following tables shows the methods that are defined on both of these classes
 | back           | [:heavy_check_mark:](#scribbler.back) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.back) :heavy_plus_sign:
 | defaultFore    | [:heavy_check_mark:](#scribbler.defaultfore) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.defaultfore) :heavy_plus_sign:
 | defaultBack    | [:heavy_check_mark:](#scribbler.defaultback) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.defaultback) :heavy_plus_sign:
-| getDefaultFore | :x:                 | [:heavy_check_mark:](#krayon.getDefaultFore)
-| getDefaultBack | :x:                 | [:heavy_check_mark:](#krayon.getDefaultBack)
+| getDefaultFore | :x:                 | [:heavy_check_mark:](#krayon.getdefaultfore)
+| getDefaultBack | :x:                 | [:heavy_check_mark:](#krayon.getdefaultback)
 
 ### Control
 
@@ -186,8 +186,8 @@ only shows the methods for 'blue' and its background counterpart.
 
 | Method Name    | Scribbler           | Krayon
 |----------------|---------------------|-----------------------------------------------
-| blue           | [:heavy_check_mark:](#scribbler.\<Colour\>) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.\<Colour\>) :heavy_plus_sign:
-| bgBlue         | [:heavy_check_mark:](#scribbler.\<Colour\>()) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.\<Colour\>) :heavy_plus_sign:
+| blue           | [:heavy_check_mark:](#scribbler.colour) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.colour) :heavy_plus_sign:
+| bgBlue         | [:heavy_check_mark:](#scribbler.bgcolour) :heavy_plus_sign: | [:heavy_check_mark:](#krayon.bgcolour) :heavy_plus_sign:
 
 ### Compounders (CSV/semi-colonSV)
 
@@ -946,7 +946,7 @@ Writes the message to the console using the colours and formatting defined in th
 
 #### Krayon.MessageNoSuffix
 
-<div id="krayon.message"></div>
+<div id="krayon.messagenosuffix"></div>
 
 :gem: Krayon.Message([string]$message)
 
