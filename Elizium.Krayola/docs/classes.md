@@ -220,6 +220,7 @@ The code examples in this section include a *Flush* invoke. It is at this point 
 #### Scribbler.Scribble
 
 <div id="scribbler.scribble"></div>
+
 :gem: Scribbler.Scribble([string]$source)
 
 *source* is a structured string, which means it contains colouring instructions and core text. The structured string is buffered **without** a new line.
@@ -323,7 +324,7 @@ Buffers the pair couplet **with** a new line.
   $scribbler.Flush();
 ```
 
-#### Scribbler.Pair
+#### Scribbler.Pair / PSCustomObject
 
 :gem: Scribbler.Pair([PSCustomObject]$couplet)
 
@@ -385,7 +386,7 @@ The Line method has a new line built into it.
 
 <div id="scribbler.nakedline"></div>
 
-:gem: Scribbler.Line([line]$nakedLine)
+:gem: Scribbler.NakedLine([line]$nakedLine)
 
 *nakedLine* is a 'Line' instance which is a collection of 'couplet's. The Line method has a new line built into it. The Line method is defined in terms of the Krayola Theme. The collection of pairs that comprises the line are 'book-ended' by the tokens defined in the Krayola theme under the 'OPEN' and 'CLOSE' keys. A naked line is one that is rendered without the 'OPEN' and 'CLOSE' tokens.
 
@@ -594,7 +595,7 @@ Buffers the default background colour.
 
 :dart: End/Flush/Ln/Reset/Restart/Save
 
-#### Scribbler.End()
+#### Scribbler.End
 
 <div id="scribbler.end"></div>
 
@@ -602,7 +603,7 @@ Buffers the default background colour.
 
 When invoking the *fluent* methods, within a function context, it is necessary to consume the return value. If the result in not consumed, then its value can be leaked out into the console. Most if not always, this is not what the client would expect. Therefore, when the end of an invoke chain has been reached, then the client should either call the *End()* method or can they use any other standard powershell technique for consuming/re-directing un-consumed values, like assigning to *$null* or re-directing to *out-null*. The *End* method was provided as a convenience. You will notice that in all the examples shown, the *End* method is being invoked.
 
-#### Scribbler.Flush()
+#### Scribbler.Flush
 
 <div id="scribbler.flush"></div>
 
@@ -610,7 +611,7 @@ When invoking the *fluent* methods, within a function context, it is necessary t
 
 Causes the buffered content inside the Scribbler to be replayed on the Krayon. The exception to this is when a Quiet scribbler is in play as a result of being run in a Testing context without *EliziumTest* being present in the environment. This ensures that by default, test cases using the Scribbler either directly or indirectly are noise-less. Of course the client can define test cases with the Scribbler mocked out which is also another recommended technique (actually mocking out classes in Powershell testcases is difficult, if not impossible). However, sometimes its good to see test cases running showing real output (in *integration tests*), that is why this design choice was taken.
 
-#### Scribbler.Ln()
+#### Scribbler.Ln
 
 <div id="scribbler.ln"></div>
 
@@ -618,7 +619,7 @@ Causes the buffered content inside the Scribbler to be replayed on the Krayon. T
 
 Buffers a new line operation.
 
-#### Scribbler.Reset()
+#### Scribbler.Reset
 
 <div id="scribbler.reset"></div>
 
@@ -626,7 +627,7 @@ Buffers a new line operation.
 
 Buffers a request to return the Krayon to default foreground and background colours.
 
-#### Scribbler.Restart()
+#### Scribbler.Restart
 
 <div id="scribbler.restart"></div>
 
@@ -648,7 +649,7 @@ When the Scribbler has been created with the *Save* option, any *Flush* invokes 
 
 :dart: ThemeColour
 
-#### Scribbler.ThemeColour([string]$val)
+#### Scribbler.ThemeColour
 
 <div id="scribbler.themecolour"></div>
 
@@ -673,7 +674,7 @@ The value inside the brackets denotes the valid string for the $val parameter th
 
 :dart: \<colour\>/bg\<colour\>
 
-#### Scribbler.\<Colour\>()
+#### Scribbler.\<Colour\>
 
 <div id="scribbler.colour"></div>
 
@@ -749,7 +750,7 @@ This method is automatically invoked when the client uses the *Pair* accelerator
 
 :pushpin: If the key or value either contains a comma or semi-colon, then these are automatically escaped. This allows the pair to be represented as a compounded string value so that it can be scribbled on the Krayon.
 
-#### Scribbler.LineSnippet([line]$line)
+#### Scribbler.LineSnippet
 
 <div id="scribbler.linesnippet"></div>
 
@@ -811,21 +812,21 @@ Structured content is written to the host WITHOUT a new line.
 
 :dart: Text/TextLn
 
-#### Krayon.Text([string]$value)
+#### Krayon.Text
 
 <div id="krayon.text"></div>
 
-:gem: Krayon.Text([string]$source)
+:gem: Krayon.Text([string]$value)
 
 *value* is a plain string fragment, which means it contains no colouring instructions but just core text.
 
 The text value is written using the current foreground and background colours. The text is written to the console **without** a new line. This allows colours to be changed at will on the current line.
 
-#### Krayon.TextLn([string]$value)
+#### Krayon.TextLn
 
 <div id="krayon.textln"></div>
 
-:gem: Krayon.TextLn([string]$source)
+:gem: Krayon.TextLn([string]$value)
 
 *value* is a plain string fragment, which means it contains no colouring instructions but just core text.
 
@@ -835,7 +836,7 @@ The text value is written using the current foreground and background colours **
 
 :dart: Pair/PairLn
 
-#### Krayon.Pair([couplet]$couplet)
+#### Krayon.Pair
 
 <div id="krayon.pair"></div>
 
@@ -845,7 +846,7 @@ The text value is written using the current foreground and background colours **
 
 Writes the couplet instance to the console using the colours and formatting defined in the Krayola theme **without** a new line.
 
-#### Krayon.PairLn([couplet]$couplet)
+#### Krayon.PairLn
 
 <div id="krayon.pairln"></div>
 
@@ -855,7 +856,7 @@ Writes the couplet instance to the console using the colours and formatting defi
 
 Writes the couplet instance to the console using the colours and formatting defined in the Krayola theme **with** a new line.
 
-#### Krayon.Pair
+#### Krayon.Pair / PSCustomObject
 
 :gem: Krayon.PairLn([PSCustomObject]$couplet)
 
@@ -863,7 +864,7 @@ Writes the couplet instance to the console using the colours and formatting defi
 
 Writes the couplet instance to the console using the colours and formatting defined in the Krayola theme **without** a new line.
 
-#### Krayon.PairLn([PSCustomObject]$couplet)
+#### Krayon.PairLn / PSCustomObject
 
 :gem: Krayon.PairLn([PSCustomObject]$couplet)
 
@@ -977,7 +978,7 @@ Writes the message to the console using the colours and formatting defined in th
 
 Set the current foreground colour.
 
-#### Krayon.back([string]$colour)
+#### Krayon.back
 
 <div id="krayon.back"></div>
 
@@ -1035,7 +1036,7 @@ Gets the default background colour. Does not affect current state of the Krayon.
 
 See [Scribbler.End()](#scribbler.End())
 
-#### Krayon.Ln()
+#### Krayon.Ln
 
 <div id="krayon.ln"></div>
 
@@ -1043,7 +1044,7 @@ See [Scribbler.End()](#scribbler.End())
 
 Writes a new line to the console.
 
-#### Krayon.Reset()
+#### Krayon.Reset
 
 <div id="krayon.reset"></div>
 
@@ -1055,11 +1056,11 @@ Resets the current foreground and background colours back to their defaults.
 
 :dart: ThemeColour
 
-#### Krayon.ThemeColour([string]$val)
+#### Krayon.ThemeColour
 
 <div id="krayon.themecolour"></div>
 
-:gem: Krayon.ThemeColour()
+:gem: Krayon.ThemeColour([string]$val)
 
 See [Scribbler.ThemeColour()](#scribbler.ThemeColour)
 
@@ -1075,7 +1076,7 @@ __background colours:__ 'bgBlack', 'bgDarkBlue', 'bgDarkGreen', 'bgDarkCyan',
 'bgDarkRed', 'bgDarkMagenta', 'bgDarkYellow', 'bgGray', 'bgDarkGray', 'bgBlue', 'bgGreen',
 'bgCyan', 'bgRed', 'bgMagenta', 'bgYellow', 'bgWhite'
 
-#### Krayon.\<Colour\>()
+#### Krayon.\<Colour\>
 
 <div id="krayon.colour"></div>
 
@@ -1101,7 +1102,11 @@ These compounder functions do not need to be called by the client. They form par
 
 A *Line* is a compound value, comprised of multiple (compound value) *couplet*s. This method extracts the embedded Line instance and invokes the Line method on the Krayon, generating the corresponding output in the console. The Line method has a new line built into it.
 
-#### Krayon.NakedLine([string]$semiColonSV)
+#### Krayon.NakedLine / Compounder
+
+<div id="krayon.nakedline.compounder"></div>
+
+:gem: Krayon.NakedLine([string]$semiColonSV)
 
 *semiColonSV* is a semi-colon separated string value, where each leg represents a single couplet. The sub-string representing a couplet, is itself a comma separated value and can contain either 2 or 3 elements.
 Because the user might need to use a comma or semi-colon inside key or value values, they need to be escaped. This is already done automatically inside the Scribbler.NakedLine method.
@@ -1118,7 +1123,7 @@ Because the user might need to use a comma or semi-colon inside key or value val
 
 Pair is a compound value that is represented as a CSV and is represented on Krayon as the invocation of the Pair method, at which point Krayon renders the Pair in the console using the colours and formats defined in the Krayola theme.
 
-#### Krayon.PairLn([string]$csv)
+#### Krayon.PairLn / Compounder
 
 <div id="krayon.pairln.compounder"></div>
 
@@ -1130,7 +1135,7 @@ Same as its [Pair](#krayon.Pair-/-Compounder) equivalent except a new line is ap
 
 :dart: Native
 
-#### Krayon.Native([string]$structured)
+#### Krayon.Native
 
 <div id="krayon.native"></div>
 
