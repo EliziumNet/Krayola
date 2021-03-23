@@ -118,7 +118,7 @@ The following tables shows the methods that are defined on both of these classes
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| [Scribble](#scribbler.scribble) | [:heavy_check_mark:](#scribbler.scribble) | [:heavy_check_mark:](#Krayon.Scribble([string]$source)) :heavy_plus_sign:
+| Scribble      | [:heavy_check_mark:](#scribbler.scribble) | [:heavy_check_mark:](#Krayon.Scribble([string]$source)) :heavy_plus_sign:
 | ScribbleLn    | :x:                 | [:heavy_check_mark:](#Krayon.ScribbleLn([string]$source)) :heavy_plus_sign:
 
 ### Text
@@ -218,6 +218,8 @@ The code examples in this section include a *Flush* invoke. It is at this point 
 + Scribble
 
 #### Scribbler.Scribble
+
+<div id="scribbler.scribble"></div>
 
 :gem: Scribbler.Scribble([string]$source)
 
