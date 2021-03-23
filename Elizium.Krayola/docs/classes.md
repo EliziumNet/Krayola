@@ -118,7 +118,7 @@ The following tables shows the methods that are defined on both of these classes
 
 | Method Name   | Scribbler           | Krayon
 |---------------|---------------------|------------------------------------------------
-| [Scribble](#Scribbler.Scribble) | [:heavy_check_mark:](#%23Scribbler.Scribble) | [:heavy_check_mark:](#Krayon.Scribble([string]$source)) :heavy_plus_sign:
+| [Scribble](#%23Scribbler.Scribble) | [:heavy_check_mark:](#%23Scribbler.Scribble) | [:heavy_check_mark:](#Krayon.Scribble([string]$source)) :heavy_plus_sign:
 | ScribbleLn    | :x:                 | [:heavy_check_mark:](#Krayon.ScribbleLn([string]$source)) :heavy_plus_sign:
 
 ### Text
