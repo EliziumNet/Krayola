@@ -11,6 +11,7 @@ Colourful console writing with PowerShell
 # Table of contents
 
 + [Introduction](#Introduction)
++ [Quick Start](#Quick-Start)
 + [Using The API](#Using-the-API)
 + [The Main Commands](#The-Main-Commands)
   + [Krayola Theme](#Krayola-Theme)
@@ -42,6 +43,40 @@ Krayola provides the capability to write consistent and colourful PowerShell con
 + commands should be designed to be flexible to enable easy re-use, so if a command is writing to the host, it maybe not be easy to use it from other commands where output could interfere with their own operation.
 
 However, bearing the above points in mind, some commands are designed specifically for a console (because they are ui commands) and in this circumstance, writing to the console is fine. There are other other writer functions (eg Write-Information/Write-Debug etc) can be used, but none of these are able to write in colours controlled by the client. Krayola can be used to assist in writing colourful output in a structured manner in accordance with a user definable theme: the 'Krayola Theme'.
+
+# Quick Start
+
++ Create a Scribbler instance using the [New-Scribbler](Elizium.Krayola/docs/New-Scribbler.md) factory function:
+
+```powershell
+  [Scribbler]$scribbler = New-Scribbler
+```
+
+This creates the object the client needs to begin writing coloured content. It uses the default Krayola theme and a default Krayon.
+
++ Next queue up some content:
+
+```powershell
+  $scribbler.Text('Greetings ').Blue().Text('Happy Scripters. ').Reset().Text("It's time to ").Red().Text('colour the world!').Ln().End();
+```
+
++ Now flush the buffer, so content is displayed:
+
+```powershell
+  $scribbler.Flush();
+```
+
+The above code results in the following output:
+
+![picture](resources/images/quick-start.colour-the-world.jpg)
+
+All the standard console colours are supported. The background colour can be set, by prepending 'bg' to the standard colour name eg:
+
+> $scribbler.bgBlue().Text('Oceans apart ...')
+
+This sets the background colour to blue, then writes 'Oceans apart ...' with the background set to blue.
+
+More formatted content can be displayed using methods such as [Pair](Elizium.Krayola/docs/classes.md#scribbler.pair) or a [Line](Elizium.Krayola/docs/classes.md#scribbler.line)
 
 # Using the API
 
@@ -136,7 +171,7 @@ One day, a busy little unicorn :unicorn: by the name of Twilight started to find
 
 Twilight, thought for a while and asked 'Well how about, we go back to the creator and asked if there were another way we could write in colour'. Willow replied, 'you know what, that may just do the job. We could go and visit the creator bearing gifts of *Musik* :notes: and poetry' :mortar_board:. Twilight heartily :revolving_hearts: agreed, 'Ok let's make haste so we can get back in time before the Setting Sun'. Willow enquired, 'Oh, what a way with words you have. Setting sun? What on :globe_with_meridians: *Earth Inferno* :fire: do you mean?'. Twilight apologised, 'Oh sorry about that, my passion for 1990's techno music sometimes gets the better of me and I just can't resist an obscure reference. *The Setting Sun* is a song by a pair of Brothers of the Chemical variety that once exited the planet dust.'. Willow, retorted 'Come on now, let's not waste any more time. You pick up that 'Recycled Plastik' over there, and I'll bring 'From My Mind To Yours', I'm sure that fan of Plastik will appreciate both of those delights.
 
-So off they trotted. After a treading a long and winding road, they eventually found the creator. "Rat-a-tat-a-tat", sounded the door as they knocked to alert him of their plea :pray:. The door opened and they were warmly welcomed into his abode. After a round a milk and cookies, Willow and Twilight stated their case.
+So off they trotted. After treading a long and winding road, they eventually found the creator. "Rat-a-tat-a-tat", sounded the door as they knocked to alert him of their plea :pray:. The door opened and they were warmly welcomed into his abode. After a round a milk and cookies, Willow and Twilight stated their case.
 
 With sympathy, the creator explained, 'I wrote those functions in haste and I too encountered the issues of which you tell. Do you know what? You are in luck. Let me introduce you to my 2 new friends :blush: :upside_down_face:'. As though pulling rabbits :rabbit: out of a hat, the creator waved his hand in a gesture of good will and out popped 2 shiny new classes named *Scribbler* :snail: and *Krayon* :smiley_cat:.
 
@@ -146,11 +181,13 @@ Twilight and Willow glanced at each other simultaneously and high-fived :thumbsu
 
 'Wowzer, Willow, today has been great', cried Twilight. 'Too right, now we don't ever have to get bogged down with those pesky little array indexing errors and can avoid those trouble-some multi-dimensional arrays. I generally don't have a problem with multi-dimensional arrays, but in PowerShell, they really do make my head itch! :thinking:'.
 
-And finally, the creator thanked them for their gifts :sunglasses: and replied in kind, 'I'm so pleased you brought me that 'Recycled Plastik', may all my good vibes and well wishes go 'From My Mind To Yours'. Do yourself a favour and branch out a little. This is a bit off beat and some say an acquired taste, but you ought to check out :four: :princess: :sparkles: '*For Her Light*' as he handed them a copy of *Earth Inferno*. 'Enjoy! Oh and don't forget, those old functions are deprecated so use them no more, they are destined for the realms of the Underworld :skull:, long live Scribbler and Krayon'
+And finally, the creator thanked them for their gifts :sunglasses: and replied in kind, 'I'm so pleased you brought me that 'Recycled Plastik', may all my good vibes and well wishes go 'From My Mind To Yours'. Do yourself a favour and branch out a little. This is a bit off beat and some say an acquired taste, but you ought to check out :four: :princess: :sparkles: '*For Her Light*' as he handed them a copy of *Earth Inferno*. 'Enjoy! Oh and don't forget, those old functions are deprecated so use them no more, they are destined for the realms of the Underworld :skull:, long live Scribbler and Krayon'; 'Hoorah!!'. They all cried.
 
 The happy scripters left the creator with a skip in their step and joy in their hearts :gift_heart:.
 
 ... and they all lived happily ever after :joy:.
+
+And now back to reality.
 
 ## Supporting Utilities
 
@@ -265,10 +302,14 @@ It is a bit onerous having to restart a session for every build, but below is a 
 
 ### Helper function restart-session
 
-Insert this function into your PowerShell session file.
+Insert this into your PowerShell session file.
 
 ```powershell
-function restart-session {
+function Get-TagPath {
+  return Join-Path $env:temp -ChildPath 'restart-session.tag.txt';
+}
+
+function Restart-Session {
   [Alias('ress')]
   param()
  
@@ -325,6 +366,6 @@ After restart, tag is restored and the restart message will indicate as such
 
 As has been documented elsewhere, the user can set this flag in the environment (just set it to any non $null value).
 
-By default, $env:EliziumTest, will not be present, this means, that the unit tests in Krayola will run in silent mode. However, there are some tests which are less valuable in silent mode, doing so would invalidate them to some degree. There are only a few of the tests in this category and it's because they require Write-Host to be invoked. Theoretically, one could mock out the Write-Host call, but some errors can be much easier to spot visually. This generally is not the best technique in unit-testing, but these test cases have been backed up by non noisy equivalents to make sure all bases are covered.
+By default, $env:EliziumTest, will not be present, this means, that the unit tests in Krayola will run in silent mode. However, there are some tests which are less valuable in silent mode, doing so would invalidate them to some degree. There are only a few of the tests in this category (tagged as 'Host') and it's because they require Write-Host to be invoked. Theoretically, one could mock out the Write-Host call, but some errors can be much easier to spot visually. This generally is not the best technique in unit-testing, but these test cases have been backed up by non noisy equivalents to make sure all bases are covered.
 
 During development, it is very useful to get a visual on how ui commands are behaving. This was the rationale behind the introduction of this flag. So when *EliziumTest* is defined, the user will see more output that reflects the execution of the Scribbler and Krayon.
