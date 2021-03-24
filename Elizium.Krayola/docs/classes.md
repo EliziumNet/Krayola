@@ -1034,7 +1034,7 @@ Gets the default background colour. Does not affect current state of the Krayon.
 
 :gem: Krayon.End()
 
-See [Scribbler.End()](#scribbler.End())
+See [Scribbler.End()](#scribbler.end)
 
 #### Krayon.Ln
 
