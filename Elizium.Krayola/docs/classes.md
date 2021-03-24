@@ -1111,7 +1111,7 @@ A *Line* is a compound value, comprised of multiple (compound value) *couplet*s.
 *semiColonSV* is a semi-colon separated string value, where each leg represents a single couplet. The sub-string representing a couplet, is itself a comma separated value and can contain either 2 or 3 elements.
 Because the user might need to use a comma or semi-colon inside key or value values, they need to be escaped. This is already done automatically inside the Scribbler.NakedLine method.
 
-*NakedLine* is a 'Line' instance which is a collection (compound value) of 'couplet's. The Line method has a new line built into it. The Line method is defined in terms of the Krayola Theme. The collection of pairs that comprises the line are 'book-ended' by the tokens defined in the Krayola theme under the 'OPEN' and 'CLOSE' keys. A naked line is one that is rendered without the 'OPEN' and 'CLOSE' tokens. The NakedLine method has a new line built into it.
+*NakedLine* is a 'Line' instance which is a collection (compound value) of 'couplet's. The Line method is defined in terms of the Krayola Theme. The collection of pairs that comprises the line are 'book-ended' by the tokens defined in the Krayola theme under the 'OPEN' and 'CLOSE' keys. A naked line is one that is rendered without the 'OPEN' and 'CLOSE' tokens. The NakedLine method has a new line built into it.
 
 #### Krayon.Pair / Compounder
 

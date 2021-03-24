@@ -713,7 +713,7 @@ Describe 'Scribbler' {
       }
 
       Context 'given: line with message' {
-        It 'should: scribble line with message' -Tag 'DOC' {
+        It 'should: scribble line with message' {
           InModuleScope Elizium.Krayola {
             [string]$message = 'Greetings Happy Scripters';
             [line]$line = $(New-Line(@(
