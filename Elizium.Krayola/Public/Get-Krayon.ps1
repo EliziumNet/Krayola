@@ -1,4 +1,4 @@
-
+﻿
 function Get-Krayon {
   <#
   .NAME
@@ -8,7 +8,7 @@ function Get-Krayon {
     Helper factory function that creates Krayon instance.
 
   .DESCRIPTION
-    Creates a new krayon instance with the optional krayola theme provided. The krayon contains various methods for writing text directly to the console (See online documentation for more information). 
+    Creates a new krayon instance with the optional krayola theme provided. The krayon contains various methods for writing text directly to the console (See online documentation for more information).
   #>
 
   [OutputType([Krayon])]

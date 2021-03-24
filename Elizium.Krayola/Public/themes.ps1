@@ -1,8 +1,4 @@
 
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseBOMForUnicodeEncodedFile', '')]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-# Param()
-
 $Global:KrayolaThemes = @{
 
   'EMERGENCY-THEME'  = @{

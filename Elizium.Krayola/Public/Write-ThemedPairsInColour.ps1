@@ -1,4 +1,4 @@
-
+﻿
 function Write-ThemedPairsInColour {
   <#
     .NAME
@@ -165,20 +165,20 @@ function Write-ThemedPairsInColour {
           else {
             # Since the affirmation colour is missing, use another way of highlighting the value
             # ie, surround in asterisks
-            # 
+            #
             $transformedValue = @("*{0}*" -f $pair[1]) + $valueColours;
           }
         }
         elseif (-not($pair[2] -ieq 'false')) {
           Write-Error "Invalid affirm value found; not boolean value, found: $($pair[2]) [!!! Reminder: you need to use the comma op for a single item array]"
-        } 
+        }
       } elseif (3 -lt $pair.Length) {
         Write-Error "Found pair with excess items (pair: $($pair)) [!!! Reminder: you need to use the comma op for a single item array]"
       }
     }
 
     $transformedPair = , @($transformedKey, $transformedValue);
-    $pairsToWriteInColour += $transformedPair;  
+    $pairsToWriteInColour += $transformedPair;
   }
 
   [System.Collections.Hashtable]$parameters = @{

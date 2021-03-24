@@ -202,7 +202,7 @@ task Compile @compileParams {
       "" >> $script:OutPsmPath;
       "# Custom Module Initialisation" >> $script:OutPsmPath;
       "#" >> $script:OutPsmPath;
-    
+
       $moduleInitContent = Get-Content -LiteralPath $moduleInitPath;
       $moduleInitContent >> $script:OutPsmPath;
     }

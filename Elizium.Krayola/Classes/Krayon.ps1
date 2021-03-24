@@ -1,4 +1,4 @@
-
+﻿
 <#
 .NAME
   couplet
@@ -697,7 +697,7 @@ class Krayon {
           [string]$snippet = $source.Substring($snippetStart, $snippetSize);
 
           # If we find a text snippet, it must be applied before the current api invoke
-          # 
+          #
           if (-not([string]::IsNullOrEmpty($snippet))) {
             [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
           }
@@ -948,7 +948,7 @@ class Scribbler {
       else {
         Write-Warning -Message $(
           "Can't write session to '$writeFullPath'. (file already exists)."
-        );        
+        );
       }
     }
     else {
@@ -1360,6 +1360,7 @@ function New-Krayon {
   to conform to the regular expression pattern specified by Expression. This format must
   accommodate a single parameter.
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [OutputType([Krayon])]
   param(
     [Parameter()]
@@ -1411,6 +1412,7 @@ function New-Line {
   .PARAMETER couplets
     Collection of couplets to create Line with.
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [OutputType([line])]
   [Alias('kl')]
   param(
@@ -1436,6 +1438,7 @@ according to the Krayola theme (AFFIRM-COLOURS).
   A 2 or 3 item array representing a key/value pair and optional affirm boolean.
 #>
 function New-Pair {
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [OutputType([couplet])]
   [Alias('kp')]
   param(
@@ -1485,6 +1488,7 @@ function New-Scribbler {
     switch to force the creation of a Quiet Scribbler. Can not be specified at the
   same time as Test (although not currently enforced). Silent overrides Test.
   #>
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
   [OutputType([Scribbler])]
   param(
     [Parameter()]
@@ -1507,7 +1511,7 @@ function New-Scribbler {
   elseif ($Test) {
     $($null -eq (Get-EnvironmentVariable 'EliziumTest')) `
       ? [QuietScribbler]::New($builder, $Krayon, $session) `
-      : [Scribbler]::New($builder, $Krayon, $session);    
+      : [Scribbler]::New($builder, $Krayon, $session);
   }
   else {
     [Scribbler]::New($builder, $Krayon, $session);
