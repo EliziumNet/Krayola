@@ -10,27 +10,47 @@ task Ana Analyse
 task Fix ApplyFix
 task BuildHelp Docs
 
-$script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf
-$script:ModuleRoot = $PSScriptRoot
-$script:OutPutFolder = "$PSScriptRoot/Output"
-$script:ImportFolders = @('Public', 'Internal', 'Classes')
-$script:OutPsmPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psm1"
-$script:OutPsdPath = Join-Path -Path $PSScriptRoot -ChildPath "Output/$($script:ModuleName)/$($script:ModuleName).psd1"
+$script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf # KEEP THIS
+$script:Core = [PSCustomObject]@{
+  ModuleName      = $(Split-Path -Path $PSScriptRoot -Leaf);
+  ModuleOutFucked = $(
+    Join-Path -Path $PSScriptRoot -ChildPath 'Output' -AdditionalChildPath `
+    $("$($script:ModuleName)$([System.IO.Path]::PathSeparator)$($script:ModuleName)");
+  );
+  ModuleOut       = Join-Path -Path $PSScriptRoot -ChildPath "Output" -AdditionalChildPath $(
+    "$($script:ModuleName)$([System.IO.Path]::DirectorySeparatorChar)$($script:ModuleName)"
+  );
+  Output          = $(Join-Path -Path $PSScriptRoot -ChildPath 'Output');
+}
 
-$script:PublicFolder = 'Public'
-$script:DSCResourceFolder = 'DSCResources'
+$script:Properties = [PSCustomObject]@{
+  ModuleName          = $($script:Core.ModuleName);
+  ModuleRoot          = $PSScriptRoot;
+  OutputFolder        = $($script:Core.Output);
+  ExternalHelpPath    = $(Join-Path -Path $script:Core.ModuleOut -ChildPath $script:ModuleName -AdditionalChildPath 'en-GB');
 
-$script:SourceOutPsdPath = Join-Path -Path $PSScriptRoot -ChildPath "$($script:ModuleName).psd1"
-$script:TestHelpers = "$PSScriptRoot/Tests/Helpers"
+  ImportFolders       = @('Public', 'Internal', 'Classes');
+  OutPsmPath          = "$($Core.ModuleOut).psm1";
+  OutPsdPath          = "$($Core.ModuleOut).psd1";
 
-if (Test-Path -Path $script:TestHelpers) {
-  $helpers = Get-ChildItem -Path $script:TestHelpers -Recurse -File -Filter '*.ps1';
+  PublicFolder        = 'Public';
+  DSCResourceFolder   = 'DSCResources';
+
+  SourceOutPsdPath    = $(Join-Path -Path $PSScriptRoot -ChildPath "$($script:Core.ModuleName).psd1");
+  TestHelpers         = $(Join-Path -Path $PSScriptRoot -ChildPath 'Tests' -AdditionalChildPath 'Helpers');
+
+  AdditionExportsPath = $(Join-Path -Path $PSScriptRoot -ChildPath 'Init' -AdditionalChildPath 'additional-exports.ps1');
+
+  StatsFile           = $(Join-Path -Path $script:Core.Output -ChildPath 'stats.json');
+}
+
+if (Test-Path -Path $script:Properties.TestHelpers) {
+  $helpers = Get-ChildItem -Path $script:Properties.TestHelpers -Recurse -File -Filter '*.ps1';
   $helpers | ForEach-Object { Write-Verbose "sourcing helper $_"; . $_; }
 }
 
-[string]$AdditionExportsPath = "$PSScriptRoot/Init/additional-exports.ps1";
-if (Test-Path -Path $AdditionExportsPath) {
-  . $AdditionExportsPath;
+if (Test-Path -Path $script:Properties.AdditionExportsPath) {
+  . $script:Properties.AdditionExportsPath;
 }
 
 function Get-AdditionalFnExports {
@@ -58,7 +78,7 @@ function Get-AdditionalAliasExports {
 }
 
 function Get-FunctionExportList {
-  [string[]]$fnExports = (Get-ChildItem -Path $script:PublicFolder -Recurse | Where-Object { $_.Name -like '*-*' } |
+  [string[]]$fnExports = (Get-ChildItem -Path $script:Properties.PublicFolder -Recurse | Where-Object { $_.Name -like '*-*' } |
     Select-Object -ExpandProperty BaseName);
 
   $fnExports += Get-AdditionalFnExports;
@@ -72,7 +92,7 @@ function Get-PublicFunctionAliasesToExport {
   [System.Text.RegularExpressions.RegEx]$aliasesRegEx = `
     New-Object -TypeName System.Text.RegularExpressions.RegEx -ArgumentList ($expression, $options);
 
-  [string]$publicPath = "$PSScriptRoot/Public";
+  [string]$publicPath = $script:Properties.Public;
 
   [string[]]$aliases = @();
 
@@ -94,11 +114,11 @@ function Get-PublicFunctionAliasesToExport {
 }
 
 task Clean {
-  if (-not(Test-Path $script:OutPutFolder)) {
-    New-Item -ItemType Directory -Path $script:OutPutFolder > $null
+  if (-not(Test-Path $script:Properties.OutputFolder)) {
+    New-Item -ItemType Directory -Path $script:Properties.OutputFolder > $null
   }
   else {
-    $resolvedOutputContents = Resolve-Path $script:OutPutFolder;
+    $resolvedOutputContents = Resolve-Path $script:Properties.OutputFolder;
     if ($resolvedOutputContents) {
       Remove-Item -Path (Resolve-Path $resolvedOutputContents) -Force -Recurse
     }
@@ -107,25 +127,25 @@ task Clean {
 
 $compileParams = @{
   Inputs = {
-    foreach ($folder in $script:ImportFolders) {
+    foreach ($folder in $script:Properties.ImportFolders) {
       Get-ChildItem -Path $folder -Recurse -File -Filter '*.ps1'
     }
   }
 
   Output = {
-    $script:OutPsmPath
+    $script:Properties.OutPsmPath
   }
 }
 
 task Compile @compileParams {
-  if (Test-Path -Path $script:OutPsmPath) {
-    Remove-Item -Path (Resolve-Path $script:OutPsmPath) -Recurse -Force
+  if (Test-Path -Path $script:Properties.OutPsmPath) {
+    Remove-Item -Path (Resolve-Path $script:Properties.OutPsmPath) -Recurse -Force
   }
-  New-Item -Path $script:OutPsmPath -Force > $null
+  New-Item -Path $script:Properties.OutPsmPath -Force > $null
 
   # Insert custom module using statements (./Init/using.ps1)
   #
-  $initFolder = Join-Path -Path $script:ModuleRoot -ChildPath 'Init'
+  $initFolder = Join-Path -Path $script:Properties.ModuleRoot -ChildPath 'Init'
   if (Test-Path -Path $initFolder) {
     Write-Verbose "Injecting module using statements";
 
@@ -133,16 +153,16 @@ task Compile @compileParams {
 
     if (Test-Path -Path $usingPath) {
       $moduleUsingContent = Get-Content -LiteralPath $usingPath;
-      $moduleUsingContent >> $script:OutPsmPath;
+      $moduleUsingContent >> $script:Properties.OutPsmPath;
     }
   }
 
-  "Set-StrictMode -Version 1.0" >> $script:OutPsmPath
+  "Set-StrictMode -Version 1.0" >> $script:Properties.OutPsmPath
 
   # !!!BUG: This should be using whatever is yielded by @compileParams
   #
-  foreach ($folder in $script:ImportFolders) {
-    $currentFolder = Join-Path -Path $script:ModuleRoot -ChildPath $folder
+  foreach ($folder in $script:Properties.ImportFolders) {
+    $currentFolder = Join-Path -Path $script:Properties.ModuleRoot -ChildPath $folder
     Write-Verbose -Message "Checking folder [$currentFolder]"
 
     if (Test-Path -Path $currentFolder) {
@@ -150,24 +170,24 @@ task Compile @compileParams {
       $files = Get-ChildItem -Path $currentFolder -File -Recurse -Filter '*.ps1'
       foreach ($file in $files) {
         Write-Verbose -Message "Adding $($file.FullName)"
-        Get-Content -Path (Resolve-Path $file.FullName) >> $script:OutPsmPath
+        Get-Content -Path (Resolve-Path $file.FullName) >> $script:Properties.OutPsmPath
       }
     }
   }
 
-  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:SourceOutPsdPath
+  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:Properties.SourceOutPsdPath
 
   if ($sourceDefinition) {
     if ($sourceDefinition.ContainsKey('VariablesToExport')) {
       [string[]]$exportVariables = $sourceDefinition['VariablesToExport'];
-      Write-Verbose "Found VariablesToExport: $exportVariables in source Psd file: $script:SourceOutPsdPath";
+      Write-Verbose "Found VariablesToExport: $exportVariables in source Psd file: $($script:Properties.SourceOutPsdPath)";
 
       if (-not([string]::IsNullOrEmpty($exportVariables))) {
         [string]$variablesArgument = $($exportVariables -join ", ") + [System.Environment]::NewLine;
         [string]$contentToAdd = "Export-ModuleMember -Variable $variablesArgument";
         Write-Verbose "Adding Psm content: $contentToAdd";
 
-        Add-Content $script:OutPsmPath "Export-ModuleMember -Variable $variablesArgument";
+        Add-Content $script:Properties.OutPsmPath "Export-ModuleMember -Variable $variablesArgument";
       }
     }
 
@@ -177,10 +197,10 @@ task Compile @compileParams {
       if ($functionAliases.Count -gt 0) {
         [string]$aliasesArgument = $($functionAliases -join ", ") + [System.Environment]::NewLine;
 
-        Write-Verbose "Found AliasesToExport: $aliasesArgument in source Psd file: $script:SourceOutPsdPath";
+        Write-Verbose "Found AliasesToExport: $aliasesArgument in source Psd file: $($script:Properties.SourceOutPsdPath)";
         [string]$contentToAdd = "Export-ModuleMember -Alias $aliasesArgument";
 
-        Add-Content $script:OutPsmPath "Export-ModuleMember -Alias $aliasesArgument";
+        Add-Content $script:Properties.OutPsmPath "Export-ModuleMember -Alias $aliasesArgument";
       }
     }
   }
@@ -188,41 +208,41 @@ task Compile @compileParams {
   $publicFunctions = Get-FunctionExportList;
 
   if ($publicFunctions.Length -gt 0) {
-    Add-Content $script:OutPsmPath "Export-ModuleMember -Function $($publicFunctions -join ', ')";
+    Add-Content $script:Properties.OutPsmPath "Export-ModuleMember -Function $($publicFunctions -join ', ')";
   }
 
   # Insert custom module initialisation (./Init/module.ps1)
   #
-  $initFolder = Join-Path -Path $script:ModuleRoot -ChildPath 'Init'
+  $initFolder = Join-Path -Path $script:Properties.ModuleRoot -ChildPath 'Init'
   if (Test-Path -Path $initFolder) {
     $moduleInitPath = Join-Path -Path $initFolder -ChildPath 'module.ps1';
 
     if (Test-Path -Path $moduleInitPath) {
       Write-Verbose "Injecting custom module initialisation code";
-      "" >> $script:OutPsmPath;
-      "# Custom Module Initialisation" >> $script:OutPsmPath;
-      "#" >> $script:OutPsmPath;
+      "" >> $($script:Properties.OutPsmPath);
+      "# Custom Module Initialisation" >> $script:Properties.OutPsmPath;
+      "#" >> $script:Properties.OutPsmPath;
 
       $moduleInitContent = Get-Content -LiteralPath $moduleInitPath;
-      $moduleInitContent >> $script:OutPsmPath;
+      $moduleInitContent >> $script:Properties.OutPsmPath;
     }
   }
 }
 
 task CopyPSD {
-  if (-not(Test-Path (Split-Path $script:OutPsdPath))) {
-    New-Item -Path (Split-Path $script:OutPsdPath) -ItemType Directory -ErrorAction 0
+  if (-not(Test-Path (Split-Path $script:Properties.OutPsdPath))) {
+    New-Item -Path (Split-Path $script:Properties.OutPsdPath) -ItemType Directory -ErrorAction 0
   }
   $copy = @{
-    Path        = "$($script:ModuleName).psd1"
-    Destination = $script:OutPsdPath
+    Path        = "$($script:Properties.ModuleName).psd1"
+    Destination = $script:Properties.OutPsdPath
     Force       = $true
     Verbose     = $true
   }
   Copy-Item @copy
 }
 
-task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
+task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:Properties.PublicFolder) {
   # This task only updates the psd file. The compile task updates the psm file
   #
   $publicFunctions = (Get-FunctionExportList) -join "', '"
@@ -236,11 +256,11 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
     # PowerShell has a problem with trying to replace (), so @() does not
     # work without jumping through hoops. (Same goes for AliasesToExport)
     #
-    (Get-Content -Path $script:OutPsdPath) -replace "FunctionsToExport = ''", $publicFunctions |
-    Set-Content -Path $script:OutPsdPath
+    (Get-Content -Path $script:Properties.OutPsdPath) -replace "FunctionsToExport = ''", $publicFunctions |
+    Set-Content -Path $script:Properties.OutPsdPath
   }
 
-  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:SourceOutPsdPath
+  [hashtable]$sourceDefinition = Import-PowerShellDataFile -Path $script:Properties.SourceOutPsdPath
   if ($sourceDefinition.ContainsKey('AliasesToExport')) {
     [string[]]$aliases = Get-PublicFunctionAliasesToExport;
 
@@ -249,20 +269,21 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:PublicFolder) {
       $aliasesStatement = "AliasesToExport = @('{0}')" -f $aliasesArgument
       Write-Verbose "AliasesToExport (psd) statement: $aliasesStatement"
 
-      (Get-Content -Path $script:OutPsdPath) -replace "AliasesToExport\s*=\s*''", $aliasesStatement |
-      Set-Content -Path $script:OutPsdPath
+      (Get-Content -Path $script:Properties.OutPsdPath) -replace "AliasesToExport\s*=\s*''", $aliasesStatement |
+      Set-Content -Path $script:Properties.OutPsdPath
     }
   }
 }
 
-task ImportCompiledModule -if (Test-Path -Path $script:OutPsmPath) {
-  Get-Module -Name $script:ModuleName | Remove-Module -Force
-  Import-Module -Name $script:OutPsdPath -Force -DisableNameChecking
+task ImportCompiledModule -if (Test-Path -Path $script:Properties.OutPsmPath) {
+  Get-Module -Name $script:Properties.ModuleName | Remove-Module -Force
+  Import-Module -Name $script:Properties.OutPsdPath -Force -DisableNameChecking
 }
 
 task Pester {
-  $resultFile = "{0}/testResults{1}.xml" -f $script:OutPutFolder, (Get-date -Format 'yyyyMMdd_hhmmss')
-  $testFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Tests/*'
+  $resultFile = "{0}$($([System.IO.Path]::DirectorySeparatorChar))testResults{1}.xml" `
+    -f $script:Properties.OutputFolder, (Get-date -Format 'yyyyMMdd_hhmmss')
+  $testFolder = Join-Path -Path $PSScriptRoot -ChildPath 'Tests' -AdditionalChildPath '*'
 
   $configuration = [PesterConfiguration]::Default
   $configuration.Run.Path = $testFolder
@@ -281,8 +302,8 @@ task Pester {
   Invoke-Pester -Configuration $configuration
 }
 
-task RemoveStats -if (Test-Path -Path "$($script:OutPutFolder)/stats.json") {
-  # Remove-Item -Force -Verbose -Path (Resolve-Path "$($script:OutPutFolder)/stats.json")
+task RemoveStats -if (Test-Path -Path "$($script:Properties.StatsFile)") {
+  # Remove-Item -Force -Verbose -Path (Resolve-Path "$($script:Properties.StatsFile)")
 }
 
 task WriteStats {
@@ -290,24 +311,24 @@ task WriteStats {
   Where-Object { $PSItem.Name -ne 'Output' }
 
   $stats = foreach ($folder in $folders) {
-    $files = Get-ChildItem "$($folder.FullName)/*" -File
+    $files = Get-ChildItem -File $(Join-Path -Path $folder.FullName -ChildPath '*');
     if ($files) {
       Get-Content -Path (Resolve-Path $files) |
       Measure-Object -Word -Line -Character |
       Select-Object -Property @{N = "FolderName"; E = { $folder.Name } }, Words, Lines, Characters
     }
   }
-  $stats | ConvertTo-Json > "$script:OutPutFolder/stats.json"
+  $stats | ConvertTo-Json > "$($script:Properties.StatsFile)"
 }
 
 task Analyse {
-  if (Test-Path -Path .\Output\) {
-    Invoke-ScriptAnalyzer -Path .\Output\ -Recurse
+  if (Test-Path -Path $Properties.OutputFolder) {
+    Invoke-ScriptAnalyzer -Path $Properties.OutputFolder -Recurse
   }
 }
 
 task ApplyFix {
-  Invoke-ScriptAnalyzer -Path .\ -Recurse -Fix
+  Invoke-ScriptAnalyzer -Path $(Get-Location) -Recurse -Fix;
 }
 
 # Before this can be run, this must be run first
@@ -317,6 +338,6 @@ task ApplyFix {
 # the docs task generates the external help from the md files
 #
 task Docs {
-  New-ExternalHelp $script:ModuleRoot\docs `
-    -OutputPath $script:OutPutFolder\$script:ModuleName\en-GB
+  New-ExternalHelp $(Join-Path -Path $script:Properties.ModuleRoot -ChildPath 'docs') `
+    -OutputPath "$($script:Properties.ExternalHelpPath)"
 }

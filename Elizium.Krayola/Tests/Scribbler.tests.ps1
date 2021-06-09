@@ -1,6 +1,6 @@
 using namespace System.Text;
 
-Describe 'Scribbler' {
+Describe 'Scribbler' -Tag 'Scribbler' {
   BeforeAll {
     InModuleScope Elizium.Krayola {
       Get-Module Elizium.Krayola | Remove-Module -Force
