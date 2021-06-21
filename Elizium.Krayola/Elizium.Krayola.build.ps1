@@ -1,26 +1,25 @@
-﻿# KRAYOLA
+# VERSION 0.0.1
 using namespace System.Text.RegularExpressions;
 
 task . Clean, Build, Tests, Stats
 task Tests ImportCompiledModule, Pester
-task CreateManifest CopyPSD, UpdatePublicFunctionsToExport
+task CreateManifest CopyPSD, UpdatePublicFunctionsToExport, CopyFileList
 task Build Compile, CreateManifest
 task Stats RemoveStats, WriteStats
 task Ana Analyse
 task Fix ApplyFix
 task BuildHelp Docs
 
-$script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf # KEEP THIS
+$script:ModuleName = Split-Path -Path $PSScriptRoot -Leaf;
 $script:Core = [PSCustomObject]@{
-  ModuleName      = $(Split-Path -Path $PSScriptRoot -Leaf);
-  ModuleOutFucked = $(
-    Join-Path -Path $PSScriptRoot -ChildPath 'Output' -AdditionalChildPath `
-    $("$($script:ModuleName)$([System.IO.Path]::PathSeparator)$($script:ModuleName)");
-  );
-  ModuleOut       = Join-Path -Path $PSScriptRoot -ChildPath "Output" -AdditionalChildPath $(
+  ModuleName = $(Split-Path -Path $PSScriptRoot -Leaf);
+
+  # ModuleOut: this represents a module file in the output directory 
+  #
+  ModuleOut  = Join-Path -Path $PSScriptRoot -ChildPath "Output" -AdditionalChildPath $(
     "$($script:ModuleName)$([System.IO.Path]::DirectorySeparatorChar)$($script:ModuleName)"
   );
-  Output          = $(Join-Path -Path $PSScriptRoot -ChildPath 'Output');
+  Output     = $(Join-Path -Path $PSScriptRoot -ChildPath 'Output');
 }
 
 $script:Properties = [PSCustomObject]@{
@@ -32,7 +31,11 @@ $script:Properties = [PSCustomObject]@{
   ImportFolders       = @('Public', 'Internal', 'Classes');
   OutPsmPath          = "$($Core.ModuleOut).psm1";
   OutPsdPath          = "$($Core.ModuleOut).psd1";
+  ModuleOutPath       = $(Join-Path -Path $PSScriptRoot -ChildPath "Output" -AdditionalChildPath $(
+      "$($script:ModuleName)"
+    ));
 
+  FinalDirectory      = 'Final';
   PublicFolder        = 'Public';
   DSCResourceFolder   = 'DSCResources';
 
@@ -42,6 +45,7 @@ $script:Properties = [PSCustomObject]@{
   AdditionExportsPath = $(Join-Path -Path $PSScriptRoot -ChildPath 'Init' -AdditionalChildPath 'additional-exports.ps1');
 
   StatsFile           = $(Join-Path -Path $script:Core.Output -ChildPath 'stats.json');
+  FileListDirectory   = $(Join-Path -Path $PSScriptRoot -ChildPath 'FileList');
 }
 
 if (Test-Path -Path $script:Properties.TestHelpers) {
@@ -56,30 +60,41 @@ if (Test-Path -Path $script:Properties.AdditionExportsPath) {
 function Get-AdditionalFnExports {
   [string []]$additional = @()
 
-  if ($AdditionalFnExports -and ($AdditionalFnExports -is [array])) {
-    $additional = $AdditionalFnExports;
-  }
+  try {
+    if ($global:AdditionalFnExports -and ($global:AdditionalFnExports -is [array])) {
+      $additional = $global:AdditionalFnExports;
+    }
 
-  Write-Verbose "---> Get-AdditionalFnExports: $($additional -join ', ')";
+    Write-Verbose "---> Get-AdditionalFnExports: $($additional -join ', ')";
+  }
+  catch {
+    Write-Verbose "===> Get-AdditionalFnExports: no 'AdditionalFnExports' found";
+  }
 
   return $additional;
 }
 
 function Get-AdditionalAliasExports {
-  [string []]$additionalAliases = @()
+  [string []]$additionalAliases = @();
 
-  if ($AdditionalAliasExports -and ($AdditionalAliasExports -is [array])) {
-    $additionalAliases = $AdditionalAliasExports;
+  try {
+    if ($global:AdditionalAliasExports -and ($global:AdditionalAliasExports -is [array])) {
+      $additionalAliases = $global:AdditionalAliasExports;
+    }
+    Write-Verbose "===> Get-AdditionalAliasExports: $($additionalAliases -join ', ')";
   }
-
-  Write-Verbose "===> Get-AdditionalAliasExports: $($additionalAliases -join ', ')";
+  catch {
+    Write-Verbose "===> Get-AdditionalAliasExports: no 'AdditionalAliasExports' found";
+  }
 
   return $additionalAliases;
 }
 
 function Get-FunctionExportList {
-  [string[]]$fnExports = (Get-ChildItem -Path $script:Properties.PublicFolder -Recurse | Where-Object { $_.Name -like '*-*' } |
-    Select-Object -ExpandProperty BaseName);
+  [string[]]$fnExports = $(
+    Get-ChildItem -Path $script:Properties.PublicFolder -Recurse | Where-Object {
+      $_.Name -like '*-*' } | Select-Object -ExpandProperty BaseName
+  );
 
   $fnExports += Get-AdditionalFnExports;
   return $fnExports;
@@ -172,6 +187,17 @@ task Compile @compileParams {
         Write-Verbose -Message "Adding $($file.FullName)"
         Get-Content -Path (Resolve-Path $file.FullName) >> $script:Properties.OutPsmPath
       }
+    }
+  }
+
+  # Finally
+  #
+  if (Test-Path -Path $script:Properties.FinalDirectory) {
+    [array]$items = $(Get-ChildItem -Path $script:Properties.FinalDirectory -File -Filter '*.ps1') ?? @();
+
+    foreach ($file in $items) {
+      Write-Host "DEBUG(final): '$($file.FullName)'"
+      Get-Content -Path $file.FullName >> $script:Properties.OutPsmPath
     }
   }
 
@@ -271,6 +297,20 @@ task UpdatePublicFunctionsToExport -if (Test-Path -Path $script:Properties.Publi
 
       (Get-Content -Path $script:Properties.OutPsdPath) -replace "AliasesToExport\s*=\s*''", $aliasesStatement |
       Set-Content -Path $script:Properties.OutPsdPath
+    }
+  }
+}
+
+task CopyFileList {
+  if (Test-Path $script:Properties.FileListDirectory) {
+    Get-ChildItem -File -LiteralPath $script:Properties.FileListDirectory | ForEach-Object {
+      $copy = @{
+        LiteralPath = $_.FullName
+        Destination = $($script:Properties.ModuleOutPath)
+        Force       = $true
+        Verbose     = $true
+      }
+      Copy-Item @copy -Verbose
     }
   }
 }
