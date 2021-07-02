@@ -1,4 +1,4 @@
-# VERSION 0.0.1
+# VERSION 1.0.0
 using namespace System.Text.RegularExpressions;
 
 task . Clean, Build, Tests, Stats
@@ -26,7 +26,7 @@ $script:Properties = [PSCustomObject]@{
   ModuleName          = $($script:Core.ModuleName);
   ModuleRoot          = $PSScriptRoot;
   OutputFolder        = $($script:Core.Output);
-  ExternalHelpPath    = $(Join-Path -Path $script:Core.ModuleOut -ChildPath $script:ModuleName -AdditionalChildPath 'en-GB');
+  ExternalHelpPath    = $(Join-Path -Path $script:Core.Output -ChildPath $script:ModuleName -AdditionalChildPath 'en-GB');
 
   ImportFolders       = @('Public', 'Internal', 'Classes');
   OutPsmPath          = "$($Core.ModuleOut).psm1";
@@ -378,6 +378,7 @@ task ApplyFix {
 # the docs task generates the external help from the md files
 #
 task Docs {
-  New-ExternalHelp $(Join-Path -Path $script:Properties.ModuleRoot -ChildPath 'docs') `
+  Write-host "Writing to: '$($script:Properties.ExternalHelpPath)'"
+  $null = New-ExternalHelp $(Join-Path -Path $script:Properties.ModuleRoot -ChildPath 'docs') `
     -OutputPath "$($script:Properties.ExternalHelpPath)"
 }
