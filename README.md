@@ -159,7 +159,7 @@ If $KrayolaThemeName is specified, then it is used to lookup the theme in the gl
 | [Line](Elizium.Krayola/docs/classes.md#Line-Class)
 | [Scribbler](Elizium.Krayola/docs/classes.md#Scribbler-Class)
 
-#### A tale of the Scribbler/Krayon vs the Legacy functions
+#### A tale of the Scribbler/Krayon vs the Legacy functions<a name="classes.tale-of-scribbler-krayon"></a>
 
 *A tale of the :tulip: Scribbler/Krayon vs the :wilted_flower: Legacy functions*
 

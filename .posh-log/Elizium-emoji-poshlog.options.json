@@ -1,0 +1,134 @@
+{
+  "Snippet": {
+    "Prefix": {
+      "Conditional": "?",
+      "Literal": "!",
+      "Lookup": "&",
+      "NamedGroupRef": "^",
+      "Statement": "*",
+      "Variable": "+"
+    }
+  },
+  "Selection": {
+    "Order": "desc",
+    "SquashBy": "#(?<issue>\\d{1,6})",
+    "Last": true,
+    "IncludeMissingIssue": true,
+    "Subject": {
+      "Include": [
+        "^(?<type>fix|feat|build|chore|ci|docs|doc|style|ref|perf|test)(?:\\((?<scope>[\\w]+)\\))?(?<break>!)?:\\s(?<body>[^\\(]+)(?:\\(?#(?<issue>\\d{1,6})\\)?)",
+        "^(?<type>fix|feat|build|chore|ci|docs|doc|style|ref|perf|test)(?:\\((?<scope>[\\w]+)\\))?(?<break>!)?:\\s(?:#(?<issue>\\d{1,6}))(?<body>[\\w\\W\\s]+)",
+        "^\\(?(?<type>fix|feat|build|chore|ci|docs|doc|style|ref|perf|test)\\s+(?:#(?<issue>\\d{1,6}))?\\)?(?<break>!)?:?\\s?(?<body>[\\w\\W\\s]+)"
+      ],
+      "Exclude": []
+    },
+    "Tags": {},
+    "Change": "^[\\w]+"
+  },
+  "SourceControl": {
+    "Service": "GitHub",
+    "HostUrl": "https://github.com/",
+    "AvatarSize": "24",
+    "CommitIdSize": 7
+  },
+  "Output": {
+    "Headings": {
+      "H2": "Release [+{display-tag}] / +{date}",
+      "H3": "*{$}",
+      "H4": "*{$}",
+      "H5": "*{$}",
+      "H6": "*{$}",
+      "Dirty": "DIRTY: *{dirtyStmt}"
+    },
+    "Sections": {
+      "Release": {
+        "Highlights": "*{highlightsStmt}",
+        "HighlightContent": [
+          "",
+          "*{highlightDummy}"
+        ]
+      }
+    },
+    "GroupBy": "scope/type/change/break",
+    "LookUp": {
+      "Authors": {
+        "?": ":woman_office_worker:"
+      },
+      "BreakingStatus": {
+        "non-breaking": ":recycle: NON BREAKING CHANGES",
+        "breaking": ":radioactive: BREAKING CHANGES"
+      },
+      "ChangeTypes": {
+        "Update": "isa:Change",
+        "Fixed": ":beetle:",
+        "Deprecate": ":heavy_multiplication_x:",
+        "Secure": ":key:",
+        "Change": ":o:",
+        "Add": ":heavy_plus_sign:",
+        "Remove": ":heavy_minus_sign:",
+        "?": ":lock:"
+      },
+      "Scopes": {
+        "all": ":star:",
+        "build": ":toolbox:",
+        "changeLog": "isa:poshlog",
+        "docs": ":books:",
+        "poshlog": ":scroll:",
+        "writer": ":black_nib:",
+        "?": ":lock:"
+      },
+      "Types": {
+        "perf": ":rocket:",
+        "fix": ":heavy_check_mark:",
+        "chore": ":nut_and_bolt:",
+        "build": ":hammer:",
+        "ref": ":gem:",
+        "style": ":hotsprings:",
+        "test": ":test_tube:",
+        "doc": "isa:docs",
+        "?": ":lock:",
+        "docs": ":clipboard:",
+        "ci": ":trophy:",
+        "feat": ":gift:"
+      }
+    },
+    "Literals": {
+      "Broken": ":warning:",
+      "BucketEnd": "---",
+      "DateFormat": "yyyy-MM-dd",
+      "Dirty": ":poop:",
+      "Uncategorised": "uncategorised"
+    },
+    "Statements": {
+      "ActiveScope": "+{scope}",
+      "Author": " by `@+{author}` &{_A}",
+      "Avatar": " by `@+{author}` +{avatar-img}",
+      "Break": "&{_B}",
+      "Breaking": "!{broken} *BREAKING CHANGE* ",
+      "Change": "Change Type(&{_C}+{change})",
+      "ChangeCommit": "&{_C} ",
+      "Commit": "+ ?{is-breaking;breakingStmt}?{is-squashed;squashedStmt}?{change;changeCommitStmt}*{subjectStmt}*{avatarStmt}*{metaStmt}",
+      "Dirty": "!{dirty}",
+      "DirtyCommit": "+ ?{is-breaking;breakingStmt}+{subject}",
+      "Highlights": ":sparkles: HIGHLIGHTS",
+      "HighlightDummy": "+ Lorem ipsum dolor sit amet",
+      "IssueLink": " \\<**+{issue-link}**\\>",
+      "Meta": " (Id: **+{commitid-link}**)?{issue-link;issueLinkStmt}",
+      "Scope": "Scope(&{_S}?{scope;activeScopeStmt;Uncategorised})",
+      "Squashed": "SQUASHED: ",
+      "Subject": "**^{body}**",
+      "Type": "Commit Type(&{_T}+{type})",
+      "Ungrouped": "UNGROUPED"
+    },
+    "Warnings": {
+      "Disable": {
+        "MD026": "no-trailing-punctuation",
+        "MD024": "no-duplicate-heading/no-duplicate-header",
+        "MD013": "line-length",
+        "MD033": "no-inline-html"
+      }
+    },
+    "Base": "ChangeLog",
+    "Template": []
+  }
+}
