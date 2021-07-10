@@ -296,7 +296,7 @@ Describe 'Krayon' {
 
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
-          [string]$snippet = $_scribbler.WithArgSnippet('ThemeColour', 'green');
+          [string]$snippet = $_scribbler.WithArgSnippet('ThemeColour', 'affirm');
           [string]$structured = "hello $($snippet)world";
           [string]$expected = 'hello world';
           $_krayon.Native($structured) | Should -BeExactly $expected;
@@ -305,7 +305,7 @@ Describe 'Krayon' {
 
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
-          [string]$themeMagentaSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'magenta');
+          [string]$themeMagentaSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'message');
           [string]$messageSnippet = $_scribbler.WithArgSnippet('Message', 'Silk Spectre');
           [string]$graySnippet = $_scribbler.Snippets(@('gray'));
           [string]$structured = "who $($themeMagentaSnippet)watches $($messageSnippet)the $($graySnippet)watchers";
