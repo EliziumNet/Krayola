@@ -554,7 +554,7 @@ Allows, writing content according to the colours defined in the *Krayola theme*.
 
 ###### :dart: Scribbler.Snippets ([string[]]$items)<a name="s.snippets"></a>
 
-This is a helper method that simplifies the action of specifying method invokes on *Krayola*. For the purposes of this description, let's assume that *Krayola* has been configured (via [*New-Krayon*](docs/New-Krayon.md) factory function) to interpret '&', '[' and ']' as the api invocation tokens. Without the *Snippets* method, the user would have to either embedded these tokens inside a structured string
+This is a helper method that simplifies the action of specifying method invokes on *Krayola*. For the purposes of this description, let's assume that *Krayola* has been configured (via [*New-Krayon*](Elizium.Krayola/docs/New-Krayon.md) factory function) to interpret '&', '[' and ']' as the api invocation tokens. Without the *Snippets* method, the user would have to either embedded these tokens inside a structured string
 
 ```powershell
   [string]$someContentStmt = 'blah';
