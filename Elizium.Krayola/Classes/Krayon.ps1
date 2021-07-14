@@ -199,10 +199,10 @@ class Krayon {
       if ($operations.Count -gt 0) {
         foreach ($op in $operations) {
           if ($op.psobject.properties.match('Arg') -and $op.Arg) {
-            $null = $this.($op.Api)($op.Arg);
+            $null = $this.($op.Method)($op.Arg);
           }
           else {
-            $null = $this.($op.Api)();
+            $null = $this.($op.Method)();
           }
         }
       }
@@ -687,7 +687,7 @@ class Krayon {
       [System.Text.RegularExpressions.MatchCollection]$mc = $this._expression.Matches($source);
       [int]$count = 0;
       foreach ($m in $mc) {
-        [string]$api = $m.Groups['api'];
+        [string]$method = $m.Groups['method'];
         [string]$parm = $m.Groups['p'];
 
         if ($previousMatch) {
@@ -696,17 +696,31 @@ class Krayon {
           [int]$snippetSize = $snippetEnd - $snippetStart;
           [string]$snippet = $source.Substring($snippetStart, $snippetSize);
 
-          # If we find a text snippet, it must be applied before the current api invoke
+          # If we find a text snippet, it must be applied before the current method invoke
           #
           if (-not([string]::IsNullOrEmpty($snippet))) {
-            [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+            [PSCustomObject] @{
+              PSTypeName = 'Krayola.Krayon.Operation';
+              #
+              Method        = 'Text';
+              Arg        = $snippet;
+            }
           }
 
           if (-not([string]::IsNullOrEmpty($parm))) {
-            [PSCustomObject] @{ Api = $api; Arg = $parm; }
+            [PSCustomObject] @{
+              PSTypeName = 'Krayola.Krayon.Operation';
+              #
+              Method        = $method;
+              Arg        = $parm;
+            }
           }
           else {
-            [PSCustomObject] @{ Api = $api; }
+            [PSCustomObject] @{
+              PSTypeName = 'Krayola.Krayon.Operation';
+              #
+              Method        = $method;
+            }
           }
         }
         else {
@@ -721,14 +735,28 @@ class Krayon {
             $source.Substring($snippetStart, $snippetEnd);
           }
           if (-not([string]::IsNullOrEmpty($snippet))) {
-            [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+            [PSCustomObject] @{
+              PSTypeName = 'Krayola.Krayon.Operation';
+              #
+              Method        = 'Text';
+              Arg        = $snippet;
+            }
           }
 
           if (-not([string]::IsNullOrEmpty($parm))) {
-            [PSCustomObject] @{ Api = $api; Arg = $parm; }
+            [PSCustomObject] @{
+              PSTypeName = 'Krayola.Krayon.Operation';
+              #
+              Method        = $method;
+              Arg        = $parm;
+            }
           }
           else {
-            [PSCustomObject] @{ Api = $api; }
+            [PSCustomObject] @{
+              PSTypeName = 'Krayola.Krayon.Operation';
+              #
+              Method        = $method;
+            }
           }
         }
         $previousMatch = $m;
@@ -739,13 +767,23 @@ class Krayon {
           [string]$snippet = $source.Substring($lastSnippetStart);
 
           if (-not([string]::IsNullOrEmpty($snippet))) {
-            [PSCustomObject] @{ Api = 'Text'; Arg = $snippet; }
+            [PSCustomObject] @{
+              PSTypeName = 'Krayola.Krayon.Operation';
+              #
+              Method        = 'Text';
+              Arg        = $snippet;
+            }
           }
         }
       } # foreach $m
     }
     else {
-      @([PSCustomObject] @{ Api = 'Text'; Arg = $source; });
+      @([PSCustomObject] @{
+          PSTypeName = 'Krayola.Krayon.Operation';
+          #
+          Method        = 'Text';
+          Arg        = $source;
+        });
     }
 
     return $operations;
@@ -1206,8 +1244,8 @@ class Scribbler {
     return $result;
   }
 
-  [string] WithArgSnippet([string]$api, [string]$arg) {
-    return "$($this.Krayon.ApiFormatWithArg -f $api, $arg)";
+  [string] WithArgSnippet([string]$method, [string]$arg) {
+    return "$($this.Krayon.ApiFormatWithArg -f $method, $arg)";
   }
 
   [string] PairSnippet([couplet]$pair) {
@@ -1287,7 +1325,7 @@ function New-Krayon {
   are case insensitive). (Please note, that custom regular expressions do not have
   to have 'lead', 'open' and 'close' tokens as illustrated here; these are just
   what are used by default. The client can define any expression with formatters
-  as long as it able to capture api calls with a single optional parameter.)
+  as long as it able to capture method calls with a single optional parameter.)
 
   However, please do not specify a literal string like this. If scribble functionality
   is required, then the Scribbler object should be used. The scribbler
@@ -1331,11 +1369,11 @@ function New-Krayon {
   'Greetings\, Earthlings;one,Eve of Destruction;two,Bango'.
 
   .PARAMETER Expression
-  A custom regular expression pattern than capture a Krayon method api call and an optional
+  A custom regular expression pattern than capture a Krayon method method call and an optional
   parameter. The expression MUST contain the following 2 named capture groups:
 
-  * 'api': string to represent a method call on the Krayon instance.
-  * 'p': optional string to represent a parameter passed into the function denoted by 'api'.
+  * 'method': string to represent a method call on the Krayon instance.
+  * 'p': optional string to represent a parameter passed into the function denoted by 'method'.
 
   Instructions can either have 0 or 1 argument. When an argument is specified that must represent
   a compound value (multiple items), then a compound representation must be used,
@@ -1346,17 +1384,17 @@ function New-Krayon {
   .PARAMETER NativeExpression
     A custom regular expression pattern that recognises the content interpreted by the Krayon Scribble
   method. The 'inverse' native expression parses a structured string and returns the core text stripped
-  of any api tokens.
+  of any method tokens.
 
   .PARAMETER Theme
   A hashtable instance containing the Krayola theme.
 
   .PARAMETER WriterFormat
-    Format string that represents a Krayon api method call without an argument. This format
+    Format string that represents a Krayon method method call without an argument. This format
   needs to conform to the regular expression pattern specified by Expression.
 
   .PARAMETER WriterFormatWithArg
-    Format string that represents a Krayon api method call with an argument. This format needs
+    Format string that represents a Krayon method method call with an argument. This format needs
   to conform to the regular expression pattern specified by Expression. This format must
   accommodate a single parameter.
   #>
@@ -1367,8 +1405,8 @@ function New-Krayon {
     [hashtable]$Theme = $(Get-KrayolaTheme),
 
     [Parameter()]
-    # OLD: '&\[(?<api>[\w]+)(,(?<p>[^\]]+))?\]'
-    [regex]$Expression = [regex]::new("µ«(?<api>[\w]+)(,(?<p>[^»]+))?»"),
+    # OLD: '&\[(?<method>[\w]+)(,(?<p>[^\]]+))?\]'
+    [regex]$Expression = [regex]::new("µ«(?<method>[\w]+)(,(?<p>[^»]+))?»"),
 
     [Parameter()]
     # OLD: '&[{0},{1}]'
@@ -1500,10 +1538,11 @@ function New-Scribbler {
     [Parameter()]
     [switch]$Save,
 
+    [Parameter()]
     [switch]$Silent
   )
   [System.text.StringBuilder]$builder = [System.text.StringBuilder]::new();
-  [System.text.StringBuilder]$session = $Save.ToBool() ? [System.text.StringBuilder]::new() : $null;
+  [System.text.StringBuilder]$session = $Save.IsPresent ? [System.text.StringBuilder]::new() : $null;
 
   [Scribbler]$scribbler = if ($Silent) {
     [QuietScribbler]::New($builder, $Krayon, $null);

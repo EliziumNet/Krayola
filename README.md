@@ -262,7 +262,7 @@ Stores the structured string inside the *Scribbler* buffer, eg:
 :warning: Note, that *Scribble* is seen as a compound method, designed to be used for more than a single item of content so it is not a fluent method call (ie, it does not return anything).
 
 <a name="s.structured-string"></a>
-In the above example, the structured string contains an api call (*&[red]*) and some text content (*hello world*). The reader can think of a structured string being akin to a mark up language like HTML or XML, with the *Krayon* executing the structured string content in much the same way as a javascript engine executes HTML but obviously on a much larger scale. Most methods defined on the *Krayon* are available to be used within a structured string. There are however, some methods that do not make sense to be present inside a structure string. These include any getter such as *getDefaultFore* and also the *Text* method; it doesn't make sense to invoke *Text*, because the required text is designed to be embedded in the structure string anyway. If you refer back to the [method call table](#sk.table), any item in the *Scribbler* column with an :x: can not be used inside a structured string.
+In the above example, the structured string contains a method call (*&[red]*) and some text content (*hello world*). The reader can think of a structured string being akin to a mark up language like HTML or XML, with the *Krayon* executing the structured string content in much the same way as a javascript engine executes HTML but obviously on a much larger scale. Most methods defined on the *Krayon* are available to be used within a structured string. There are however, some methods that do not make sense to be present inside a structure string. These include any getter such as *getDefaultFore* and also the *Text* method; it doesn't make sense to invoke *Text*, because the required text is designed to be embedded in the structure string anyway. If you refer back to the [method call table](#sk.table), any item in the *Scribbler* column with an :x: can not be used inside a structured string.
 
 :pushpin: Another point worthy of note is that in the above example, we can see that the *meta* characters have been included inside the *snippet*. In this case, it assumes that the *Krayon* has been configured to recognise the characters '&', '[' and ']', but these are not the default values. The default values are deliberately other characters not easily accessible from the keyboard. Rather, the user should use the utility method [Scribbler.Snippets](#s.snippets). Whether the user uses the *Snippets* method or includes the raw content inline is largely a matter of style. The advantage of using the snippets method is that the meta characters configured in the *Krayon* can be changed without causing rippling code changes through the rest of the code base, but some might say, the code is easier to read with the meta characters embedded inline.
 
@@ -554,7 +554,7 @@ Allows, writing content according to the colours defined in the *Krayola theme*.
 
 ###### :dart: Scribbler.Snippets ([string[]]$items)<a name="s.snippets"></a>
 
-This is a helper method that simplifies the action of specifying method invokes on *Krayola*. For the purposes of this description, let's assume that *Krayola* has been configured (via [*New-Krayon*](Elizium.Krayola/docs/New-Krayon.md) factory function) to interpret '&', '[' and ']' as the api invocation tokens. Without the *Snippets* method, the user would have to either embedded these tokens inside a structured string
+This is a helper method that simplifies the action of specifying method invokes on *Krayola*. For the purposes of this description, let's assume that *Krayola* has been configured (via [*New-Krayon*](Elizium.Krayola/docs/New-Krayon.md) factory function) to interpret '&', '[' and ']' as the method invocation tokens. Without the *Snippets* method, the user would have to either embedded these tokens inside a structured string
 
 ```powershell
   [string]$someContentStmt = 'blah';
@@ -611,7 +611,7 @@ which sets the foreground colour to white and the background colour to dark blue
 
 [:arrow_heading_up:](#sk.table)
 
-###### :dart: Scribbler.WithArgSnippet ([string]$api, [string]$arg)<a name="s.with-arg-snippet"></a>
+###### :dart: Scribbler.WithArgSnippet ([string]$method, [string]$arg)<a name="s.with-arg-snippet"></a>
 
 The *Snippets* helper method is only suitable for *Krayon* methods that do not take argument. To invoke a *Krayon* method which takes a single argument, the client should use *WithArgSnippet*, eg:
 
