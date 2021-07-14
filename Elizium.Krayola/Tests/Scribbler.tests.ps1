@@ -21,37 +21,37 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       [Krayon]$global:_krayon = New-Krayon -Theme $_theme;
       [Scribbler]$global:_scribbler = New-Scribbler -Krayon $_krayon -Test;
 
-      [string]$global:_lnSnippet = $_scribbler.Snippets(@('Ln'));
-      [string]$global:_resetSnippet = $_scribbler.Snippets(@('Reset'));
+      [string]$global:_lnSn = $_scribbler.Snippets(@('Ln'));
+      [string]$global:_resetSn = $_scribbler.Snippets(@('Reset'));
 
-      [string]$global:_redSnippet = $_scribbler.Snippets(@('red'));
-      [string]$global:_blueSnippet = $_scribbler.Snippets(@('blue'));
-      [string]$global:_cyanSnippet = $_scribbler.Snippets(@('cyan'));
-      [string]$global:_yellowSnippet = $_scribbler.Snippets(@('yellow'));
-      [string]$global:_magentaSnippet = $_scribbler.Snippets(@('magenta'));
-      [string]$global:_blackSnippet = $_scribbler.Snippets(@('black'));
-      [string]$global:_greenSnippet = $_scribbler.Snippets(@('green'));
-      [string]$global:_whiteSnippet = $_scribbler.Snippets(@('white'));
-      [string]$global:_bgDarkCyanSnippet = $_scribbler.Snippets(@('bgDarkCyan'));
-      [string]$global:_bgMagentaSnippet = $_scribbler.Snippets(@('bgMagenta'));
-      [string]$global:_bgCyanSnippet = $_scribbler.Snippets(@('bgCyan'));
-      [string]$global:_bgYellowSnippet = $_scribbler.Snippets(@('bgYellow'));
-      [string]$global:_bgDarkBlueSnippet = $_scribbler.Snippets(@('bgDarkBlue'));
-      [string]$global:_bgRedSnippet = $_scribbler.Snippets(@('bgRed'));
+      [string]$global:_redSn = $_scribbler.Snippets(@('red'));
+      [string]$global:_blueSn = $_scribbler.Snippets(@('blue'));
+      [string]$global:_cyanSn = $_scribbler.Snippets(@('cyan'));
+      [string]$global:_yellowSn = $_scribbler.Snippets(@('yellow'));
+      [string]$global:_magentaSn = $_scribbler.Snippets(@('magenta'));
+      [string]$global:_blackSn = $_scribbler.Snippets(@('black'));
+      [string]$global:_greenSn = $_scribbler.Snippets(@('green'));
+      [string]$global:_whiteSn = $_scribbler.Snippets(@('white'));
+      [string]$global:_bgDarkCyanSn = $_scribbler.Snippets(@('bgDarkCyan'));
+      [string]$global:_bgMagentaSn = $_scribbler.Snippets(@('bgMagenta'));
+      [string]$global:_bgCyanSn = $_scribbler.Snippets(@('bgCyan'));
+      [string]$global:_bgYellowSn = $_scribbler.Snippets(@('bgYellow'));
+      [string]$global:_bgDarkBlueSn = $_scribbler.Snippets(@('bgDarkBlue'));
+      [string]$global:_bgRedSn = $_scribbler.Snippets(@('bgRed'));
 
       [string]$global:_structuredSoloLn = $(
-        "$($_resetSnippet){0}$($_lnSnippet)"
+        "$($_resetSn){0}$($_lnSn)"
       );
 
       [string]$global:_structuredSolo = $(
-        "$($_resetSnippet){0}"
+        "$($_resetSn){0}"
       );
 
-      [string]$global:_ThemeColourAffirmSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'affirm');
-      [string]$global:_ThemeColourKeySnippet = $_scribbler.WithArgSnippet('ThemeColour', 'key');
-      [string]$global:_ThemeColourMessageSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'message');
-      [string]$global:_ThemeColourMetaSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'meta');
-      [string]$global:_ThemeColourValueSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'value');
+      [string]$global:_ThemeColourAffirmSn = $_scribbler.WithArgSnippet('ThemeColour', 'affirm');
+      [string]$global:_ThemeColourKeySn = $_scribbler.WithArgSnippet('ThemeColour', 'key');
+      [string]$global:_ThemeColourMessageSn = $_scribbler.WithArgSnippet('ThemeColour', 'message');
+      [string]$global:_ThemeColourMetaSn = $_scribbler.WithArgSnippet('ThemeColour', 'meta');
+      [string]$global:_ThemeColourValueSn = $_scribbler.WithArgSnippet('ThemeColour', 'value');
     }
   }
 
@@ -66,11 +66,11 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       It 'should: write in colour' {
         InModuleScope Elizium.Krayola {
           $_scribbler.Scribble(
-            "$($_resetSnippet)$($_redSnippet)Are you master of your domain? " +
-            "$($_blueSnippet)Yeah, I'm still king of the county!$($_lnSnippet)" +
+            "$($_resetSn)$($_redSn)Are you master of your domain? " +
+            "$($_blueSn)Yeah, I'm still king of the county!$($_lnSn)" +
 
-            "$($_redSnippet)$($_bgMagentaSnippet)Are you master of your domain? " +
-            "$($_blueSnippet)$($_bgDarkCyanSnippet)Yeah, Im still lord of the manner!$($_lnSnippet)"
+            "$($_redSn)$($_bgMagentaSn)Are you master of your domain? " +
+            "$($_blueSn)$($_bgDarkCyanSn)Yeah, Im still lord of the manner!$($_lnSn)"
           );
         }
       } # should: write in colour
@@ -78,12 +78,12 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       It 'should: write in theme colours' {
         InModuleScope Elizium.Krayola {
           $_scribbler.Scribble(
-            "$($_resetSnippet)" +
-            "$($_ThemeColourAffirmSnippet)This is affirmed text$($_lnSnippet)" +
-            "$($_ThemeColourKeySnippet)This is key text$($_lnSnippet)" +
-            "$($_ThemeColourMessageSnippet)This is message text$($_lnSnippet)" +
-            "$($_ThemeColourMetaSnippet)This is meta text$($_lnSnippet)" +
-            "$($_ThemeColourValueSnippet)This is value text$($_lnSnippet)"
+            "$($_resetSn)" +
+            "$($_ThemeColourAffirmSn)This is affirmed text$($_lnSn)" +
+            "$($_ThemeColourKeySn)This is key text$($_lnSn)" +
+            "$($_ThemeColourMessageSn)This is message text$($_lnSn)" +
+            "$($_ThemeColourMetaSn)This is meta text$($_lnSn)" +
+            "$($_ThemeColourValueSn)This is value text$($_lnSn)"
           )
         }
       } # should: write in theme colours
@@ -91,17 +91,17 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       Context 'and: style' {
         It 'should: not affect text display' {
           InModuleScope Elizium.Krayola {
-            [string]$boldSnippet = $_scribbler.Snippets(@('bold'));
-            [string]$italicSnippet = $_scribbler.Snippets(@('italic'));
-            [string]$strikeSnippet = $_scribbler.Snippets(@('strike'));
-            [string]$underSnippet = $_scribbler.Snippets(@('under'));
+            [string]$boldSn = $_scribbler.Snippets(@('bold'));
+            [string]$italicSn = $_scribbler.Snippets(@('italic'));
+            [string]$strikeSn = $_scribbler.Snippets(@('strike'));
+            [string]$underSn = $_scribbler.Snippets(@('under'));
 
             $_scribbler.Scribble(
-              "$($_resetSnippet)" +
-              "$($boldSnippet)This is *bold* text$($_lnSnippet)" +
-              "$($italicSnippet)This is /italic/ text$($_lnSnippet)" +
-              "$($strikeSnippet)This is s-t-r-i-k-e--t-h-r-u text$($_lnSnippet)" +
-              "$($underSnippet)This is _underlined_ text$($_lnSnippet)"
+              "$($_resetSn)" +
+              "$($boldSn)This is *bold* text$($_lnSn)" +
+              "$($italicSn)This is /italic/ text$($_lnSn)" +
+              "$($strikeSn)This is s-t-r-i-k-e--t-h-r-u text$($_lnSn)" +
+              "$($underSn)This is _underlined_ text$($_lnSn)"
             );
           }
         }
@@ -111,8 +111,8 @@ Describe 'Scribbler' -Tag 'Scribbler' {
         It 'should: write text with background without flooding with background colour' {
           InModuleScope Elizium.Krayola {
             $_scribbler.Scribble(
-              "$($_resetSnippet)" +
-              "$($_blackSnippet)$($_bgCyanSnippet)Text with background colour$($_lnSnippet)"
+              "$($_resetSn)" +
+              "$($_blackSn)$($_bgCyanSn)Text with background colour$($_lnSn)"
             );
           }
         }
@@ -124,14 +124,14 @@ Describe 'Scribbler' -Tag 'Scribbler' {
         Context 'and: pair is PSCustomObject' {
           It 'should: write pair' {
             InModuleScope Elizium.Krayola {          
-              [string]$pairSnippet = $_scribbler.WithArgSnippet('Pair', 'Album,Pungent Effulgent,true');
+              [string]$pairSn = $_scribbler.WithArgSnippet('Pair', 'Album,Pungent Effulgent,true');
               $_scribbler.Scribble(
-                ($_structuredSoloLn -f $pairSnippet)
+                ($_structuredSoloLn -f $pairSn)
               );
 
-              [string]$pairSnippet = $_scribbler.WithArgSnippet('PairLn', 'Nine,Wreltch');
+              [string]$pairSn = $_scribbler.WithArgSnippet('PairLn', 'Nine,Wreltch');
               $_scribbler.Scribble(
-                ($_structuredSolo -f $pairSnippet)
+                ($_structuredSolo -f $pairSn)
               );
             }
           }
@@ -140,10 +140,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
         Context 'and: Scribbled Pair' {
           It 'should: write pair' {
             InModuleScope Elizium.Krayola {
-              [string]$pairSnippet = $_scribbler.WithArgSnippet('Pair', 'Blue Amazon,Long Way home');
+              [string]$pairSn = $_scribbler.WithArgSnippet('Pair', 'Blue Amazon,Long Way home');
 
               $_scribbler.Scribble(
-                ($_structuredSoloLn -f $pairSnippet)
+                ($_structuredSoloLn -f $pairSn)
               );
             }
           }
@@ -152,24 +152,24 @@ Describe 'Scribbler' -Tag 'Scribbler' {
         Context 'and: Scribbled Pair with escaped comma' {
           It 'should: write pair' {
             InModuleScope Elizium.Krayola {
-              [string]$pairSnippet = $_scribbler.WithArgSnippet('Pair', $(
+              [string]$pairSn = $_scribbler.WithArgSnippet('Pair', $(
                   'Subversive,Blue Amazon\,Long Way home,true'
                 ));
 
               $_scribbler.Scribble(
-                ($_structuredSoloLn -f $pairSnippet)
+                ($_structuredSoloLn -f $pairSn)
               );
             }
           }
 
           It 'should: write pair' {
             InModuleScope Elizium.Krayola {
-              [string]$pairSnippet = $_scribbler.WithArgSnippet('Pair', $(
+              [string]$pairSn = $_scribbler.WithArgSnippet('Pair', $(
                   'Subversive\,Blue Amazon,Long Way home'
                 ));
 
               $_scribbler.Scribble(
-                ($_structuredSoloLn -f $pairSnippet)
+                ($_structuredSoloLn -f $pairSn)
               );
             }
           }
@@ -181,13 +181,13 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       Context 'and: Scribbled Line' {
         It 'should: write line' {
           InModuleScope Elizium.Krayola {
-            [string]$lineSnippet = `
+            [string]$lineSn = `
               $_scribbler.WithArgSnippet('Line', $(
                 'one,MoonChild;two,Infinite Dreams;three,Can I Play With Madness'
               ));
 
             $_scribbler.Scribble(
-              ($_structuredSolo -f $lineSnippet)
+              ($_structuredSolo -f $lineSn)
             );
           }
         }
@@ -196,13 +196,13 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       Context 'and: Scribbled Line with message' {
         It 'should: write line' {
           InModuleScope Elizium.Krayola {
-            [string]$lineSnippet = `
+            [string]$lineSn = `
               $_scribbler.WithArgSnippet('Line', $(
                 'greetings earthlings;four,The Evil That Men Do;five,Seventh Son;six,The Prophecy'
               ));
 
             $_scribbler.Scribble(
-              ($_structuredSolo -f $lineSnippet)
+              ($_structuredSolo -f $lineSn)
             );
           }
         }
@@ -211,13 +211,13 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       Context 'and: Scribbled Line with escaped semi-colon' {
         It 'should: write line' {
           InModuleScope Elizium.Krayola {
-            [string]$lineSnippet = `
+            [string]$lineSn = `
               $_scribbler.WithArgSnippet('Line', $(
                 'seven,The Clairvoyant;eight,Only The Good Die Young\; Iron Maiden'
               ));
 
             $_scribbler.Scribble(
-              ($_structuredSolo -f $lineSnippet)
+              ($_structuredSolo -f $lineSn)
             );
           }
         }
@@ -227,7 +227,7 @@ Describe 'Scribbler' -Tag 'Scribbler' {
     Context 'given: Custom expression' {
       It 'should: perform structured write' {
         InModuleScope Elizium.Krayola {
-          [regex]$expression = [regex]::new('`\((?<api>[\w]+)(,(?<p>[^\)]+))?\)');
+          [regex]$expression = [regex]::new('`\((?<method>[\w]+)(,(?<p>[^\)]+))?\)');
           [string]$formatWithArg = '`({0},{1})';
           [string]$format = '`({0})';
           [regex]$nativeExpression = [regex]::new('');
@@ -258,10 +258,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           [string]$open = '«'; # (left pointing guillemet)
           [string]$close = '»'; # (right pointing guillemet)
 
-          # "µ«(?<api>[\w]+)(,(?<p>[^»]+))?»"
+          # "µ«(?<method>[\w]+)(,(?<p>[^»]+))?»"
           #
           [regex]$expression = [regex]::new(
-            "$($lead)$($open)(?<api>[\w]+)(,(?<p>[^$($close)]+))?$($close)"
+            "$($lead)$($open)(?<method>[\w]+)(,(?<p>[^$($close)]+))?$($close)"
           );
 
           # "µ«{0},{1}»"
@@ -287,16 +287,16 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             "`(red)Fields `(blue)Of The `(cyan)`(bgDarkMagenta)Nephilim, Love `(green)Under Will`(Ln)"
           );
 
-          [string]$redSnippet = $scribbler.Snippets(@('red'));
-          [string]$blueSnippet = $scribbler.Snippets(@('blue'));
-          [string]$cyanSnippet = $scribbler.Snippets(@('cyan'));
-          [string]$bgDarkMagentaSnippet = $scribbler.Snippets(@('bgDarkMagenta'));
-          [string]$greenSnippet = $scribbler.Snippets(@('green'));
+          [string]$redSn = $scribbler.Snippets(@('red'));
+          [string]$blueSn = $scribbler.Snippets(@('blue'));
+          [string]$cyanSn = $scribbler.Snippets(@('cyan'));
+          [string]$bgDarkMagentaSn = $scribbler.Snippets(@('bgDarkMagenta'));
+          [string]$greenSn = $scribbler.Snippets(@('green'));
           [string]$lnSnippet = $scribbler.Snippets(@('Ln'));
 
           [string]$source = $(
-            "$($redSnippet)Fields $($blueSnippet)Of The $($cyanSnippet)$($bgDarkMagentaSnippet)" +
-            "Nephilim, Love $($greenSnippet)Under Will$($lnSnippet)"
+            "$($redSn)Fields $($blueSn)Of The $($cyanSn)$($bgDarkMagentaSn)" +
+            "Nephilim, Love $($greenSn)Under Will$($lnSnippet)"
           );
 
           $scribbler.Scribble($source);
@@ -310,13 +310,13 @@ Describe 'Scribbler' -Tag 'Scribbler' {
 
     Context 'given: valid structured string' {
       Context 'and: leading text snippet' {
-        Context 'and: single api call' {
+        Context 'and: single method call' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
-              [string]$source = "I need to be alone $($_redSnippet)today";
+              [string]$source = "I need to be alone $($_redSn)today";
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)$($_lnSnippet)"
+                "$($_resetSn)$($source)$($_lnSn)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -325,13 +325,13 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           }
         }
 
-        Context 'and: multiple api calls' {
+        Context 'and: multiple method calls' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
-              [string]$source = "Smother $($_cyanSnippet)me or $($_blueSnippet)suffer $($_greenSnippet)me";
+              [string]$source = "Smother $($_cyanSn)me or $($_blueSn)suffer $($_greenSn)me";
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)$($_lnSnippet)"
+                "$($_resetSn)$($source)$($_lnSn)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -341,27 +341,27 @@ Describe 'Scribbler' -Tag 'Scribbler' {
 
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
-              [string]$source = "Lay $($_redSnippet)$($_magentaSnippet)down I'll die today";
+              [string]$source = "Lay $($_redSn)$($_magentaSn)down I'll die today";
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)$($_lnSnippet)"
+                "$($_resetSn)$($source)$($_lnSn)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
               $operations | Should -HaveCount 4;
             }
           }
-        } # and: multiple api calls
+        } # and: multiple method calls
 
-        Context 'and: api invoke with param' {
+        Context 'and: method invoke with param' {
           Context 'and: Message' {
             It 'should: perform message write' {
               InModuleScope Elizium.Krayola {
                 [string]$message = '*** Love under will';
-                [string]$messageSnippet = $_scribbler.WithArgSnippet('Message', $message);
+                [string]$messageSn = $_scribbler.WithArgSnippet('Message', $message);
 
                 $_scribbler.Scribble(
-                  "$($_resetSnippet)$($messageSnippet)$($_lnSnippet)"
+                  "$($_resetSn)$($messageSn)$($_lnSn)"
                 );
               }
             }
@@ -369,10 +369,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             It 'should: perform message write' {
               InModuleScope Elizium.Krayola {
                 [string]$message = '!!! Love under will';
-                [string]$messageSnippet = $_scribbler.WithArgSnippet('MessageLn', $message);
+                [string]$messageSn = $_scribbler.WithArgSnippet('MessageLn', $message);
 
                 $_scribbler.Scribble(
-                  "$($_resetSnippet)$($messageSnippet)"
+                  "$($_resetSn)$($messageSn)"
                 );
               }
             }
@@ -382,25 +382,25 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             It 'should: perform message write' {
               InModuleScope Elizium.Krayola {
                 [string]$source = 'Love under will';
-                [string]$themeColourSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'affirm');
+                [string]$themeColourSn = $_scribbler.WithArgSnippet('ThemeColour', 'affirm');
 
                 $_scribbler.Scribble(
-                  "$($_resetSnippet)$($themeColourSnippet)$($source)$($_lnSnippet)"
+                  "$($_resetSn)$($themeColourSn)$($source)$($_lnSn)"
                 );
               }
             }
           }
-        } # and: api invoke with param
+        } # and: method invoke with param
       } # and: leading text snippet
 
-      Context 'given: leading api call' {
-        Context 'and: single api call' {
+      Context 'given: leading method call' {
+        Context 'and: single method call' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
-              [string]$source = "$($_cyanSnippet)Smother me or suffer me";
+              [string]$source = "$($_cyanSn)Smother me or suffer me";
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)$($_lnSnippet)"
+                "$($_resetSn)$($source)$($_lnSn)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -408,13 +408,13 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             }
           }
 
-          Context 'and: with api param' {
-            It 'should: invoke api with param' {
+          Context 'and: with method param' {
+            It 'should: invoke method with param' {
               InModuleScope Elizium.Krayola {
                 [string]$source = $_scribbler.WithArgSnippet('message', 'Love Under Will');
 
                 $_scribbler.Scribble(
-                  "$($_resetSnippet)$($source)$($_lnSnippet)"
+                  "$($_resetSn)$($source)$($_lnSn)"
                 );
 
                 [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -422,15 +422,15 @@ Describe 'Scribbler' -Tag 'Scribbler' {
               }
             }
           }
-        } # and: single api call
+        } # and: single method call
 
-        Context 'and: multiple api calls' {
+        Context 'and: multiple method calls' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
-              [string]$source = "$($_cyanSnippet)When $($_redSnippet)I'm gone $($_yellowSnippet)wait here";
+              [string]$source = "$($_cyanSn)When $($_redSn)I'm gone $($_yellowSn)wait here";
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)$($_lnSnippet)"
+                "$($_resetSn)$($source)$($_lnSn)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -441,11 +441,11 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = $(
-                "$($_cyanSnippet)Discover $($_redSnippet)$($_bgYellowSnippet)all of $($_magentaSnippet)life's surprises"
+                "$($_cyanSn)Discover $($_redSn)$($_bgYellowSn)all of $($_magentaSn)life's surprises"
               );
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)$($_lnSnippet)"
+                "$($_resetSn)$($source)$($_lnSn)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -453,14 +453,14 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             }
           }
 
-          Context 'and: with api param' {
-            It 'should: invoke api with param' {
+          Context 'and: with method param' {
+            It 'should: invoke method with param' {
               InModuleScope Elizium.Krayola {
-                [string]$messageSnippet = $_scribbler.WithArgSnippet('Message', 'Love Under Will');
-                [string]$source = "The Nephilim; $($messageSnippet)$($_redSnippet)*The Winter Solstace";
+                [string]$messageSn = $_scribbler.WithArgSnippet('Message', 'Love Under Will');
+                [string]$source = "The Nephilim; $($messageSn)$($_redSn)*The Winter Solstace";
 
                 $_scribbler.Scribble(
-                  "$($_resetSnippet)$($source)$($_lnSnippet)"
+                  "$($_resetSn)$($source)$($_lnSn)"
                 );
 
                 [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -468,14 +468,14 @@ Describe 'Scribbler' -Tag 'Scribbler' {
               }
             }
 
-            It 'should: invoke api with param' {
+            It 'should: invoke method with param' {
               InModuleScope Elizium.Krayola {
                 [string]$source = $(
-                  "$($_ThemeColourMetaSnippet)[🚀] ====== [ $($_ThemeColourMessageSnippet)Children of the Damned$($($_ThemeColourMetaSnippet)) ] ==="
+                  "$($_ThemeColourMetaSn)[🚀] ====== [ $($_ThemeColourMessageSn)Children of the Damned$($($_ThemeColourMetaSn)) ] ==="
                 );
 
                 $_scribbler.Scribble(
-                  "$($_resetSnippet)$($source)$($_lnSnippet)"
+                  "$($_resetSn)$($source)$($_lnSn)"
                 );
 
                 [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -483,17 +483,17 @@ Describe 'Scribbler' -Tag 'Scribbler' {
               }
             }
           }
-        } # and: multiple api calls
-      } # given: leading api call
+        } # and: multiple method calls
+      } # given: leading method call
 
-      Context 'given: trailing api call' {
-        Context 'and: single api call' {
+      Context 'given: trailing method call' {
+        Context 'and: single method call' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
-              [string]$source = "When I'm gone wait here$($_lnSnippet)";
+              [string]$source = "When I'm gone wait here$($_lnSn)";
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)"
+                "$($_resetSn)$($source)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -502,13 +502,13 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           }
         }
 
-        Context 'and: multiple api calls' {
+        Context 'and: multiple method calls' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
-              [string]$source = "$($_whiteSnippet)When $($_greenSnippet)I'm gone $($_yellowSnippet)wait here$($_lnSnippet)";
+              [string]$source = "$($_whiteSn)When $($_greenSn)I'm gone $($_yellowSn)wait here$($_lnSn)";
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)"
+                "$($_resetSn)$($source)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -519,11 +519,11 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           It 'should: perform structured write' {
             InModuleScope Elizium.Krayola {
               [string]$source = $(
-                "I'll $($_greenSnippet)send my child my last $($_yellowSnippet)$($_bgDarkBlueSnippet)good smile$($_lnSnippet)"
+                "I'll $($_greenSn)send my child my last $($_yellowSn)$($_bgDarkBlueSn)good smile$($_lnSn)"
               );
 
               $_scribbler.Scribble(
-                "$($_resetSnippet)$($source)"
+                "$($_resetSn)$($source)"
               );
 
               [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -531,7 +531,7 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             }
           }
         }
-      } # given: trailing api call
+      } # given: trailing method call
 
       Context 'and: empty string' {
         It 'should: ignore' {
@@ -545,20 +545,20 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       }
     } # valid structured string
 
-    Context 'given: non colour api calls' {
+    Context 'given: non colour method calls' {
       It 'should: perform structured write' {
         InModuleScope Elizium.Krayola {
-          [string]$source = "$($_bgRedSnippet)If you pass $($_resetSnippet)through my soul tonight$($_lnSnippet)";
+          [string]$source = "$($_bgRedSn)If you pass $($_resetSn)through my soul tonight$($_lnSn)";
 
           $_scribbler.Scribble(
-            "$($_resetSnippet)$($source)"
+            "$($_resetSn)$($source)"
           );
 
           [PSCustomObject []]$operations = $_krayon._parse($source);
           $operations | Should -HaveCount 5;
         }
       }
-    } # non colour api calls
+    } # non colour method calls
 
     Context 'given: Vanilla string' {
       It 'should: write test as is' {
@@ -566,7 +566,7 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           [string]$source = 'Gather all his troubles';
 
           $_scribbler.Scribble(
-            "$($_resetSnippet)$($source)$($_lnSnippet)"
+            "$($_resetSn)$($source)$($_lnSn)"
           );
 
           [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -578,10 +578,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
     Context 'given: string without core text' {
       It 'should: should not write any text' {
         InModuleScope Elizium.Krayola {
-          [string]$source = "$($_redSnippet)" * 6;
+          [string]$source = "$($_redSn)" * 6;
           $_scribbler.Scribble(
-            "$($_resetSnippet)Should be no text inside square brackets: " +
-            "[$($source)$($_resetSnippet)]$($_lnSnippet)"
+            "$($_resetSn)Should be no text inside square brackets: " +
+            "[$($source)$($_resetSn)]$($_lnSn)"
           );
 
           [PSCustomObject []]$operations = $_krayon._parse($source);
@@ -592,7 +592,7 @@ Describe 'Scribbler' -Tag 'Scribbler' {
   } # Scribble
 
   Describe 'Snippets' {
-    Context 'given: single api' {
+    Context 'given: single method' {
       It 'should: return snippet' {
         InModuleScope Elizium.Krayola {
           [string[]]$source = @('red');
@@ -602,7 +602,7 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       }
     }
 
-    Context 'given: double api' {
+    Context 'given: double method' {
       It 'should: return double snippet' {
         InModuleScope Elizium.Krayola {
           [string[]]$source = @('red', 'bgRed');
@@ -896,10 +896,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('two, Never Forget', 'Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
-            $pairSnippet | Should -Match 'two\\,';
+            [string]$pairSn = $_scribbler.PairSnippet($pair);
+            $pairSn | Should -Match 'two\\,';
 
-            $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
+            $_scribbler.Scribble("$($pairSn)$($_lnSn)");
           }
         }
       }
@@ -909,10 +909,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('three', 'Searching, Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
-            $pairSnippet | Should -Match 'Searching\\,';
+            [string]$pairSn = $_scribbler.PairSnippet($pair);
+            $pairSn | Should -Match 'Searching\\,';
 
-            $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
+            $_scribbler.Scribble("$($pairSn)$($_lnSn)");
           }
         }
       }
@@ -922,10 +922,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('four; The Runner', 'Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
-            $pairSnippet | Should -Match 'four\\;';
+            [string]$pairSn = $_scribbler.PairSnippet($pair);
+            $pairSn | Should -Match 'four\\;';
 
-            $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
+            $_scribbler.Scribble("$($pairSn)$($_lnSn)");
           }
         }
       }
@@ -935,10 +935,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
           InModuleScope Elizium.Krayola {
             [couplet]$pair = $(New-Pair @('five', 'The Javelin; Blue Amazon'));
 
-            [string]$pairSnippet = $_scribbler.PairSnippet($pair);
-            $pairSnippet | Should -Match 'The Javelin\\;';
+            [string]$pairSn = $_scribbler.PairSnippet($pair);
+            $pairSn | Should -Match 'The Javelin\\;';
 
-            $_scribbler.Scribble("$($pairSnippet)$($_lnSnippet)");
+            $_scribbler.Scribble("$($pairSn)$($_lnSn)");
           }
         }
       }
@@ -951,10 +951,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             [couplet]$pair = $(New-Pair @('one, Doubleplusgood', 'Eurythmics'));
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.LineSnippet($line);
-            $lineSnippet | Should -Match 'one\\,';
+            [string]$lineSn = $_scribbler.LineSnippet($line);
+            $lineSn | Should -Match 'one\\,';
 
-            $_scribbler.Scribble("$($lineSnippet)");
+            $_scribbler.Scribble("$($lineSn)");
           }
         }
       }
@@ -965,10 +965,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             [couplet]$pair = $(New-Pair @('two', 'For The Love Of Big Brother, Eurythmics')); ;
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.LineSnippet($line);
-            $lineSnippet | Should -Match 'Brother\\,';
+            [string]$lineSn = $_scribbler.LineSnippet($line);
+            $lineSn | Should -Match 'Brother\\,';
 
-            $_scribbler.Scribble("$($lineSnippet)");
+            $_scribbler.Scribble("$($lineSn)");
           }
         }
       }
@@ -979,10 +979,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             [couplet]$pair = $(New-Pair @('three; The Runner', 'Eurythmics'));
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.LineSnippet($line);
-            $lineSnippet | Should -Match 'three\\;';
+            [string]$lineSn = $_scribbler.LineSnippet($line);
+            $lineSn | Should -Match 'three\\;';
 
-            $_scribbler.Scribble("$($lineSnippet)");
+            $_scribbler.Scribble("$($lineSn)");
           }
         }
       }
@@ -993,10 +993,10 @@ Describe 'Scribbler' -Tag 'Scribbler' {
             [couplet]$pair = $(New-Pair @('four', 'I Did It Just The Same; Eurythmics'));
             [line]$line = New-Line(@($pair));
 
-            [string]$lineSnippet = $_scribbler.LineSnippet($line);
-            $lineSnippet | Should -Match 'Same\\;';
+            [string]$lineSn = $_scribbler.LineSnippet($line);
+            $lineSn | Should -Match 'Same\\;';
 
-            $_scribbler.Scribble("$($lineSnippet)");
+            $_scribbler.Scribble("$($lineSn)");
           }
         }
       }
@@ -1008,12 +1008,12 @@ Describe 'Scribbler' -Tag 'Scribbler' {
       InModuleScope Elizium.Krayola {
         [Scribbler]$scribbler = New-Scribbler -Test -Save;
 
-        [string]$lineSnippet = `
+        [string]$lineSn = `
           $scribbler.WithArgSnippet('Line', $(
             'seven,The Clairvoyant;eight,Only The Good Die Young\; Iron Maiden'
           ));
 
-        [string]$lineSnippet = `
+        [string]$lineSn = `
           $scribbler.WithArgSnippet('Line', $(
             'one,MoonChild;two,Infinite Dreams;three,Can I Play With Madness'
           ));

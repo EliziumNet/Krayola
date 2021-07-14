@@ -21,15 +21,15 @@ Describe 'Krayon' {
       [Krayon]$global:_krayon = New-Krayon -Theme $_theme;
       [Scribbler]$global:_scribbler = New-Scribbler -Krayon $_krayon -Test;
 
-      [string]$global:_lnSnippet = $_scribbler.Snippets(@('Ln'));
-      [string]$global:_resetSnippet = $_scribbler.Snippets(@('Reset'));
+      [string]$global:_lnSn = $_scribbler.Snippets(@('Ln'));
+      [string]$global:_resetSn = $_scribbler.Snippets(@('Reset'));
 
-      [string]$global:_redSnippet = $_scribbler.Snippets(@('red'));
-      [string]$global:_blueSnippet = $_scribbler.Snippets(@('blue'));
-      [string]$global:_greenSnippet = $_scribbler.Snippets(@('green'));
-      [string]$global:_magentaSnippet = $_scribbler.Snippets(@('magenta'));
-      [string]$global:_cyanSnippet = $_scribbler.Snippets(@('cyan'));
-      [string]$global:_graySnippet = $_scribbler.Snippets(@('gray'));
+      [string]$global:_redSn = $_scribbler.Snippets(@('red'));
+      [string]$global:_blueSn = $_scribbler.Snippets(@('blue'));
+      [string]$global:_greenSn = $_scribbler.Snippets(@('green'));
+      [string]$global:_magentaSn = $_scribbler.Snippets(@('magenta'));
+      [string]$global:_cyanSn = $_scribbler.Snippets(@('cyan'));
+      [string]$global:_graySn = $_scribbler.Snippets(@('gray'));
     }
   }
 
@@ -216,8 +216,8 @@ Describe 'Krayon' {
         It 'should: throw' {
           InModuleScope Elizium.Krayola {
             {
-              [string]$orangeSnippet = $_scribbler.Snippets(@('orange'));
-              [string]$source = "I'll love her 'til i $($orangeSnippet)die$($_lnSnippet)";
+              [string]$orangeSn = $_scribbler.Snippets(@('orange'));
+              [string]$source = "I'll love her 'til i $($orangeSn)die$($_lnSn)";
               $_krayon.Scribble($source);
             } | Should -Throw;
             Write-Host '';        
@@ -230,7 +230,7 @@ Describe 'Krayon' {
           InModuleScope Elizium.Krayola {
             {
               [string]$textSnippet = $_scribbler.Snippets(@('Text'));
-              [string]$source = "Then rest in peace can't you $($textSnippet)see$($_lnSnippet)";
+              [string]$source = "Then rest in peace can't you $($textSnippet)see$($_lnSn)";
               $_krayon.Scribble($source);
             } | Should -Throw;
             Write-Host '';        
@@ -241,10 +241,10 @@ Describe 'Krayon' {
   } # Scribble
 
   Describe 'given: native' {
-    Context 'and: structured string with api invokes without arguments' {
+    Context 'and: structured string with method invokes without arguments' {
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
-          [string]$structured = "$($_redSnippet)hello world";
+          [string]$structured = "$($_redSn)hello world";
           [string]$expected = 'hello world';
           $_krayon.Native($structured) | Should -BeExactly $expected;
         }
@@ -252,7 +252,7 @@ Describe 'Krayon' {
 
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
-          [string]$structured = "hello world$($_blueSnippet)";
+          [string]$structured = "hello world$($_blueSn)";
           [string]$expected = 'hello world';
           $_krayon.Native($structured) | Should -BeExactly $expected;
         }
@@ -260,7 +260,7 @@ Describe 'Krayon' {
 
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
-          [string]$structured = "hello $($_greenSnippet)world";
+          [string]$structured = "hello $($_greenSn)world";
           [string]$expected = 'hello world';
           $_krayon.Native($structured) | Should -BeExactly $expected;
         }
@@ -268,14 +268,14 @@ Describe 'Krayon' {
 
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
-          [string]$structured = "who $($_magentaSnippet)watches $($_cyanSnippet)the $($_graySnippet)watchers";
+          [string]$structured = "who $($_magentaSn)watches $($_cyanSn)the $($_graySn)watchers";
           [string]$expected = 'who watches the watchers';
           $_krayon.Native($structured) | Should -BeExactly $expected;
         }
       }
     }
 
-    Context 'and: structured string with api invokes without arguments' {
+    Context 'and: structured string with method invokes without arguments' {
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
           [string]$snippet = $_scribbler.WithArgSnippet('fore', 'red');
@@ -305,10 +305,10 @@ Describe 'Krayon' {
 
       It 'should: return native string' {
         InModuleScope Elizium.Krayola {
-          [string]$themeMagentaSnippet = $_scribbler.WithArgSnippet('ThemeColour', 'message');
-          [string]$messageSnippet = $_scribbler.WithArgSnippet('Message', 'Silk Spectre');
-          [string]$graySnippet = $_scribbler.Snippets(@('gray'));
-          [string]$structured = "who $($themeMagentaSnippet)watches $($messageSnippet)the $($graySnippet)watchers";
+          [string]$themeMagentaSn = $_scribbler.WithArgSnippet('ThemeColour', 'message');
+          [string]$messageSn = $_scribbler.WithArgSnippet('Message', 'Silk Spectre');
+          [string]$graySn = $_scribbler.Snippets(@('gray'));
+          [string]$structured = "who $($themeMagentaSn)watches $($messageSn)the $($graySn)watchers";
           [string]$expected = 'who watches the watchers';
           $_krayon.Native($structured) | Should -BeExactly $expected;
         }

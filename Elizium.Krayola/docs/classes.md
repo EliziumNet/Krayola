@@ -1,3 +1,5 @@
+<!-- MarkDownLint-disable no-inline-html -->
+<!-- MarkDownLint-disable no-trailing-punctuation -->
 
 # :rainbow: Elizium.Krayola Classes
 
@@ -219,7 +221,7 @@ The code examples in this section include a *Flush* invoke. It is at this point 
 
 #### Scribbler.Scribble
 
-<div id="scribbler.scribble"></div>
+<a id="scribbler.scribble"></a>
 
 :gem: Scribbler.Scribble([string]$source)
 
@@ -246,7 +248,7 @@ The code examples in this section include a *Flush* invoke. It is at this point 
 
 #### Scribbler.Text
 
-<div id="scribbler.text"></div>
+<a id="scribbler.text"></a>
 
 :gem: Scribbler.Text([string]$value)
 
@@ -268,7 +270,7 @@ The text string value is buffered **without** a new line.
 
 #### Scribbler.TextLn
 
-<div id="scribbler.textln"></div>
+<a id="scribbler.textln"></a>
 
 :gem: Scribbler.TextLn([string]$value)
 
@@ -294,7 +296,7 @@ The text string value is buffered **with** a new line.
 
 #### Scribbler.Pair
 
-<div id="scribbler.pair"></div>
+<a id="scribbler.pair"></a>
 
 :gem: Scribbler.Pair([couplet]$couplet)
 
@@ -310,7 +312,7 @@ Buffers the pair couplet **without** a new line.
 
 #### Scribbler.PairLn
 
-<div id="scribbler.pairln"></div>
+<a id="scribbler.pairln"></a>
 
 :gem: Scribbler.PairLn([couplet]$couplet)
 
@@ -365,7 +367,7 @@ Buffers the pair object **without** a new line.
 
 #### Scribbler.Line
 
-<div id="scribbler.line"></div>
+<a id="scribbler.line"></a>
 
 :gem: Scribbler.Line([line]$line)
 
@@ -384,7 +386,7 @@ The Line method has a new line built into it.
 
 #### Scribbler.NakedLine([line]$nakedLine)
 
-<div id="scribbler.nakedline"></div>
+<a id="scribbler.nakedline"></a>
 
 :gem: Scribbler.NakedLine([line]$nakedLine)
 
@@ -403,7 +405,7 @@ The NakedLine method has a new line built into it.
 
 #### Scribbler.Line / With message
 
-<div id="scribbler.line.message"></div>
+<a id="scribbler.line.message"></a>
 
 :gem: Scribbler.Line([string]$message, [line]$line)
 
@@ -428,7 +430,7 @@ The Line method has a new line built into it.
 
 #### Scribbler.NakedLine / With message
 
-<div id="scribbler.nakedline.message"></div>
+<a id="scribbler.nakedline.message"></a>
 
 :gem: Scribbler.NakedLine([string]$message, [line]$nakedline)
 
@@ -459,7 +461,7 @@ All these methods are displayed using the colour defined in the Krayola theme un
 
 #### Scribbler.Message
 
-<div id="scribbler.message"></div>
+<a id="scribbler.message"></a>
 
 :gem: Scribbler.Message([string]$message)
 
@@ -474,7 +476,7 @@ Buffers the message **without** a new line.
 
 #### Scribbler.MessageLn
 
-<div id="scribbler.messageln"></div>
+<a id="scribbler.messageln"></a>
 
 :gem: Scribbler.MessageLn([string]$message)
 
@@ -489,7 +491,7 @@ Buffers the message **with** a new line.
 
 #### Scribbler.MessageNoSuffix
 
-<div id="scribbler.messagenosuffix"></div>
+<a id="scribbler.messagenosuffix"></a>
 
 :gem: Scribbler.MessageNoSuffix([string]$message)
 
@@ -506,7 +508,7 @@ Buffers the message **without** a new line.
 
 #### Scribbler.MessageNoSuffixLn([string]$message)
 
-<div id="scribbler.messagenosuffixln"></div>
+<a id="scribbler.messagenosuffixln"></a>
 
 :gem: Scribbler.MessageNoSuffixLn([string]$message)
 
@@ -527,7 +529,7 @@ Buffers the message **with** a new line.
 
 #### Scribbler.fore
 
-<div id="scribbler.fore"></div>
+<a id="scribbler.fore"></a>
 
 :gem: Scribbler.fore([string]$colour)
 
@@ -543,7 +545,7 @@ Buffers the foreground colour.
 
 #### Scribbler.back([string]$colour)
 
-<div id="scribbler.back"></div>
+<a id="scribbler.back"></a>
 
 :gem: Scribbler.back([string]$colour)
 
@@ -561,7 +563,7 @@ Buffers the background colour.
 
 #### Scribbler.defaultFore
 
-<div id="scribbler.defaultfore"></div>
+<a id="scribbler.defaultfore"></a>
 
 :gem: Scribbler.defaultFore([string]$colour)
 
@@ -576,7 +578,7 @@ Buffers the default foreground colour.
 
 #### Scribbler.defaultBack
 
-<div id="scribbler.defaultback"></div>
+<a id="scribbler.defaultback"></a>
 
 :gem: Scribbler.defaultBack([string]$colour)
 
@@ -597,7 +599,7 @@ Buffers the default background colour.
 
 #### Scribbler.End
 
-<div id="scribbler.end"></div>
+<a id="scribbler.end"></a>
 
 :gem: Scribbler.End()
 
@@ -605,7 +607,7 @@ When invoking the *fluent* methods, within a function context, it is necessary t
 
 #### Scribbler.Flush
 
-<div id="scribbler.flush"></div>
+<a id="scribbler.flush"></a>
 
 :gem: Scribbler.Flush()
 
@@ -613,7 +615,7 @@ Causes the buffered content inside the Scribbler to be replayed on the Krayon. T
 
 #### Scribbler.Ln
 
-<div id="scribbler.ln"></div>
+<a id="scribbler.ln"></a>
 
 :gem: Scribbler.Ln()
 
@@ -621,7 +623,7 @@ Buffers a new line operation.
 
 #### Scribbler.Reset
 
-<div id="scribbler.reset"></div>
+<a id="scribbler.reset"></a>
 
 :gem: Scribbler.Reset()
 
@@ -629,7 +631,7 @@ Buffers a request to return the Krayon to default foreground and background colo
 
 #### Scribbler.Restart
 
-<div id="scribbler.restart"></div>
+<a id="scribbler.restart"></a>
 
 :gem: Scribbler.Restart()
 
@@ -637,7 +639,7 @@ Similar to Reset, but also clears internal buffers. Akin to a *HardReset*.
 
 #### Scribbler.Save
 
-<div id="scribbler.save"></div>
+<a id="scribbler.save"></a>
 
 :gem: Scribbler.Save([string]$fullPath)
 
@@ -651,7 +653,7 @@ When the Scribbler has been created with the *Save* option, any *Flush* invokes 
 
 #### Scribbler.ThemeColour
 
-<div id="scribbler.themecolour"></div>
+<a id="scribbler.themecolour"></a>
 
 :gem: Scribbler.ThemeColour([string]$val)
 
@@ -676,7 +678,7 @@ The value inside the brackets denotes the valid string for the $val parameter th
 
 #### Scribbler.\<Colour\>
 
-<div id="scribbler.colour"></div>
+<a id="scribbler.colour"></a>
 
 :gem: Scribbler.\<Colour\>()
 
@@ -688,7 +690,7 @@ Sets either the foreground or background colour. The background colours are spec
 
 #### Scribbler.Snippets
 
-<div id="scribbler.snippets"></div>
+<a id="scribbler.snippets"></a>
 
 :gem: Scribbler.Snippets([string[]]$items)
 
@@ -706,15 +708,15 @@ Returns the structured string:
 
 #### Scribbler.WithArgSnippet
 
-<div id="scribbler.withargsnippet"></div>
+<a id="scribbler.withargsnippet"></a>
 
-:gem: Scribbler.WithArgSnippet([string]$api,[string]$arg)
+:gem: Scribbler.WithArgSnippet([string]$method,[string]$arg)
 
-*api* the single parameter Krayon method to invoke.
+*method* the single parameter Krayon method to invoke.
 
-*arg* the parameter to invoke method represented by *api*, with.
+*arg* the parameter to invoke method represented by *method*, with.
 
-A single invoke of *WithArgSnippet* represents a single invoke only. The api must be a Krayon method that takes a single parameter. The snippet created is formulated using *WriterFormatWithArg* parameter passed into *New-Krayon* factory function. The default value is "µ«{0},{1}»". ({0} represents the api call and {1} represents that parameter passed into *api*). Invoking this function returns a snippet of structured content that represents the api call with a single parameter.
+A single invoke of *WithArgSnippet* represents a single invoke only. The method must be a Krayon method that takes a single parameter. The snippet created is formulated using *WriterFormatWithArg* parameter passed into *New-Krayon* factory function. The default value is "µ«{0},{1}»". ({0} represents the method call and {1} represents that parameter passed into *method*). Invoking this function returns a snippet of structured content that represents the method call with a single parameter.
 
 ```powershell
   [string]$message = '*** Love under will';
@@ -730,7 +732,7 @@ A single invoke of *WithArgSnippet* represents a single invoke only. The api mus
 
 #### Scribbler.PairSnippet
 
-<div id="scribbler.pairsnippet"></div>
+<a id="scribbler.pairsnippet"></a>
 
 :gem: Scribbler.PairSnippet([couplet]$pair)
 
@@ -752,7 +754,7 @@ This method is automatically invoked when the client uses the *Pair* accelerator
 
 #### Scribbler.LineSnippet
 
-<div id="scribbler.linesnippet"></div>
+<a id="scribbler.linesnippet"></a>
 
 :gem: Scribbler.LineSnippet([line]$line)
 
@@ -792,7 +794,7 @@ The workhorse that performs the actual writes to the console.
 
 #### Krayon.Scribble
 
-<div id="krayon.scribble"></div>
+<a id="krayon.scribble"></a>
 
 :gem: Krayon.Scribble([string]$source)
 
@@ -802,7 +804,7 @@ Structured content is written to the host WITHOUT a new line.
 
 #### Krayon.ScribbleLn
 
-<div id="krayon.scribbleln"></div>
+<a id="krayon.scribbleln"></a>
 
 :gem: Krayon.ScribbleLn([string]$source)
 
@@ -814,7 +816,7 @@ Structured content is written to the host WITHOUT a new line.
 
 #### Krayon.Text
 
-<div id="krayon.text"></div>
+<a id="krayon.text"></a>
 
 :gem: Krayon.Text([string]$value)
 
@@ -824,7 +826,7 @@ The text value is written using the current foreground and background colours. T
 
 #### Krayon.TextLn
 
-<div id="krayon.textln"></div>
+<a id="krayon.textln"></a>
 
 :gem: Krayon.TextLn([string]$value)
 
@@ -838,7 +840,7 @@ The text value is written using the current foreground and background colours **
 
 #### Krayon.Pair
 
-<div id="krayon.pair"></div>
+<a id="krayon.pair"></a>
 
 :gem: Krayon.Pair([couplet]$couplet)
 
@@ -848,7 +850,7 @@ Writes the couplet instance to the console using the colours and formatting defi
 
 #### Krayon.PairLn
 
-<div id="krayon.pairln"></div>
+<a id="krayon.pairln"></a>
 
 :gem: Krayon.PairLn([couplet]$couplet)
 
@@ -878,7 +880,7 @@ Writes the couplet instance to the console using the colours and formatting defi
 
 #### Krayon.Line
 
-<div id="krayon.line"></div>
+<a id="krayon.line"></a>
 
 :gem: Krayon.Line([line]$line)
 
@@ -888,7 +890,7 @@ Writes the line instance to the console using the colours and formatting defined
 
 #### Krayon.NakedLine
 
-<div id="krayon.nakedline"></div>
+<a id="krayon.nakedline"></a>
 
 :gem: Krayon.NakedLine([line]$nakedLine)
 
@@ -898,7 +900,7 @@ Writes the naked line to the console using the colours and formatting defined in
 
 #### Krayon.Line / With Message
 
-<div id="krayon.line.message"></div>
+<a id="krayon.line.message"></a>
 
 :gem: Krayon.Line([string]$message, [line]$line)
 
@@ -910,7 +912,7 @@ Writes the message line instance to the console using the colours and formatting
 
 #### Krayon.NakedLine / With Message
 
-<div id="krayon.nakedline.message"></div>
+<a id="krayon.nakedline.message"></a>
 
 :gem: Krayon.NakedLine([string]$message, [line]$line)
 
@@ -926,7 +928,7 @@ Writes the message and the naked line to the console using the colours and forma
 
 #### Krayon.Message
 
-<div id="krayon.message"></div>
+<a id="krayon.message"></a>
 
 :gem: Krayon.Message([string]$message)
 
@@ -936,7 +938,7 @@ Writes the message to the console using the colours and formatting defined in th
 
 #### Krayon.MessageLn
 
-<div id="krayon.messageln"></div>
+<a id="krayon.messageln"></a>
 
 :gem: Krayon.MessageLn([string]$message)
 
@@ -946,7 +948,7 @@ Writes the message to the console using the colours and formatting defined in th
 
 #### Krayon.MessageNoSuffix
 
-<div id="krayon.messagenosuffix"></div>
+<a id="krayon.messagenosuffix"></a>
 
 :gem: Krayon.Message([string]$message)
 
@@ -956,7 +958,7 @@ Writes the message to the console using the colours and formatting defined in th
 
 #### Krayon.MessageNoSuffixLn
 
-<div id="krayon.messagenosuffixln"></div>
+<a id="krayon.messagenosuffixln"></a>
 
 :gem: Krayon.MessageNoSuffixLn([string]$message)
 
@@ -970,7 +972,7 @@ Writes the message to the console using the colours and formatting defined in th
 
 #### Krayon.fore
 
-<div id="krayon.fore"></div>
+<a id="krayon.fore"></a>
 
 :gem: Krayon.Fore([string]$colour)
 
@@ -980,7 +982,7 @@ Set the current foreground colour.
 
 #### Krayon.back
 
-<div id="krayon.back"></div>
+<a id="krayon.back"></a>
 
 :gem: Krayon.Back([string]$colour)
 
@@ -990,7 +992,7 @@ Set the current background colour.
 
 #### Krayon.defaultFore
 
-<div id="krayon.defaultfore"></div>
+<a id="krayon.defaultfore"></a>
 
 :gem: Krayon.defaultFore([string]$colour)
 
@@ -1000,7 +1002,7 @@ Set the default foreground colour.
 
 #### Krayon.defaultBack
 
-<div id="krayon.defaultback"></div>
+<a id="krayon.defaultback"></a>
 
 :gem: Krayon.defaultBack([string]$colour)
 
@@ -1010,7 +1012,7 @@ Set the default background colour.
 
 #### Krayon.getDefaultFore
 
-<div id="krayon.getdefaultfore"></div>
+<a id="krayon.getdefaultfore"></a>
 
 :gem: Krayon.getDefaultFore()
 
@@ -1018,7 +1020,7 @@ Gets the default foreground colour. Does not affect current state of the Krayon.
 
 #### Krayon.getDefaultBack
 
-<div id="krayon.getdefaultback"></div>
+<a id="krayon.getdefaultback"></a>
 
 :gem: Krayon.getDefaultBack()
 
@@ -1030,7 +1032,7 @@ Gets the default background colour. Does not affect current state of the Krayon.
 
 #### Krayon.End
 
-<div id="krayon.end"></div>
+<a id="krayon.end"></a>
 
 :gem: Krayon.End()
 
@@ -1038,7 +1040,7 @@ See [Scribbler.End()](#scribbler.end)
 
 #### Krayon.Ln
 
-<div id="krayon.ln"></div>
+<a id="krayon.ln"></a>
 
 :gem: Krayon.Ln()
 
@@ -1046,7 +1048,7 @@ Writes a new line to the console.
 
 #### Krayon.Reset
 
-<div id="krayon.reset"></div>
+<a id="krayon.reset"></a>
 
 :gem: Krayon.Reset()
 
@@ -1058,7 +1060,7 @@ Resets the current foreground and background colours back to their defaults.
 
 #### Krayon.ThemeColour
 
-<div id="krayon.themecolour"></div>
+<a id="krayon.themecolour"></a>
 
 :gem: Krayon.ThemeColour([string]$val)
 
@@ -1078,7 +1080,7 @@ __background colours:__ 'bgBlack', 'bgDarkBlue', 'bgDarkGreen', 'bgDarkCyan',
 
 #### Krayon.\<Colour\>
 
-<div id="krayon.colour"></div>
+<a id="krayon.colour"></a>
 
 :gem: Krayon.\<Colour\>()
 
@@ -1094,7 +1096,7 @@ These compounder functions do not need to be called by the client. They form par
 
 #### Krayon.Line / Compounder
 
-<div id="krayon.line.compounder"></div>
+<a id="krayon.line.compounder"></a>
 
 :gem: Krayon.Line([string]$semiColonSV)
 
@@ -1104,7 +1106,7 @@ A *Line* is a compound value, comprised of multiple (compound value) *couplet*s.
 
 #### Krayon.NakedLine / Compounder
 
-<div id="krayon.nakedline.compounder"></div>
+<a id="krayon.nakedline.compounder"></a>
 
 :gem: Krayon.NakedLine([string]$semiColonSV)
 
@@ -1115,7 +1117,7 @@ Because the user might need to use a comma or semi-colon inside key or value val
 
 #### Krayon.Pair / Compounder
 
-<div id="krayon.pair.compounder"></div>
+<a id="krayon.pair.compounder"></a>
 
 :gem: Krayon.Pair([string]$csv)
 
@@ -1125,7 +1127,7 @@ Pair is a compound value that is represented as a CSV and is represented on Kray
 
 #### Krayon.PairLn / Compounder
 
-<div id="krayon.pairln.compounder"></div>
+<a id="krayon.pairln.compounder"></a>
 
 :gem: Krayon.PairLn([string]$csv)
 
@@ -1137,17 +1139,17 @@ Same as its [Pair](#krayon.Pair-/-Compounder) equivalent except a new line is ap
 
 #### Krayon.Native
 
-<div id="krayon.native"></div>
+<a id="krayon.native"></a>
 
 :gem: Krayon.Native([string]$structured)
 
 *structured* represents a blob of structured content.
 
-This method uses the regular expression that it was created with in order to extract the core content returning the full core text without the api calls and associated parameters. This is generally not needed but can be useful for assisting with unit-testing.
+This method uses the regular expression that it was created with in order to extract the core content returning the full core text without the method calls and associated parameters. This is generally not needed but can be useful for assisting with unit-testing.
 
 ## Couplet Class
 
-<div id="couplet.class"></div>
+<a id="couplet.class"></a>
 
 This represents a key/value pair with an optional Affirm boolean value. A couplet's affirmed status is determined by the client and indicates if the value should be rendered using the Krayola theme's *AFFIRM-COLOURS*.
 
@@ -1155,7 +1157,7 @@ See [New-Pair](New-Pair.md).
 
 ## Line Class
 
-<div id="line.class"></div>
+<a id="line.class"></a>
 
 This represents a collection of 'couplet's. The line methods on the Scribbler and Krayon have a new line built into their semantics.
 
