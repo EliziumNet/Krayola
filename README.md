@@ -190,7 +190,7 @@ And finally, the creator thanked them for their gifts :sunglasses: and replied i
 
 The happy scripters left the creator with a skip in their step and joy in their hearts :gift_heart:.
 
-... and they all lived happily ever after :joy:.
+... and they all scripted happily ever after :joy:.
 
 And now back to reality.
 
